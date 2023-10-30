@@ -80,31 +80,7 @@ def disp_bell_curv_area(self, axe, curve, x_interval, qx, px, dir):
 
 
 def get_mat(init_ent, inv_ent, op_ent):
-    
-    
-    # init_mat = Matrix(
-    #     init_ent,
-    #     v_buff = 1.3,
-    #     h_buff = 0.75,
-    #     bracket_h_buff = SMALL_BUFF,
-    #     bracket_v_buff = SMALL_BUFF
-    # )
-
-    # inv_mat = Matrix(
-    #     inv_ent,
-    #     v_buff = 1.3,
-    #     h_buff = 0.75,
-    #     bracket_h_buff = SMALL_BUFF,
-    #     bracket_v_buff = SMALL_BUFF
-    # )
-    
-    # ent_init_mat = init_mat.get_entries()
-    # ent_inv_mat = inv_mat.get_entries()
-    
     colors = [RED, GREEN, BLUE]
-        
-    
-
     entries = [init_ent[i] + inv_ent[i] + op_ent[i] for i in range(3)]
     mat = Matrix(
         entries,
@@ -120,16 +96,9 @@ def get_mat(init_ent, inv_ent, op_ent):
             ent_mat[k].set_color(colors[1])
         elif k > 13 and k < 21:
             ent_mat[k].set_color(colors[2])
-
-    # op_mat = Matrix(
-    #     op_ent,
-    #     h_buff = 0.75
-    # )
-    
-    
-    #g = Group(init_mat, inv_mat, op_mat).arrange_in_grid(buff = 0.01)
     
     return mat.scale(0.65)
+
 
 class GaussElimination(Scene):
     def setup(self, add_border=True):
@@ -161,9 +130,9 @@ class GaussElimination(Scene):
         det_A = get_det_text(A, determinant=1, initial_scale_factor=0.75)
         self.add(A)
         self.play(Write(det_A))
-        self.wait(0.05)
+        self.wait(0.5)
         self.play(Unwrite(det_A))
-        self.wait(0.05)
+        self.wait(0.25)
 
         inv_ent = [
             [1, 0, 0],
@@ -191,7 +160,7 @@ class GaussElimination(Scene):
         #self.play(FadeIn(g))
         
         self.play(Create(separator1), Create(separator2))
-        self.wait(0.05)
+        self.wait(0.5)
 
         init_ent2 = [
             [1, 1, 0],
@@ -207,11 +176,10 @@ class GaussElimination(Scene):
         op_ent2 = [[L] for L in lignes]
         
         g2 = get_mat(init_ent2, inv_ent2, op_ent2)
-        line3 = SurroundingRectangle(g2.get_rows()[2])
-        self.play(Write(line3))
+        line3g2 = SurroundingRectangle(g2.get_rows()[2])
+        self.play(Write(line3g2))
         self.play(ReplacementTransform(g, g2))
-        self.wait(0.05)
-        self.play(Unwrite(line3))
+        self.wait(0.5)
         
         init_ent3 = [
             [1, 0, 1],
@@ -227,11 +195,10 @@ class GaussElimination(Scene):
         op_ent3 = [[L] for L in lignes]
         
         g3 = get_mat(init_ent3, inv_ent3, op_ent3)
-        line1 = SurroundingRectangle(g3.get_rows()[0])
-        self.play(Write(line1))
+        line1g3 = SurroundingRectangle(g3.get_rows()[0])
+        self.play(ReplacementTransform(line3g2, line1g3))
         self.play(ReplacementTransform(g2, g3))
-        self.wait(0.05)
-        self.play(Unwrite(line1))
+        self.wait(0.5)
 
         init_ent4 = [
             [1, 0, 0],
@@ -249,21 +216,22 @@ class GaussElimination(Scene):
         op_ent4 = [[L] for L in lignes]
         
         g4 = get_mat(init_ent4, inv_ent4, op_ent4)
-        line2 = SurroundingRectangle(g4.get_rows()[1])
-        line1 = SurroundingRectangle(g4.get_rows()[0])
-        self.play(Write(line2))
+        line2g4 = SurroundingRectangle(g4.get_rows()[1])
+        line1g4 = SurroundingRectangle(g4.get_rows()[0])
+        self.play(Write(line2g4))
         self.wait()
-        self.play(Write(line1))
+        self.play(ReplacementTransform(line1g3, line1g4))
         self.wait()
         self.play(ReplacementTransform(g3, g4))
-        self.wait(0.05)
-        self.play(Unwrite(line2))
-        self.play(Unwrite(line1))
-        self.wait(0.05)
-        self.play(Unwrite(separator1))
-        self.play(Unwrite(separator2))
-        self.play(Unwrite(g4))
-        self.wait()
+        self.wait(0.5)
+        self.play(
+            Unwrite(separator1),
+            Unwrite(separator2),
+            Unwrite(line2g4),
+            Unwrite(line1g4),
+            Unwrite(g4)
+        )
+        self.wait(0.25)
 
         init_ent = [
             [1, 1, 0],
@@ -288,90 +256,108 @@ class GaussElimination(Scene):
 
         abi = Group(A, B, I).arrange_in_grid(buff=1)
         self.play(FadeIn(abi))
-        self.wait(0.05)
+        self.wait(0.5)
         
         A_row1 = SurroundingRectangle(A.get_rows()[0])
 
         B_col1 = SurroundingRectangle(B.get_columns()[0])
         id_ent = I.get_entries()
-        id_ent[0].set_color(YELLOW)
-        self.play(Write(A_row1), Write(B_col1), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col1))
-        self.wait(0.05) 
+        #id_ent[0].set_color(YELLOW)
+        I_11 = SurroundingRectangle(id_ent[0])
+        self.play(
+            Write(A_row1),
+            Write(B_col1),
+            Write(I_11)
+        )
+        self.wait(0.5)
 
         B_col2 = SurroundingRectangle(B.get_columns()[1])
-        id_ent[0].set_color(WHITE)
-        id_ent[1].set_color(YELLOW)
-        self.play(Write(A_row1), Write(B_col2), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col2))
-        self.wait(0.05) 
+        # id_ent[0].set_color(WHITE)
+        # id_ent[1].set_color(YELLOW)
+        I_12 = SurroundingRectangle(id_ent[1])
+        self.play(
+            ReplacementTransform(B_col1, B_col2),
+            ReplacementTransform(I_11, I_12)
+        )
+        self.wait(0.5)
 
         B_col3 = SurroundingRectangle(B.get_columns()[2])
-        id_ent[1].set_color(WHITE)
-        id_ent[2].set_color(YELLOW)
-        self.play(Write(A_row1), Write(B_col3), Write(I))
+        # id_ent[1].set_color(WHITE)
+        # id_ent[2].set_color(YELLOW)
+        I_13 = SurroundingRectangle(id_ent[2])
+        self.play(
+            ReplacementTransform(B_col2, B_col3),
+            ReplacementTransform(I_12, I_13)
+        )
         self.wait(0.5)
-        self.play(Unwrite(B_col3))
-        self.play(Unwrite(A_row1))
-        self.wait(0.05)
 
 
         A_row2 = SurroundingRectangle(A.get_rows()[1])
 
         B_col1 = SurroundingRectangle(B.get_columns()[0])
-        id_ent[2].set_color(WHITE)
-        id_ent[3].set_color(YELLOW)
-        self.play(Write(A_row2), Write(B_col1), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col1))
-        self.wait(0.05)
+        # id_ent[2].set_color(WHITE)
+        # id_ent[3].set_color(YELLOW)
+        I_21 = SurroundingRectangle(id_ent[3])
+        self.play(
+            ReplacementTransform(A_row1, A_row2),
+            ReplacementTransform(B_col3, B_col1),
+            ReplacementTransform(I_13, I_21)
+        )
+        self.wait(0.35)
 
         B_col2 = SurroundingRectangle(B.get_columns()[1])
-        id_ent[3].set_color(WHITE)
-        id_ent[4].set_color(YELLOW)
-        self.play(Write(A_row2), Write(B_col2), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col2))
-        self.wait(0.05)
+        # id_ent[3].set_color(WHITE)
+        # id_ent[4].set_color(YELLOW)
+        I_22 = SurroundingRectangle(id_ent[4])
+        self.play(
+            ReplacementTransform(B_col1, B_col2),
+            ReplacementTransform(I_21, I_22)
+        )
+        self.wait(0.5)
 
         B_col3 = SurroundingRectangle(B.get_columns()[2])
-        id_ent[4].set_color(WHITE)
-        id_ent[5].set_color(YELLOW)
-        self.play(Write(A_row2), Write(B_col3), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col3))
-        self.play(Unwrite(A_row2))
-        self.wait(0.05)
+        # id_ent[4].set_color(WHITE)
+        # id_ent[5].set_color(YELLOW)
+        I_23 = SurroundingRectangle(id_ent[5])
+        self.play(
+            ReplacementTransform(B_col2, B_col3),
+            ReplacementTransform(I_22, I_23)
+        )
+        self.wait(0.5)
 
 
         A_row3 = SurroundingRectangle(A.get_rows()[2])
 
         B_col1 = SurroundingRectangle(B.get_columns()[0])
-        id_ent[5].set_color(WHITE)
-        id_ent[6].set_color(YELLOW)
-        self.play(Write(A_row3), Write(B_col1), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col1))
-        self.wait(0.05)
+        # id_ent[5].set_color(WHITE)
+        # id_ent[6].set_color(YELLOW)
+        I_31 = SurroundingRectangle(id_ent[6])
+        self.play(
+            ReplacementTransform(A_row2, A_row3),
+            ReplacementTransform(B_col3, B_col1),
+            ReplacementTransform(I_23, I_31)
+        )
+        self.wait(0.35)
 
         B_col2 = SurroundingRectangle(B.get_columns()[1])
-        id_ent[6].set_color(WHITE)
-        id_ent[7].set_color(YELLOW)
-        self.play(Write(A_row3), Write(B_col2), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col2))
-        self.wait(0.05)
+        # id_ent[6].set_color(WHITE)
+        # id_ent[7].set_color(YELLOW)
+        I_32 = SurroundingRectangle(id_ent[7])
+        self.play(
+            ReplacementTransform(B_col1, B_col2),
+            ReplacementTransform(I_31, I_32)
+        )
+        self.wait(0.5)
 
         B_col3 = SurroundingRectangle(B.get_columns()[2])
-        id_ent[7].set_color(WHITE)
-        id_ent[8].set_color(YELLOW)
-        self.play(Write(A_row3), Write(B_col3), Write(I))
-        self.wait(0.05)
-        self.play(Unwrite(B_col3))
-        self.play(Unwrite(A_row3))
-        self.wait(0.05)
+        # id_ent[7].set_color(WHITE)
+        # id_ent[8].set_color(YELLOW)
+        I_33 = SurroundingRectangle(id_ent[8])
+        self.play(
+            ReplacementTransform(B_col2, B_col3),
+            ReplacementTransform(I_32, I_33)
+        )
+        self.wait(0.5)
         
         disp_sub(self, lang='fr')
 
