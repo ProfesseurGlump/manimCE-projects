@@ -55,29 +55,6 @@ def disp_full_part_full(self, full, part, images, lang, full_scale=1):
     disp_sub(self, lang)
 
     
-def disp_bell_curv_area(self, axe, curve, x_interval, qx, px, dir):
-    area = axe.get_area(curve, x_range=x_interval)
-    self.play(FadeIn(area))
-    
-    if dir == 1:
-        msg = f"\Phi({qx}) = "
-        msg += "\mathbb{P}(X \leqslant "
-        msg += f"{qx}) = {px}"
-    elif dir == 0:
-        msg = "\mathbb{P}("
-        msg += f"{-qx} \leqslant X "
-        msg += f"\leqslant {qx}) = "
-        msg += f"2\Phi({qx}) - 1 = "
-        msg += f"{2*px}-1"
-    elif dir == -1:
-        msg = "\mathbb{P}(X \geqslant "
-        msg += f"{qx}) = 1 - \Phi({qx}) = 1 - {px}"
-        
-    prob = MathTex(msg)
-    self.play(Create(prob.scale(0.75)))
-    self.wait(.5)
-    self.play(FadeOut(prob), FadeOut(area))
-
 
 def get_mat(init_ent, inv_ent, op_ent):
     colors = [RED, GREEN, BLUE]
@@ -132,7 +109,7 @@ class GaussElimination(Scene):
         self.play(Write(det_A))
         self.wait(0.5)
         self.play(Unwrite(det_A))
-        self.wait(0.25)
+        self.wait(0.1)
 
         inv_ent = [
             [1, 0, 0],
@@ -160,7 +137,7 @@ class GaussElimination(Scene):
         #self.play(FadeIn(g))
         
         self.play(Create(separator1), Create(separator2))
-        self.wait(0.5)
+        self.wait(0.35)
 
         init_ent2 = [
             [1, 1, 0],
@@ -231,7 +208,7 @@ class GaussElimination(Scene):
             Unwrite(line1g4),
             Unwrite(g4)
         )
-        self.wait(0.25)
+        self.wait(0.1)
 
         init_ent = [
             [1, 1, 0],
@@ -257,107 +234,384 @@ class GaussElimination(Scene):
         abi = Group(A, B, I).arrange_in_grid(buff=1)
         self.play(FadeIn(abi))
         self.wait(0.5)
-        
-        A_row1 = SurroundingRectangle(A.get_rows()[0])
 
-        B_col1 = SurroundingRectangle(B.get_columns()[0])
+        def matrix_mult_line(left_matrix, right_matrix, result_matrix, dim):
+            A, B, I = left_matrix, right_matrix, result_matrix
+            id_ent = I.get_entries()
+            n, p = dim
+            
+            for i in range(n):
+                A_row_i_fix = SurroundingRectangle(
+                    A.get_rows()[i]
+                )
+                A_row_i_move = SurroundingRectangle(
+                    A.get_rows()[i]
+                )
+                if i == 0: self.play(Write(A_row_i_fix))
+                
+                for j in range(p):
+                    B_col_j_fix = SurroundingRectangle(
+                        B.get_columns()[j]
+                    )
+                    B_col_j_move = SurroundingRectangle(
+                        B.get_columns()[j]
+                    )
+                    if j == 0: self.play(Write(B_col_j_fix))                    
+                    k = p * i + j
+                    I_ij = SurroundingRectangle(id_ent[k])
+                    
+                    self.wait(0.25)
+                    
+                    self.play(
+                        ReplacementTransform(A_row_i_move, I_ij),
+                        ReplacementTransform(B_col_j_move, I_ij),
+                    )
+                    self.wait(0.25)
+
+                    if j < p - 1:
+                        self.play(
+                            ReplacementTransform(
+                                B_col_j_fix,
+                                SurroundingRectangle(
+                                    B.get_columns()[j+1]
+                                )
+                            ),
+                            Unwrite(SurroundingRectangle(
+                                    B.get_columns()[j+1]
+                                )),
+                            ReplacementTransform(
+                                I_ij,
+                                SurroundingRectangle(id_ent[k+1])
+                            ),
+                            Unwrite(SurroundingRectangle(id_ent[k+1])),
+                        )
+                        
+                if i < n - 1:
+                    self.play(
+                        ReplacementTransform(
+                            A_row_i_fix,
+                            SurroundingRectangle(
+                                A.get_rows()[i+1]
+                            )
+                        )
+                    )
+
+                    
+            
+
+                
+                
+        # left_matrix, right_matrix, result_matrix, dim = A, B, I, (3, 3)
+        # matrix_mult_line(left_matrix, right_matrix, result_matrix, dim)
+
         id_ent = I.get_entries()
-        #id_ent[0].set_color(YELLOW)
-        I_11 = SurroundingRectangle(id_ent[0])
+        A_row_i_fix = [
+            SurroundingRectangle(A.get_rows()[i]) for i in range(3)
+        ]
+        A_row_i_move = [
+            SurroundingRectangle(A.get_rows()[i]) for i in range(3)
+        ]
+        B_col_j_fix = [
+            SurroundingRectangle(B.get_columns()[j]) for j in range(3)
+        ]
+        B_col_j_move = [
+            SurroundingRectangle(B.get_columns()[j]) for j in range(3)
+        ]
+        I_ij = [
+            SurroundingRectangle(id_ent[k]) for k in range(9)
+        ]
+        ############################################################
+        # Ligne 1
+        ############################################################
+        
         self.play(
-            Write(A_row1),
-            Write(B_col1),
-            Write(I_11)
+            Write(A_row_i_fix[0]),
+            Write(B_col_j_fix[0]),            
         )
-        self.wait(0.5)
-
-        B_col2 = SurroundingRectangle(B.get_columns()[1])
-        # id_ent[0].set_color(WHITE)
-        # id_ent[1].set_color(YELLOW)
-        I_12 = SurroundingRectangle(id_ent[1])
+        self.wait(0.25)
+        
+        # Ligne 1 colonne 1
         self.play(
-            ReplacementTransform(B_col1, B_col2),
-            ReplacementTransform(I_11, I_12)
+            ReplacementTransform(
+                A_row_i_move[0],
+                I_ij[0]
+            ),
+            ReplacementTransform(
+                B_col_j_move[0],
+                I_ij[0]
+            )
         )
-        self.wait(0.5)
+        self.wait(0.25)
+        A_row_i_move[0] = SurroundingRectangle(A.get_rows()[0]) 
+        B_col_j_move[0] = SurroundingRectangle(B.get_columns()[0])
+        
+        # Décalage de la colonne 1 vers la colonne 2
+        def deplace_colonne(initiale, finale):
+            b0 = initiale
+            b1 = finale
+            self.play(ReplacementTransform(b0, b1))
+            self.wait(0.25)
+            b0 = initiale
+            b1 = finale
+            return initiale, finale
 
-        B_col3 = SurroundingRectangle(B.get_columns()[2])
-        # id_ent[1].set_color(WHITE)
-        # id_ent[2].set_color(YELLOW)
-        I_13 = SurroundingRectangle(id_ent[2])
+        b0 = SurroundingRectangle(B.get_columns()[0])
+        b1 = SurroundingRectangle(B.get_columns()[1])
+        b0, b1 = deplace_colonne(initiale=b0, finale=b1)
+        
+        # Ligne 1 colonne 2
         self.play(
-            ReplacementTransform(B_col2, B_col3),
-            ReplacementTransform(I_12, I_13)
+            ReplacementTransform(
+                A_row_i_move[0],
+                I_ij[1]
+            ),
+            ReplacementTransform(
+                B_col_j_move[1],
+                I_ij[1]
+            ),
+            ReplacementTransform(
+                I_ij[0],
+                I_ij[1]
+            ),
+            Unwrite(I_ij[0])
         )
-        self.wait(0.5)
-
-
-        A_row2 = SurroundingRectangle(A.get_rows()[1])
-
-        B_col1 = SurroundingRectangle(B.get_columns()[0])
-        # id_ent[2].set_color(WHITE)
-        # id_ent[3].set_color(YELLOW)
-        I_21 = SurroundingRectangle(id_ent[3])
+        self.wait(0.25)
+        A_row_i_move[0] = SurroundingRectangle(A.get_rows()[0]) 
+        B_col_j_move[1] = SurroundingRectangle(B.get_columns()[1])
+        
+        # Décalage de la colonne 2 vers la colonne 3
+        b1 = SurroundingRectangle(B.get_columns()[1])
+        b2 = SurroundingRectangle(B.get_columns()[2])
+        b1, b2 = deplace_colonne(initiale=b1, finale=b2)
+        
+        # Ligne 1 colonne 3
         self.play(
-            ReplacementTransform(A_row1, A_row2),
-            ReplacementTransform(B_col3, B_col1),
-            ReplacementTransform(I_13, I_21)
+            ReplacementTransform(
+                A_row_i_move[0],
+                I_ij[2]
+            ),
+            ReplacementTransform(
+                B_col_j_move[2],
+                I_ij[2]
+            ),
+            ReplacementTransform(
+                I_ij[1],
+                I_ij[2]
+            ),
+            Unwrite(I_ij[1])
         )
-        self.wait(0.35)
-
-        B_col2 = SurroundingRectangle(B.get_columns()[1])
-        # id_ent[3].set_color(WHITE)
-        # id_ent[4].set_color(YELLOW)
-        I_22 = SurroundingRectangle(id_ent[4])
+        self.wait(0.25)
+        A_row_i_move[0] = SurroundingRectangle(A.get_rows()[0]) 
+        B_col_j_move[2] = SurroundingRectangle(B.get_columns()[2])
+        
+        ############################################################
+        # Ligne 2
+        ############################################################
+        
+        # Décalage de la ligne 1 vers la ligne 2
         self.play(
-            ReplacementTransform(B_col1, B_col2),
-            ReplacementTransform(I_21, I_22)
+            ReplacementTransform(
+                A_row_i_fix[0],
+                A_row_i_fix[1],
+            )
         )
-        self.wait(0.5)
-
-        B_col3 = SurroundingRectangle(B.get_columns()[2])
-        # id_ent[4].set_color(WHITE)
-        # id_ent[5].set_color(YELLOW)
-        I_23 = SurroundingRectangle(id_ent[5])
+        self.wait(0.25)
+        
+        # Décalage de la colonne 3 vers la colonne 1
+        b2 = SurroundingRectangle(B.get_columns()[2])
+        b0 = SurroundingRectangle(B.get_columns()[0])
+        b2, b0 = deplace_colonne(initiale=b2, finale=b0)
+        
+        
+        # Ligne 2 colonne 1
         self.play(
-            ReplacementTransform(B_col2, B_col3),
-            ReplacementTransform(I_22, I_23)
+            ReplacementTransform(
+                A_row_i_move[1],
+                I_ij[3]
+            ),
+            ReplacementTransform(
+                B_col_j_move[0],
+                I_ij[3]
+            ),
+            ReplacementTransform(
+                I_ij[2],
+                I_ij[3]
+            ),
+            Unwrite(I_ij[2])
         )
-        self.wait(0.5)
+        self.wait(0.25)
+        A_row_i_move[1] = SurroundingRectangle(A.get_rows()[1])
+        B_col_j_move[0] = SurroundingRectangle(B.get_columns()[0])
 
-
-        A_row3 = SurroundingRectangle(A.get_rows()[2])
-
-        B_col1 = SurroundingRectangle(B.get_columns()[0])
-        # id_ent[5].set_color(WHITE)
-        # id_ent[6].set_color(YELLOW)
-        I_31 = SurroundingRectangle(id_ent[6])
+        # Décalage de la colonne 1 vers la colonne 2
+        b0 = SurroundingRectangle(B.get_columns()[0])
+        b1 = SurroundingRectangle(B.get_columns()[1])
+        b0, b1 = deplace_colonne(initiale=b0, finale=b1)
+        
+        # Ligne 2 colonne 2
         self.play(
-            ReplacementTransform(A_row2, A_row3),
-            ReplacementTransform(B_col3, B_col1),
-            ReplacementTransform(I_23, I_31)
+            ReplacementTransform(
+                A_row_i_move[1],
+                I_ij[4]
+            ),
+            ReplacementTransform(
+                B_col_j_move[1],
+                I_ij[4]
+            ),
+            ReplacementTransform(
+                I_ij[2],
+                I_ij[3]
+            ),
+            Unwrite(I_ij[2])
         )
-        self.wait(0.35)
+        self.wait(0.25)
+        A_row_i_move[1] = SurroundingRectangle(A.get_rows()[1])
+        B_col_j_move[0] = SurroundingRectangle(B.get_columns()[0])
+        
+        # A_row1fix = SurroundingRectangle(A.get_rows()[0])
+        # A_row1move = SurroundingRectangle(A.get_rows()[0])
+        # B_col1 = SurroundingRectangle(B.get_columns()[0])
+        # id_ent = I.get_entries()
+        # #id_ent[0].set_color(YELLOW)
+        # I_11 = SurroundingRectangle(id_ent[0])
+        # self.play(
+        #     Write(A_row1fix),
+        #     Write(B_col1)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row1move, I_11),
+        #     ReplacementTransform(B_col1, I_11),
+        # )
+        # self.wait(0.35)
+        
+        # B_col2 = SurroundingRectangle(B.get_columns()[1])
+        # # id_ent[0].set_color(WHITE)
+        # # id_ent[1].set_color(YELLOW)
+        # I_12 = SurroundingRectangle(id_ent[1])
+        # self.play(
+        #     ReplacementTransform(B_col1, B_col2),
+        #     Unwrite(I_11)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row1move, I_12),
+        #     ReplacementTransform(B_col1, I_12),
+        # )
+        # self.wait(0.35)
+        
 
-        B_col2 = SurroundingRectangle(B.get_columns()[1])
-        # id_ent[6].set_color(WHITE)
-        # id_ent[7].set_color(YELLOW)
-        I_32 = SurroundingRectangle(id_ent[7])
-        self.play(
-            ReplacementTransform(B_col1, B_col2),
-            ReplacementTransform(I_31, I_32)
-        )
-        self.wait(0.5)
+        # B_col3 = SurroundingRectangle(B.get_columns()[2])
+        # # id_ent[1].set_color(WHITE)
+        # # id_ent[2].set_color(YELLOW)
+        # I_13 = SurroundingRectangle(id_ent[2])
+        # self.play(
+        #     ReplacementTransform(B_col2, B_col3),
+        #     Unwrite(I_12)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row1move, I_13),
+        #     ReplacementTransform(B_col3, I_13),
+        # )
+        # self.wait(0.35)
 
-        B_col3 = SurroundingRectangle(B.get_columns()[2])
-        # id_ent[7].set_color(WHITE)
-        # id_ent[8].set_color(YELLOW)
-        I_33 = SurroundingRectangle(id_ent[8])
-        self.play(
-            ReplacementTransform(B_col2, B_col3),
-            ReplacementTransform(I_32, I_33)
-        )
-        self.wait(0.5)
+        # A_row2fix = SurroundingRectangle(A.get_rows()[1])
+        # A_row2move = SurroundingRectangle(A.get_rows()[1])
+        # B_col1 = SurroundingRectangle(B.get_columns()[0])
+        # # id_ent[2].set_color(WHITE)
+        # # id_ent[3].set_color(YELLOW)
+        # I_21 = SurroundingRectangle(id_ent[3])
+        # self.play(
+        #     ReplacementTransform(A_row1fix, A_row2fix),
+        #     ReplacementTransform(B_col3, B_col1),
+        #     Unwrite(I_13)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row1move, I_21),
+        #     ReplacementTransform(B_col3, I_21),
+        # )
+        # self.wait(0.35)
+
+        # B_col2 = SurroundingRectangle(B.get_columns()[1])
+        # # id_ent[3].set_color(WHITE)
+        # # id_ent[4].set_color(YELLOW)
+        # I_22 = SurroundingRectangle(id_ent[4])
+        # self.play(
+        #     ReplacementTransform(B_col1, B_col2),
+        #     Unwrite(I_21)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row2move, I_22),
+        #     ReplacementTransform(B_col2, I_22),
+        # )
+        # self.wait(0.35)
+        
+        # B_col3 = SurroundingRectangle(B.get_columns()[2])
+        # # id_ent[4].set_color(WHITE)
+        # # id_ent[5].set_color(YELLOW)
+        # I_23 = SurroundingRectangle(id_ent[5])
+        # self.play(
+        #     ReplacementTransform(B_col2, B_col3),
+        #     Unwrite(I_22)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row2move, I_23),
+        #     ReplacementTransform(B_col3, I_23),
+        # )
+        # self.wait(0.35)
+
+        # A_row3fix = SurroundingRectangle(A.get_rows()[2])
+        # A_row3move = SurroundingRectangle(A.get_rows()[2])
+        # B_col1 = SurroundingRectangle(B.get_columns()[0])
+        # # id_ent[5].set_color(WHITE)
+        # # id_ent[6].set_color(YELLOW)
+        # I_31 = SurroundingRectangle(id_ent[6])
+        # self.play(
+        #     ReplacementTransform(A_row2fix, A_row3fix),
+        #     ReplacementTransform(B_col3, B_col1),
+        #     Unwrite(I_23)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row3move, I_31),
+        #     ReplacementTransform(B_col1, I_31),
+        # )
+        # self.wait(0.35)
+
+        # B_col2 = SurroundingRectangle(B.get_columns()[1])
+        # # id_ent[6].set_color(WHITE)
+        # # id_ent[7].set_color(YELLOW)
+        # I_32 = SurroundingRectangle(id_ent[7])
+        # self.play(
+        #     ReplacementTransform(B_col1, B_col2),
+        #     Unwrite(I_31)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row3move, I_32),
+        #     ReplacementTransform(B_col2, I_32),
+        # )
+        # self.wait(0.35)
+        
+        # B_col3 = SurroundingRectangle(B.get_columns()[2])
+        # # id_ent[7].set_color(WHITE)
+        # # id_ent[8].set_color(YELLOW)
+        # I_33 = SurroundingRectangle(id_ent[8])
+        # self.play(
+        #     ReplacementTransform(B_col2, B_col3),
+        #     Unwrite(I_32)
+        # )
+        # self.wait(0.35)
+        # self.play(
+        #     ReplacementTransform(A_row3move, I_33),
+        #     ReplacementTransform(B_col3, I_33),
+        # )
+        # self.wait(0.35)
+
         
         disp_sub(self, lang='fr')
 
