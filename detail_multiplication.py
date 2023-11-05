@@ -109,10 +109,10 @@ class MultiplyMatrix(Scene):
 
             C_22 = Matrix(ent_AB_22)
 
-            c00 = "1\\times 4 + 3\\times 2"
-            c01 = "3\\times 4 + 4\\times 2"
-            c10 = "1\\times 3 + 3\\times 1"
-            c11 = "1\\times 4 + 3\\times 2"
+            c00 = "1\\times 4 + 2\\times 2"
+            c01 = "1\\times 3 + 2\\times 1"
+            c10 = "3\\times 4 + 4\\times 2"
+            c11 = "3\\times 3 + 4\\times 1"
 
             ent_C_details = [
                 [c00],
