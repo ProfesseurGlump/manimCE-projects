@@ -139,29 +139,33 @@ def vect_text(name, coordinates):
     v = MathTex(v_text)
     return v
 
-def family(nc1, nc2, nc3):
+
+def family(*nc):
+    v_names = [nc[i][0] for i in range(len(nc))]
+    v_coords = [nc[i][1] for i in range(len(nc))]
+    v = [vect_text(v_names[i], v_coords[i]) for i in range(len(nc))]
+    return v
     
-        v1_name, v1_coord = nc1
-        v1 = vect_text(name=v1_name, coordinates=v1_coord)
 
-        v2_name, v2_coord = nc2
-        v2 = vect_text(name=v2_name, coordinates=v2_coord)
 
-        v3_name, v3_coord = nc3
-        v3 = vect_text(name=v3_name, coordinates=v3_coord)
-
-        return v1, v2, v3
-
-def vect2matrix(v1, v2, v3):
+def vect2matrix(*v):
     A_text = r"A = \begin{pmatrix}"
-    for i in range(3):
-        A_text += f"{v1[i]}" + r"&"
-        A_text += f"{v2[i]}" + r"&"
-        A_text += f"{v3[i]}" + r"\\"
+    n = len(v)
+    p = len(v[0])
+    for i in range(n):
+        for j in range(p):
+            if j == p - 1:
+                A_text += f"{v[i][j]}" + r"\\"
+            else:
+                A_text += f"{v[i][j]}" + r"&"
     A_text += r"\end{pmatrix}"
     A = MathTex(A_text)
     return A
 
+
+    
+    
+    
 class Family1(Scene):
     def setup(self, add_border=True):
         if add_border:
@@ -535,7 +539,7 @@ class Family2(Scene):
         self.wait(1)
 
         c1, c2, c3 = nc1[1], nc2[1], nc3[1]
-        A = vect2matrix(v1=c1, v2=c2, v3=c3)
+        A = vect2matrix(c1, c2, c3)
         self.play(
             FadeOut(v1),
             FadeOut(v2),
@@ -1349,7 +1353,7 @@ class Method2Family4(Scene):
         )
         self.wait(2.5)
         
-        inbox = "Pour montrer c'est une famille libre ou pas, "
+        inbox = "Pour montrer si c'est une famille libre ou pas, "
         msg_text = r"\mbox{" + f"{inbox}" + r"} \\"
         inbox2 = "on va résoudre le système avec la méthode du pivot."
         msg_text += r"\mbox{" + f"{inbox2}" + r"}"
@@ -1655,3 +1659,166 @@ class Method2Family4(Scene):
         
         
         
+class ApplyMatrix1(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        title_start = Title("Effet géométrique d'une matrice")
+        self.add(title_start.scale(0.85))
+        sub_pic = put_sub_logo(self)
+
+
+        # C-x C-t transpose line
+
+        plane = NumberPlane()
+        
+        nc1 = ("v_1", [0, 1])
+        nc2 = ("v_2", [1, 1])
+        v1, v2 = family(nc1, nc2)
+
+        inbox = "Considérons la famille de vecteurs de "
+        msg_text = "\\mbox{" + f"{inbox}" + "}"
+        msg_text += "\\mathbb{R}^2"
+        msg = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=37
+        )
+        self.play(
+            Write(msg.next_to(title_start, 3*DOWN)),
+            Write(v1.next_to(msg, DOWN)),
+            Write(v2.next_to(v1, RIGHT)),
+            Write(plane),
+            *[Write(Vector(c)) for c in [nc1[1], nc2[1]]],
+            *[
+                Write(
+                    Vector(c).coordinate_label(color=YELLOW)
+                ) for c in [nc1[1], nc2[1]]
+            ]
+        )
+        self.wait(2.5)
+
+        c1, c2 = nc1[1], nc2[1]
+        A_text = vect2matrix(c1, c2)
+        inbox = "Voici la matrice associée "
+        msg_text = "\\mbox{" + f"{inbox}" + "}"
+        msg2 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=37
+        )
+        self.play(
+            ReplacementTransform(
+                msg,
+                msg2.next_to(title_start, 3*DOWN)
+            ),
+            FadeOut(v1),
+            FadeOut(v2),
+            Write(A_text.next_to(msg2, DOWN))
+        )
+        self.wait(2.5)
+
+        mat_A = [c1, c2]
+        self.play(
+            ApplyMatrix(mat_A, msg2),
+            ApplyMatrix(mat_A, plane)
+        )
+        self.wait(2.5)
+
+
+        inbox = "Que faut-il faire pour revenir en arrière ?"
+        msg_text = r"\mbox{" + f"{inbox}" + r"} \\"
+        inbox2 = "Écrivez votre réponse dans les commentaires."
+        msg_text += r"\mbox{" + f"{inbox2}" + r"} \\"
+        msg3 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=37
+        )
+        self.play(
+            ReplacementTransform(
+                msg2,
+                msg3.next_to(title_start, 3*DOWN)
+            )
+        )
+        self.wait(2.5)
+
+        inbox = "Il appliquer la matrice inverse."
+        msg_text = r"\mbox{" + f"{inbox}" + r"} \\"
+        inbox2 = "Calculons-la."
+        msg_text = r"\mbox{" + f"{inbox2}" + r"} \\"
+        msg4 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=37
+        )
+        self.play(
+            ReplacementTransform(
+                msg3,
+                msg4.next_to(title_start, 3*DOWN)
+            ),
+        )
+        self.wait(2.5)
+
+        ent_A = [[0, 1], [1, 1]]
+        A = Matrix(ent_A)
+        
+        ent_I = [[1, 0], [0, 1]]
+        I = Matrix(ent_I)
+
+        lignes = ["L_1", "L_2"]
+        op_ent = [[L] for L in lignes]
+        OP = Matrix(
+            op_ent,
+            h_buff=1.5
+        )
+
+        det_op = Group(
+            A,
+            I,
+            OP
+        ).arrange_in_grid(
+            rows=1,
+            cols=3,
+            buff=(0.5, 0.5),
+            #col_alignments="c"
+        )
+
+        self.play(
+            GrowFromCenter(det_op.next_to(A_text, DOWN))
+        )
+        self.wait(2)
+        
+        # c1, c2 = nc1[1], nc2[1]
+        # A_text = vect2matrix(c1, c2)
+        # inbox = "Considérons la matrice associée "
+        # msg_text = r"\mbox{" + f"{inbox}" + r"}"
+        # msg4 = MathTex(
+        #     msg_text,
+        #     tex_template=TexFontTemplates.french_cursive,
+        #     font_size=37
+        # )
+        # self.play(
+        #     ReplacementTransform(
+        #         msg3,
+        #         msg4.next_to(title_start, 3*DOWN)
+        #     ),
+        #     FadeOut(v1),
+        #     FadeOut(v2),
+        #     Write(A_text.next_to(msg3, DOWN))
+        # )
+        # self.wait(2.5)
+        
+        # mat_A = [c1, c2]
+        # self.play(
+        #     ApplyMatrix(mat_A, msg2),
+        #     ApplyMatrix(mat_A, plane)
+        # )
+        # self.wait(2.5)
