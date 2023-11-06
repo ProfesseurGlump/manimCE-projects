@@ -148,8 +148,9 @@ def family(*nc):
     
 
 
-def vect2matrix(*v):
-    A_text = r"A = \begin{pmatrix}"
+def vect2matrix(*v, name):
+    A_text = f"{name} = " 
+    A_text += r"\begin{bmatrix}"
     n = len(v)
     p = len(v[0])
     for i in range(n):
@@ -158,7 +159,7 @@ def vect2matrix(*v):
                 A_text += f"{v[i][j]}" + r"\\"
             else:
                 A_text += f"{v[i][j]}" + r"&"
-    A_text += r"\end{pmatrix}"
+    A_text += r"\end{bmatrix}"
     A = MathTex(A_text)
     return A
 
@@ -539,7 +540,7 @@ class Family2(Scene):
         self.wait(1)
 
         c1, c2, c3 = nc1[1], nc2[1], nc3[1]
-        A = vect2matrix(c1, c2, c3)
+        A = vect2matrix(c1, c2, c3, "A")
         self.play(
             FadeOut(v1),
             FadeOut(v2),
@@ -835,7 +836,7 @@ class Family3(Scene):
         self.wait(1)
 
         c1, c2, c3 = nc1[1], nc2[1], nc3[1]
-        A = vect2matrix(v1=c1, v2=c2, v3=c3)
+        A = vect2matrix(c1, c2, c3, "A")
         self.play(
             FadeOut(v1),
             FadeOut(v2),
@@ -1100,7 +1101,7 @@ class Family4(Scene):
         self.wait(1)
 
         c1, c2, c3 = nc1[1], nc2[1], nc3[1]
-        A = vect2matrix(v1=c1, v2=c2, v3=c3)
+        A = vect2matrix(c1, c2, c3, "A")
         self.play(
             FadeOut(v1),
             FadeOut(v2),
@@ -1362,13 +1363,14 @@ class Method2Family4(Scene):
             tex_template=TexFontTemplates.french_cursive,
             font_size=40
         )
+        
         self.play(
             ReplacementTransform(msg, msg2.next_to(v3, DOWN))
         )
         self.wait(2)
 
         c1, c2, c3 = nc1[1], nc2[1], nc3[1]
-        A = vect2matrix(v1=c1, v2=c2, v3=c3)
+        A = vect2matrix(c1, c2, c3, "A")
         self.play(
             FadeOut(v1),
             FadeOut(v2),
@@ -1691,22 +1693,25 @@ class ApplyMatrix1(Scene):
             tex_template=TexFontTemplates.french_cursive,
             font_size=37
         )
+        cs = [nc1[1], nc2[1]]
+        vec1 = Vector(cs[0], color=RED)
+        vec2 = Vector(cs[1], color=GREEN)
+        lab1 = vec1.coordinate_label(color=RED)
+        lab2 = vec2.coordinate_label(color=GREEN)
         self.play(
             Write(msg.next_to(title_start, 3*DOWN)),
             Write(v1.next_to(msg, DOWN)),
             Write(v2.next_to(v1, RIGHT)),
             Write(plane),
-            *[Write(Vector(c)) for c in [nc1[1], nc2[1]]],
-            *[
-                Write(
-                    Vector(c).coordinate_label(color=YELLOW)
-                ) for c in [nc1[1], nc2[1]]
-            ]
+            *[Write(vec) for vec in [vec1, vec2]],
+            # *[Write(lab) for lab in [lab1, lab2]],
+            Write(lab1.next_to(vec1, UL)),
+            Write(lab2.next_to(vec2, UR)),
         )
         self.wait(2.5)
 
         c1, c2 = nc1[1], nc2[1]
-        A_text = vect2matrix(c1, c2)
+        A_text = vect2matrix(c1, c2, name="A")
         inbox = "Voici la matrice associée "
         msg_text = "\\mbox{" + f"{inbox}" + "}"
         msg2 = MathTex(
@@ -1714,6 +1719,7 @@ class ApplyMatrix1(Scene):
             tex_template=TexFontTemplates.french_cursive,
             font_size=37
         )
+        msg2_origin = msg2
         self.play(
             ReplacementTransform(
                 msg,
@@ -1743,17 +1749,14 @@ class ApplyMatrix1(Scene):
             font_size=37
         )
         self.play(
-            ReplacementTransform(
-                msg2,
-                msg3.next_to(title_start, 3*DOWN)
-            )
+            Write(msg3.next_to(vec1, 2*DOWN))
         )
-        self.wait(2.5)
+        self.wait(3)
 
         inbox = "Il appliquer la matrice inverse."
         msg_text = r"\mbox{" + f"{inbox}" + r"} \\"
         inbox2 = "Calculons-la."
-        msg_text = r"\mbox{" + f"{inbox2}" + r"} \\"
+        msg_text += r"\mbox{" + f"{inbox2}" + r"} \\"
         msg4 = MathTex(
             msg_text,
             tex_template=TexFontTemplates.french_cursive,
@@ -1762,7 +1765,7 @@ class ApplyMatrix1(Scene):
         self.play(
             ReplacementTransform(
                 msg3,
-                msg4.next_to(title_start, 3*DOWN)
+                msg4.next_to(vec1, 3*DOWN)
             ),
         )
         self.wait(2.5)
@@ -1791,34 +1794,167 @@ class ApplyMatrix1(Scene):
             #col_alignments="c"
         )
 
+        
         self.play(
-            GrowFromCenter(det_op.next_to(A_text, DOWN))
+            GrowFromCenter(det_op.next_to(msg4, 2*DOWN)),
+        )
+        self.wait(0.5)
+
+        # A_pivotL1L2 = SurroundingRectangle(A.get_rows()[0])
+        # A_pivotL2L1 = SurroundingRectangle(A.get_rows()[1])
+        # I_pivotL1L2 = SurroundingRectangle(I.get_rows()[0])
+        # I_pivotL2L1 = SurroundingRectangle(I.get_rows()[1])
+        # OP_pivotL1L2 = SurroundingRectangle(OP.get_rows()[0])
+        # OP_pivotL2L1 = SurroundingRectangle(OP.get_rows()[1])
+        # pivots = [
+        #     A_pivotL1L2, A_pivotL2L1,
+        #     I_pivotL1L2, I_pivotL2L1,
+        #     OP_pivotL1L2, OP_pivotL2L1
+        # ]
+
+        # self.play(
+        #     *[Write(pivot) for pivot in pivots]
+        # )
+        # self.wait(1.5)
+        
+        ent_A2 = [[1, 1], [0, 1]]
+        A2 = Matrix(ent_A2)
+        
+        ent_I2 = [[0, 1], [1, 0]]
+        I2 = Matrix(ent_I2)
+        
+        ent_OP2 = [["L_2"], ["L_1"]]
+        OP2 = Matrix(ent_OP2)
+
+        det_op2 = Group(
+            A2,
+            I2,
+            OP2
+        ).arrange_in_grid(
+            rows=1,
+            cols=3,
+            buff=(0.5, 0.5),
+            #col_alignments="c"
+        )
+        
+        
+        self.play(
+            ReplacementTransform(det_op, det_op2.next_to(msg4, 2*DOWN)),
         )
         self.wait(2)
-        
-        # c1, c2 = nc1[1], nc2[1]
-        # A_text = vect2matrix(c1, c2)
-        # inbox = "Considérons la matrice associée "
-        # msg_text = r"\mbox{" + f"{inbox}" + r"}"
-        # msg4 = MathTex(
-        #     msg_text,
-        #     tex_template=TexFontTemplates.french_cursive,
-        #     font_size=37
-        # )
+
+        # A2_L2 = SurroundingRectangle(A2.get_rows()[1])
+        # A2_L1 = SurroundingRectangle(A.get_rows()[0])
+        # I2_L2 = SurroundingRectangle(I.get_rows()[1])
+        # I2_L1 = SurroundingRectangle(I.get_rows()[0])
+        # OP2_L2 = SurroundingRectangle(OP.get_rows()[1])
+        # OP2_L1 = SurroundingRectangle(OP.get_rows()[0])
+        # permutations = [
+        #     A2_L2, A2_L1,
+        #     I2_L2, I2_L1,
+        #     OP2_L2, OP2_L1,
+        # ]
+            
         # self.play(
-        #     ReplacementTransform(
-        #         msg3,
-        #         msg4.next_to(title_start, 3*DOWN)
-        #     ),
-        #     FadeOut(v1),
-        #     FadeOut(v2),
-        #     Write(A_text.next_to(msg3, DOWN))
+        #     *[
+        #         ReplacementTransform(pivots[i], permutations[i])
+        #         for i in range(len(permutations))
+        #     ]
         # )
-        # self.wait(2.5)
+        # self.wait(1)
+
+        ent_A3 = [[1, 0], [0, 1]]
+        A3 = Matrix(
+            ent_A3,
+        )
         
-        # mat_A = [c1, c2]
-        # self.play(
-        #     ApplyMatrix(mat_A, msg2),
-        #     ApplyMatrix(mat_A, plane)
-        # )
-        # self.wait(2.5)
+        ent_I3 = [[-1, 1], [1, 0]]
+        I3 = Matrix(
+            ent_I3,
+        )
+        
+        ent_OP3 = [["L_2 - L_1"], ["L_1"]]
+        OP3 = Matrix(
+            ent_OP3,
+            h_buff=1.75
+        )
+
+        det_op3 = Group(
+            A3,
+            I3,
+            OP3
+        ).arrange_in_grid(
+            rows=1,
+            cols=3,
+            buff=(0.5, 0.5),
+            #col_alignments="c"
+        )
+        
+        
+        self.play(
+            ReplacementTransform(
+                det_op2,
+                det_op3.next_to(msg4, 2*DOWN)
+            ),
+        )
+        self.wait(2)
+
+        c1, c2 = [-1, 1], [1, 0]
+        inv_A_text = vect2matrix(c1, c2, name=r"A^{-1}")
+        inbox = "Voici la matrice inverse "
+        msg_text = r"\mbox{" + f"{inbox}" + r"}"
+        msg5 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=37
+        )
+        self.play(
+            ReplacementTransform(
+                msg4,
+                msg5.next_to(det_op3, DOWN)
+            ),
+            Write(inv_A_text.next_to(msg5, DOWN))
+        )
+        self.wait(2.5)
+
+        mat_inv_A = [[-1, 1], [1, 0]]
+        self.play(
+            ApplyMatrix(mat_inv_A, msg2),
+            ApplyMatrix(mat_inv_A, plane)
+        )
+        self.wait(2)
+
+        vec3 = Vector([3, -2], color=PINK)
+        lab3 = vec3.coordinate_label(color=PINK)
+        
+        vec4 = Vector([3, 0], color=ORANGE)
+        lab4 = vec4.coordinate_label(color=ORANGE)
+        
+        vec5 = Vector([-3, 2], color=YELLOW)
+        lab5 = vec5.coordinate_label(color=YELLOW)
+        
+        vec6 = Vector([-2, -2])
+        lab6 = vec6.coordinate_label()
+
+        vecs = [vec3, vec4, vec5, vec6]
+        labs = [lab3, lab4, lab5, lab6]
+        
+        self.play(
+            FadeOut(det_op3),
+            *[Write(vec) for vec in vecs],
+            *[Write(lab) for lab in labs],
+        )
+        self.wait(2)
+
+        self.play(
+            ApplyMatrix(mat_A, msg2),
+            ApplyMatrix(mat_A, plane)
+        )
+        self.wait(2.5)
+
+        self.play(
+            ApplyMatrix(mat_inv_A, msg2),
+            ApplyMatrix(mat_inv_A, plane)
+        )
+        self.wait(2.5)
+        
