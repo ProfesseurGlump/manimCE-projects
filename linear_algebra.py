@@ -490,7 +490,7 @@ class Family1(Scene):
         self.wait(0.75)
 
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
@@ -786,7 +786,7 @@ class Family2(Scene):
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
@@ -1050,7 +1050,7 @@ class Family3(Scene):
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
@@ -1318,7 +1318,7 @@ class Family4(Scene):
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
@@ -1664,7 +1664,7 @@ class Method2Family4(Scene):
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
@@ -1714,7 +1714,6 @@ class ApplyMatrix1(Scene):
             Write(v2.next_to(v1, RIGHT)),
             Write(plane),
             *[Write(vec) for vec in [vec1, vec2]],
-            # *[Write(lab) for lab in [lab1, lab2]],
             Write(lab1.next_to(vec1, UL)),
             Write(lab2.next_to(vec2, UR)),
         )
@@ -1741,42 +1740,65 @@ class ApplyMatrix1(Scene):
         )
         self.wait(2.5)
 
-        mat_A = [[1, 0], [1, 1]]
-        self.play(
-            ApplyMatrix(mat_A, msg2),
-            ApplyMatrix(mat_A, plane)
+        mat_A = [[0, 1], [1, 1]]
+        disp_A = Matrix(
+            mat_A,
+            h_buff=0.5
         )
-        self.wait(2.5)
+        inbox1 = "Effet géométrique de"
+        inbox2 = "la matrice A"
+        inboxes = [inbox1, inbox2]
+        msg_eff = inbox_msg(*inboxes, font_size=40)
+        self.play(
+            ReplacementTransform(
+                lab2,
+                msg_eff.next_to(vec2, UP)
+            ),
+            ReplacementTransform(
+                lab1,
+                disp_A.next_to(msg_eff, RIGHT)
+            ),
+            ApplyMatrix(mat_A, plane),
+            ApplyMatrix(mat_A, msg2)
+        )
+        self.wait(3.5)
+        
 
 
-        inbox1 = "Que faut-il faire "
-        inbox2 = "pour revenir en arrière ?"
-        inbox3 = "Écrivez votre réponse "
+        inbox1 = "Que faut-il faire"
+        inbox2 = " pour revenir en arrière ?"
+        inbox3 = "Écrivez votre réponse"
         inbox4 = "dans les commentaires."
         inboxes = [inbox1, inbox2, inbox3, inbox4]
-        msg3 = inbox_msg(inboxes, font_size=37)
+        msg3 = inbox_msg(*inboxes, font_size=40)
         self.play(
-            Write(msg3.next_to(vec1, 2*DOWN))
+            Write(msg3.next_to(vec2, DOWN))
         )
         self.wait(3)
 
         inbox1 = "Il appliquer la matrice inverse."
         inbox2 = "Calculons-la."
         inboxes = [inbox1, inbox2]
-        msg4 = inbox_msg(inboxes, font_size=37)
+        msg4 = inbox_msg(*inboxes, font_size=40)
         self.play(
             ReplacementTransform(
                 msg3,
-                msg4.next_to(vec1, 3*DOWN)
+                msg4.next_to(vec2, DOWN)
             ),
         )
         self.wait(2.5)
 
         ent_A = [[0, 1], [1, 1]]
-        A = Matrix(ent_A)
+        A = Matrix(
+            ent_A,
+            h_buff=0.5
+        )
         
         ent_I = [[1, 0], [0, 1]]
-        I = Matrix(ent_I)
+        I = Matrix(
+            ent_I,
+            h_buff=0.5
+        )
 
         lignes = ["L_1", "L_2"]
         op_ent = [[L] for L in lignes]
@@ -1804,13 +1826,22 @@ class ApplyMatrix1(Scene):
 
         
         ent_A2 = [[1, 1], [0, 1]]
-        A2 = Matrix(ent_A2)
+        A2 = Matrix(
+            ent_A2,
+            h_buff=0.5
+        )
         
         ent_I2 = [[0, 1], [1, 0]]
-        I2 = Matrix(ent_I2)
+        I2 = Matrix(
+            ent_I2,
+            h_buff=0.5
+        )
         
         ent_OP2 = [["L_2"], ["L_1"]]
-        OP2 = Matrix(ent_OP2)
+        OP2 = Matrix(
+            ent_OP2,
+            h_buff=0.5
+        )
 
         det_op2 = Group(
             A2,
@@ -1833,17 +1864,19 @@ class ApplyMatrix1(Scene):
         ent_A3 = [[1, 0], [0, 1]]
         A3 = Matrix(
             ent_A3,
+            h_buff=0.5
         )
         
         ent_I3 = [[-1, 1], [1, 0]]
         I3 = Matrix(
             ent_I3,
+            h_buff=0.5
         )
         
         ent_OP3 = [["L_2 - L_1"], ["L_1"]]
         OP3 = Matrix(
             ent_OP3,
-            h_buff=1.75
+            h_buff=1.5
         )
 
         det_op3 = Group(
@@ -1885,49 +1918,57 @@ class ApplyMatrix1(Scene):
         self.wait(2.5)
 
         mat_inv_A = [[-1, 1], [1, 0]]
+        disp_inv_A = Matrix(
+            mat_inv_A,
+            h_buff=0.75
+        )
+        inbox1 = "Effet géométrique de"
+        inbox2 = "la matrice inverse de A"
+        inboxes = [inbox1, inbox2]
+        msg_eff_inv = inbox_msg(*inboxes, font_size=40)
         self.play(
+            FadeOut(det_op3),
+            ReplacementTransform(
+                msg_eff,
+                msg_eff_inv.next_to(vec1, DOWN)
+            ),
+            ReplacementTransform(
+                disp_A,
+                disp_inv_A.next_to(msg_eff_inv, DOWN)
+            ),
             ApplyMatrix(mat_inv_A, msg2),
             ApplyMatrix(mat_inv_A, plane)
         )
         self.wait(2)
 
-        vec3 = Vector([3, -2], color=PINK)
-        lab3 = vec3.coordinate_label(color=PINK)
-        
-        vec4 = Vector([3, 0], color=ORANGE)
-        lab4 = vec4.coordinate_label(color=ORANGE)
-        
-        vec5 = Vector([-3, 2], color=YELLOW)
-        lab5 = vec5.coordinate_label(color=YELLOW)
-        
-        vec6 = Vector([-2, -2])
-        lab6 = vec6.coordinate_label()
-
-        vecs = [vec3, vec4, vec5, vec6]
-        labs = [lab3, lab4, lab5, lab6]
-        
         self.play(
-            FadeOut(det_op3),
-            *[Write(vec) for vec in vecs],
-            *[Write(lab) for lab in labs],
+            FadeOut(msg_eff_inv),
+            FadeOut(disp_inv_A),
         )
-        self.wait(2)
-
+        self.wait(0.5)
+        
         self.play(
             ApplyMatrix(mat_A, msg2),
+            ApplyMatrix(mat_A, msg5),
+            ApplyMatrix(mat_A, A_text),
+            ApplyMatrix(mat_A, inv_A_text),
             ApplyMatrix(mat_A, plane)
         )
         self.wait(2.5)
 
         self.play(
             ApplyMatrix(mat_inv_A, msg2),
+            ApplyMatrix(mat_inv_A, msg5),
+            ApplyMatrix(mat_inv_A, A_text),
+            ApplyMatrix(mat_inv_A, inv_A_text),
             ApplyMatrix(mat_inv_A, plane)
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
+
 
 class ApplyMatrix2(Scene):
     def setup(self, add_border=True):
@@ -2195,6 +2236,278 @@ class ApplyMatrix2(Scene):
         )
         self.wait(2.5)
         
-        title_end = Title("Abonnez-vous parce que ça m'aide à vous aider")
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
+
+
+class ApplyMatrix3(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        title_start = Title("Effet géométrique d'une matrice")
+        self.add(title_start.scale(0.85))
+        sub_pic = put_sub_logo(self)
+
+
+        # C-x C-t transpose line
+
+        plane = NumberPlane()
+        
+        nc1 = ("v_1", [0, 1])
+        nc2 = ("v_2", [1, 1])
+        v1, v2 = family(nc1, nc2)
+
+        inbox = "Considérons la famille de vecteurs de "
+        msg_text = r"\mbox{" + f"{inbox}" + r"}"
+        msg_text += "\mathbb{R}^2"
+        msg = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=40
+        )
+        cs = [nc1[1], nc2[1]]
+        vec1 = Vector(cs[0], color=RED)
+        vec2 = Vector(cs[1], color=GREEN)
+        lab1 = vec1.coordinate_label(color=RED)
+        lab2 = vec2.coordinate_label(color=GREEN)
+        self.play(
+            Write(msg.next_to(title_start, 3*DOWN)),
+            Write(v1.next_to(msg, DOWN)),
+            Write(v2.next_to(v1, RIGHT)),
+            Write(plane),
+        )
+        self.wait(1.75)
+
+        self.play(
+            Write(vec1),
+            Write(lab1.next_to(vec1, UR)),
+        )
+        self.wait(0.75)
+        
+        self.play(
+            Write(vec2),
+            Write(lab2.next_to(vec2, UL)),
+        )
+        self.wait(0.75)
+        
+        c1, c2 = nc1[1], nc2[1]
+        A_text = vect2matrix(c1, c2, name="A")
+        inbox = "Voici la matrice associée "
+        msg_text = r"\mbox{" + f"{inbox}" + r"}"
+        msg2 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=40
+        )
+        msg2_origin = msg2
+        self.play(
+            ReplacementTransform(
+                msg,
+                msg2.next_to(title_start, 3*DOWN)
+            ),
+            FadeOut(v1),
+            FadeOut(v2),
+            Write(A_text.next_to(msg2, DOWN))
+        )
+        self.wait(2.5)
+
+        mat_A = [[0, 1], [1, 1]]
+        disp_A = Matrix(
+            mat_A,
+            h_buff=0.75
+        )
+        inbox1 = "Effet géométrique de"
+        inbox2 = "la matrice A"
+        inboxes = [inbox1, inbox2]
+        msg_eff = inbox_msg(*inboxes, font_size=40)
+        self.play(
+            ReplacementTransform(
+                lab2,
+                msg_eff.next_to(vec2, UP)
+            ),
+            ReplacementTransform(
+                lab1,
+                disp_A.next_to(msg_eff, RIGHT)
+            ),
+            ApplyMatrix(mat_A, plane),
+            ApplyMatrix(mat_A, msg2)
+        )
+        self.wait(3.5)
+
+        inbox1 = "Que faut-il faire"
+        inbox2 = " pour revenir en arrière ?"
+        inbox3 = "Écrivez votre réponse"
+        inbox4 = "dans les commentaires."
+        inboxes = [inbox1, inbox2, inbox3, inbox4]
+        msg3 = inbox_msg(*inboxes, font_size=40)
+        self.play(
+            Write(msg3.next_to(vec2, DOWN))
+        )
+        self.wait(3)
+
+        inbox1 = "Il appliquer la matrice inverse."
+        inbox2 = "Calculons-la."
+        inboxes = [inbox1, inbox2]
+        msg4 = inbox_msg(*inboxes, font_size=40)
+        self.play(
+            ReplacementTransform(
+                msg3,
+                msg4.next_to(vec2, DOWN)
+            ),
+        )
+        self.wait(2.5)
+
+        ent_A = [[1, 0], [1, 1]]
+        A = Matrix(
+            ent_A,
+            h_buff=0.75
+        )
+        
+        ent_I = [[1, 0], [0, 1]]
+        I = Matrix(
+            ent_I,
+            h_buff=0.75
+        )
+
+        lignes = ["L_1", "L_2"]
+        op_ent = [[L] for L in lignes]
+        OP = Matrix(
+            op_ent,
+            h_buff=1.5
+        )
+
+        det_op = Group(
+            A,
+            I,
+            OP
+        ).arrange_in_grid(
+            rows=1,
+            cols=3,
+            buff=(0.5, 0.5),
+            #col_alignments="c"
+        )
+
+        
+        self.play(
+            GrowFromCenter(det_op.next_to(msg4, 2*DOWN)),
+        )
+        self.wait(0.5)
+
+        ent_A2 = [[1, 0], [0, 1]]
+        A2 = Matrix(
+            ent_A2,
+            h_buff=0.75
+        )
+        
+        ent_I2 = [[1, 0], [-1, 1]]
+        I2 = Matrix(
+            ent_I2,
+            h_buff=0.75
+        )
+        
+        ent_OP2 = [["L_1"], ["L_2 - L_1"]]
+        OP2 = Matrix(
+            ent_OP2,
+            h_buff=1.75
+        )
+
+        det_op2 = Group(
+            A2,
+            I2,
+            OP2
+        ).arrange_in_grid(
+            rows=1,
+            cols=3,
+            buff=(0.5, 0.5),
+            #col_alignments="c"
+        )
+        
+        
+        self.play(
+            ReplacementTransform(
+                det_op,
+                det_op2.next_to(msg4, 2*DOWN)
+            ),
+        )
+        self.wait(2)
+
+        
+
+        c1, c2 = [1, -1], [0, 1]
+        inv_A_text = vect2matrix(c1, c2, name=r"A^{-1}")
+        inbox = "Voici la matrice inverse "
+        msg_text = r"\mbox{" + f"{inbox}" + r"}"
+        msg5 = MathTex(
+            msg_text,
+            tex_template=TexFontTemplates.french_cursive,
+            font_size=40
+        )
+        self.play(
+            ReplacementTransform(
+                msg4,
+                msg5.next_to(det_op2, DOWN)
+            ),
+            Write(inv_A_text.next_to(msg5, DOWN))
+        )
+        self.wait(2.5)
+
+        mat_inv_A = [[1, 0], [-1, 1]]
+        disp_inv_A = Matrix(
+            mat_inv_A,
+            h_buff=0.75
+        )
+        inbox1 = "Effet géométrique de"
+        inbox2 = "la matrice inverse de A"
+        inboxes = [inbox1, inbox2]
+        msg_eff_inv = inbox_msg(*inboxes, font_size=40)
+        self.play(
+            FadeOut(det_op2),
+            ReplacementTransform(
+                msg_eff,
+                msg_eff_inv.next_to(vec1, DOWN)
+            ),
+            ReplacementTransform(
+                disp_A,
+                disp_inv_A.next_to(msg_eff_inv, DOWN)
+            ),
+            ApplyMatrix(mat_inv_A, msg2),
+            ApplyMatrix(mat_inv_A, plane)
+        )
+        self.wait(2)
+
+        self.play(
+            FadeOut(msg_eff_inv),
+            FadeOut(disp_inv_A),
+        )
+        self.wait(0.5)
+        
+        self.play(
+            ApplyMatrix(mat_A, msg2),
+            ApplyMatrix(mat_A, msg5),
+            ApplyMatrix(mat_A, A_text),
+            ApplyMatrix(mat_A, inv_A_text),
+            ApplyMatrix(mat_A, plane)
+        )
+        self.wait(2.5)
+
+        self.play(
+            ApplyMatrix(mat_inv_A, msg2),
+            ApplyMatrix(mat_inv_A, msg5),
+            ApplyMatrix(mat_inv_A, A_text),
+            ApplyMatrix(mat_inv_A, inv_A_text),
+            ApplyMatrix(mat_inv_A, plane)
+        )
+        self.wait(2.5)
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
+        disp_sub(self, lang='fr')
+        

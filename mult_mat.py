@@ -67,8 +67,8 @@ class MultiplyMatrix(Scene):
     
     def construct(self):
         msg = "Multiplication de matrices "
-        title = Title(f"{msg} Manim {manim.__version__}")
-        self.add(title)
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start)
         youtube_shorts = SVGMobject(
             "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
             fill_opacity=1,
@@ -77,80 +77,104 @@ class MultiplyMatrix(Scene):
         self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
 
         
-        def disp_ABCdetails(A, B, C_col0, C_col1, C, switch):
+        def disp_ABCdetails(A, B, AB_details, AB_result, switch):
             abcdetails = Group(
-                A, B, C_col0, C_col1
-            ).arrange_in_grid(buff=1.25)
+                A, B, AB_details, AB_result
+            ).arrange_in_grid(
+                rows=2,
+                cols=2,
+                buff=1.25,
+                #row_alignments="c"
+            )
             if switch == 1: self.play(FadeIn(abcdetails))
             elif switch == -1: self.play(FadeOut(abcdetails))
             self.wait(0.5)
+
+        def somme(L):
+            S = 0
+            for i in range(len(L)):
+                S += L[i]
+            return S
         
+        def multiply_matrix(ent_A, ent_B):
+            nb_A_cols = len(ent_A[0][:])
+            nb_B_rows = len(ent_B[:][0])
+            if nb_A_cols != nb_B_rows: return False
+            else:
+                nb_AB_rows = len(ent_A[:][0])
+                nb_AB_cols = len(ent_B[0][:])
+                ent_AB = []
+                for i in range(nb_AB_rows):
+                    AB_row_i = []
+                    for k in range(nb_AB_cols):
+                        AB_ij = [
+                            ent_A[i][j] * ent_B[j][k]
+                            for j in range(nb_AB_cols)
+                        ]
+                        AB_row_i.append(somme(AB_ij))
+                    ent_AB.append(AB_row_i)
+            return ent_AB
 
         def test_values():
-            ent_A_22 = [
+            ent_A = [
                 [1, 2],
                 [3, 4]
             ]
-
-            A_22 = Matrix(ent_A_22)
+            
+            
+            A = Matrix(ent_A)
         
-            ent_B_22 = [
-                [4, 3],
-                [2, 1]
+            ent_B = [
+                [5, 6],
+                [7, 8]
             ]
 
-            B_22 = Matrix(ent_B_22)
+            B = Matrix(ent_B)
 
-            
-            c00 = "1\\times 4 + 3\\times 2"
-            c01 = "3\\times 4 + 4\\times 2"
-            c10 = "1\\times 3 + 3\\times 1"
-            c11 = "1\\times 4 + 3\\times 2"
-            
-            ent_C_col0 = [
-                [c00],
-                [c10]
-            ]
+            ent_AB = multiply_matrix(ent_A, ent_B)
+            AB_result = Matrix(ent_AB)
 
-            C_col0 = Matrix(ent_col0)
+            # dispAB = Group(
+            #     A, B, AB
+            # ).arrange_in_grid(
+            #     buff=0.75,
+            #     rows=1,
+            #     cols=3
+            # )
+            # self.play(FadeIn(dispAB))
+            # self.wait(2)
             
-            ent_C_col1 = [
-                [c01],
-                [c11]
-            ]
+            c00 = f"{ent_A[0][0]}" + r"\times " + f"{ent_B[0][0]} + "
+            c00 += f"{ent_A[0][1]}" + r"\times " + f"{ent_B[1][0]}"
+            c01 = f"{ent_A[0][0]}" + r"\times " + f"{ent_B[0][1]} + "
+            c01 += f"{ent_A[0][1]}" + r"\times " + f"{ent_B[1][1]}"
+            c10 = f"{ent_A[1][0]}" + r"\times " + f"{ent_B[0][0]} + "
+            c10 += f"{ent_A[1][1]}" + r"\times " + f"{ent_B[1][0]}"
+            c11 = f"{ent_A[1][0]}" + r"\times " + f"{ent_B[0][1]} + "
+            c11 += f"{ent_A[1][1]}" + r"\times " + f"{ent_B[1][1]}"
             
-            C_col1 = Matrix(ent_col1)
-            
-            ent_AB_22 = [
-                [8, 5],
-                [20, 13]
-            ]
+            ent_AB_details = [[c00], [c01], [c10], [c11]]
 
-            C_22 = Matrix(ent_AB_22)
+            AB_details = Matrix(ent_AB_details)
+            
 
-            d00 = MathTex("4\times 1 + 3\times 3")
-            d01 = MathTex("4\times 2 + 3\times 4")
-            d10 = MathTex("2\times 1 + 1\times 3")
-            d11 = MathTex("2\times 2 + 1\times 4")
+            d00 = MathTex("5\times 1 + 6\times 3")
+            d01 = MathTex("5\times 2 + 6\times 4")
+            d10 = MathTex("7\times 1 + 8\times 3")
+            d11 = MathTex("7\times 2 + 8\times 4")
             
-            ent_details_BA = [
-                [d00, d01],
-                [d10, d11]
-            ]
+            ent_BA_details = [[d00], [d01], [d10], [d11]]
             
-            D_22_details = Matrix(ent_details_BA)
+            BA_details = Matrix(ent_BA_details)
             
-            ent_BA_22 = [
-                [13, 20],
-                [5, 8]
-                ]
+            ent_BA = multiply_matrix(ent_A=ent_B, ent_B=ent_A)
             
-            D_22 = Matrix(ent_BA_22)
+            BA_result = Matrix(ent_BA)
 
-            return A_22, B_22, C_col0, C_col1, C_22, D_22_details, D_22
-
-        A, B, C_col0, C_col1, C, D_details, D = test_values()
-        disp_ABCdetails(A, B, C, C_details, 1)
+            return A, B, AB_details, AB_result, BA_details, BA_result
+        
+        A, B, AB_details, AB_result, BA_details, BA_result = test_values()
+        disp_ABCdetails(A, B, AB_details, AB_result, 1)
         
         # Lignes de A
         A_row0_fix = SurroundingRectangle(A.get_rows()[0])
@@ -171,54 +195,67 @@ class MultiplyMatrix(Scene):
         B_col_move = [B_col0_move, B_col1_move]
 
             
-        # Éléments du produit AB
-        ent_C_col0 = C_col0.get_entries()
-        C_col00_fix = SurroundingRectangle(ent_C_col0[0])
-        C_col10_fix = SurroundingRectangle(ent_C_col0[1])
-        C_col0_elts_fix = [C_col00_fix, C_col10_fix]
-
-        ent_C_col1 = C_col1.get_entries()
-        C_col01_fix = SurroundingRectangle(ent_C_col1[0])
-        C_col11_fix = SurroundingRectangle(ent_C_col1[1])
-        C_col1_elts_fix = [C_col01_fix, C_col11_fix]
-
-        ent_C = C.get_entries()
-        C_00_fix = SurroundingRectangle(ent_C[0])
-        C_01_fix = SurroundingRectangle(ent_C[1])
-        C_10_fix = SurroundingRectangle(ent_C[2])
-        C_11_fix = SurroundingRectangle(ent_C[3])
-        C_elts_fix = [
-            C_00_fix, C_01_fix,
-            C_10_fix, C_11_fix
+        # Éléments du détail du produit AB
+        ent_AB_details = AB_details.get_entries()
+        AB_details_00_fix = SurroundingRectangle(ent_AB_details[0])
+        AB_details_01_fix = SurroundingRectangle(ent_AB_details[1])
+        AB_details_10_fix = SurroundingRectangle(ent_AB_details[2])
+        AB_details_11_fix = SurroundingRectangle(ent_AB_details[3])
+        AB_details_fix = [
+            SurroundingRectangle(ent_AB_details[i]) for i in range(4)
         ]
-
+        AB_details_move = [
+            SurroundingRectangle(ent_AB_details[i]) for i in range(4)
+        ]
+        
+        # Éléments du résultat du produit AB
+        ent_AB_result = AB_result.get_entries()
+        AB_result_00_fix = SurroundingRectangle(ent_AB_result[0])
+        AB_result_01_fix = SurroundingRectangle(ent_AB_result[1])
+        AB_result_10_fix = SurroundingRectangle(ent_AB_result[2])
+        AB_result_11_fix = SurroundingRectangle(ent_AB_result[3])
+        AB_result_fix = [
+            SurroundingRectangle(ent_AB_result[i]) for i in range(4)
+        ]
+        AB_result_move = [
+            SurroundingRectangle(ent_AB_result[i]) for i in range(4)
+        ]
+        
         #####################
         # Ligne 1 colonne 1 #
         #####################
 
-        # STEP 1: Encadre A[0:], B[:0] et C[0:0]
+        # STEP 1: Encadre A[0:], B[:0] 
         self.play(
             Write(A_row_fix[0]),
             Write(B_col_fix[0]),
-            Write(C_details_elts_fix[0]),
         )
         self.wait(0.45)
 
-        # STEP 2: Envoie les cadres A[0:] et B[:0] sur C_details[0:0]
+        # STEP 2: Envoie les cadres A[0:] et B[:0] sur AB_details[0:0]
         self.play(
-            ReplacementTransform(A_row_move[0], C_details_elts_fix[0]),
-            ReplacementTransform(B_col_move[0], C_details_elts_fix[0])
+            ReplacementTransform(A_row_move[0], AB_details_fix[0]),
+            ReplacementTransform(B_col_move[0], AB_details_fix[0])
         )
         self.wait(0.3)
         A_row_move[0] = SurroundingRectangle(A.get_rows()[0])
         B_col_move[0] = SurroundingRectangle(B.get_columns()[0])
 
-        # STEP 3: Déplace
+        # STEP 3: Envoie les cadres AB_details[0:0] sur AB_result[0:0]
+        self.play(
+            ReplacementTransform(AB_details_move[0], AB_result_fix[0])
+        )
+        self.wait(0.3)
+        AB_details_move[0] = SurroundingRectangle(ent_AB_details[0])
+
+        # STEP 4: Déplace
         # 1) B[:0] vers B[:1]
-        # 2) C_details[0:0] vers C_details[0:1]
+        # 2) AB_details[0:0] vers AB_details[0:1]
+        # 3) AB_result[0:0] vers AB_result[0:1]
         self.play(
             ReplacementTransform(B_col_fix[0], B_col_fix[1]),
-            ReplacementTransform(C_details_elts_fix[0], C_details_elts_fix[1])
+            ReplacementTransform(AB_details_fix[0], AB_details_fix[1]),
+            ReplacementTransform(AB_result_fix[0], AB_result_fix[1])
         )
         self.wait(0.3)
         B_col_fix[0] = SurroundingRectangle(B.get_columns()[0])
@@ -228,60 +265,90 @@ class MultiplyMatrix(Scene):
         # Ligne 1 colonne 2 #
         #####################
         
-        # STEP 4: Envoie les cadres A[0:] et B[:1] sur C_details[0:1]
+        # STEP 5: Envoie les cadres A[0:] et B[:1] sur AB_details[0:1]
         self.play(
-            ReplacementTransform(A_row_move[0], C_details_elts_fix[1]),
-            ReplacementTransform(B_col_move[1], C_details_elts_fix[1])
+            ReplacementTransform(A_row_move[0], AB_details_fix[1]),
+            ReplacementTransform(B_col_move[1], AB_details_fix[1])
         )
         self.wait(0.3)
         A_row_move[0] = SurroundingRectangle(A.get_rows()[0])
         B_col_move[1] = SurroundingRectangle(B.get_columns()[1])
 
-        # STEP 5: Déplace
+        # STEP 6: Envoie les cadres AB_details[0:1] sur AB_result[0:1]
+        self.play(
+            ReplacementTransform(AB_details_move[1], AB_result_fix[1])
+        )
+        self.wait(0.3)
+        AB_details_move[1] = SurroundingRectangle(ent_AB_details[1])
+        
+        # STEP 7: Déplace
         # 1) A[0:] vers A[1:]
         # 2) B[:1] vers B[:0]
-        # 3) C_details[0:1] vers C_details[1:0]
+        # 3) AB_details[0:1] vers AB_details[1:0]
+        # 4) AB_result[0:1] vers AB_result[1:0]
         self.play(
             ReplacementTransform(A_row_fix[0], A_row_fix[1]),
             ReplacementTransform(B_col_fix[1], B_col_fix[0]),
-            ReplacementTransform(C_details_elts_fix[0], C_details_elts_fix[2]),
-            ReplacementTransform(C_details_elts_fix[1], C_details_elts_fix[2]),
+            ReplacementTransform(AB_details_fix[0], AB_details_fix[2]),
+            ReplacementTransform(AB_details_fix[1], AB_details_fix[2]),
+            ReplacementTransform(AB_result_fix[0], AB_result_fix[2]),
+            ReplacementTransform(AB_result_fix[1], AB_result_fix[2]),
         )
         self.wait(0.3)
         A_row_fix[0] = SurroundingRectangle(A.get_rows()[0])
         B_col_fix[1] = SurroundingRectangle(B.get_columns()[1])
+
         
-        # STEP 6: envoie les cadres A[:1] et B[:0] sur C_details[1:0]
+        # STEP 8: envoie les cadres A[:1] et B[:0] sur AB_details[1:0]
         self.play(
-            ReplacementTransform(A_row_move[1], C_details_elts_fix[2]),
-            ReplacementTransform(B_col_move[0], C_details_elts_fix[2]),
+            ReplacementTransform(A_row_move[1], AB_details_fix[2]),
+            ReplacementTransform(B_col_move[0], AB_details_fix[2]),
         )
         self.wait(0.3)
         A_row_move[1] = SurroundingRectangle(A.get_rows()[1])
         B_col_move[0] = SurroundingRectangle(B.get_columns()[0])
 
-        # STEP 7: Déplace
+        # STEP 9: Envoie les cadres AB_details[1:0] sur AB_result[1:0]
+        self.play(
+            ReplacementTransform(AB_details_move[2], AB_result_fix[2])
+        )
+        self.wait(0.3)
+        AB_details_move[2] = SurroundingRectangle(ent_AB_details[2])
+        
+        # STEP 10: Déplace
         # 1) B[:0] vers B[:1]
-        # 2) C_details[1:0] vers C_details[1:1]
+        # 2) AB_details[1:0] vers AB_details[1:1]
+        # 3) AB_result[1:0] vers AB_result[1:1]
         self.play(
             ReplacementTransform(B_col_fix[0], B_col_fix[1]),
-            ReplacementTransform(C_details_elts_fix[2], C_details_elts_fix[3]),
-            ReplacementTransform(C_details_elts_fix[1], C_details_elts_fix[3]),
-            ReplacementTransform(C_details_elts_fix[0], C_details_elts_fix[3])
+            ReplacementTransform(AB_details_fix[2], AB_details_fix[3]),
+            ReplacementTransform(AB_details_fix[1], AB_details_fix[3]),
+            ReplacementTransform(AB_details_fix[0], AB_details_fix[3]),
+            ReplacementTransform(AB_result_fix[2], AB_result_fix[3]),
+            ReplacementTransform(AB_result_fix[1], AB_result_fix[3]),
+            ReplacementTransform(AB_result_fix[0], AB_result_fix[3])
         )
         self.wait(0.3)
         B_col_fix[0] = SurroundingRectangle(B.get_columns()[0])
 
-        # STEP 8: envoie les cadres A[:1] et B[:1] sur C_details[1:1]
+        # STEP 11: envoie les cadres A[:1] et B[:1] sur AB_details[1:1]
         self.play(
-            ReplacementTransform(A_row_move[1], C_details_elts_fix[3]),
-            ReplacementTransform(B_col_move[1], C_details_elts_fix[3]),
+            ReplacementTransform(A_row_move[1], AB_details_fix[3]),
+            ReplacementTransform(B_col_move[1], AB_details_fix[3]),
         )
         self.wait(0.3)
         A_row_move[1] = SurroundingRectangle(A.get_rows()[1])
         B_col_move[1] = SurroundingRectangle(B.get_columns()[1])
         
-
+        # STEP 12: Envoie les cadres AB_details[1:1] sur AB_result[1:1]
+        self.play(
+            ReplacementTransform(AB_details_move[3], AB_result_fix[3])
+        )
+        self.wait(0.3)
+        AB_details_move[2] = SurroundingRectangle(ent_AB_details[2])
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
         disp_sub(self, lang='fr')
 
         
