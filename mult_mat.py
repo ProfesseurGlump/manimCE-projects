@@ -1299,18 +1299,28 @@ class MultiplyMatrixEx1(Scene):
         sub_sub1 = Dot(plane.n2p(2 - 2j), color=RED)
         sub_sub_line1 = Line(sub_sub_origin, sub_sub1, color=RED)
         
+        norm1 = MathTex("2", color=RED).next_to(sub_sub_line1, DOWN)
+        norm2 = MathTex("1", color=YELLOW).next_to(sub_line2, UP)
+
+        self.play(
+            ReplacementTransform(line1, sub_sub_line1),
+            Write(norm1),
+            ReplacementTransform(dashed_line2, sub_line2),
+            Write(norm2)
+        )
+        self.wait(1)
+
         msg = r"{^{\mathsf{T}}}\begin{pmatrix}2& 0\end{pmatrix}\cdot "
         msg += r"\begin{pmatrix}1\\ 2\end{pmatrix} = "
         msg += r"2\times 1 = 2"
-
-        
+        norm_prod_res = MathTex(msg).next_to(sub_line2, DOWN)
         self.play(
-            ReplacementTransform(line1, sub_sub_line1),
-            Write(MathTex("2").next_to(sub_sub_line1, DOWN)),
-            ReplacementTransform(dashed_line2, sub_line2),
-            Write(MathTex("1").next_to(sub_line2, UP))
+            ReplacementTransform(sub_sub_line1, vec_1),
+            ReplacementTransform(sub_line2, vec_1),
+            ReplacementTransform(norm1, norm_prod_res),
+            ReplacementTransform(norm2, norm_prod_res),
         )
-        self.wait(2)
+        self.wait(1)
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
