@@ -1,6 +1,7 @@
 from manim import *
 import manim
 from math import e, pi
+import math
 
 SCALE_FACTOR = 0.5
 # flip width => height, height => width
@@ -157,13 +158,27 @@ def surround_matrices_elts(matrices_group):
         matrices_cols_fix.append(matrix_cols_fix)
         matrices_cols_move.append(matrix_cols_move)
             
-        matrix_elts_fix = [SurroundingRectangle(matrix.get_entries()[i]) for i in range(len(matrix.get_entries()))]
-        matrix_elts_move = [SurroundingRectangle(matrix.get_entries()[i]) for i in range(len(matrix.get_entries()))]
+        matrix_elts_fix = [
+            SurroundingRectangle(matrix.get_entries()[i])
+            for i in range(len(matrix.get_entries()))
+        ]
+        matrix_elts_move = [
+            SurroundingRectangle(matrix.get_entries()[i])
+            for i in range(len(matrix.get_entries()))
+        ]
         matrices_elts_fix.append(matrix_elts_fix)
         matrices_elts_move.append(matrix_elts_move)
 
-    fix_matrices = [matrices_rows_fix, matrices_cols_fix, matrices_elts_fix]
-    move_matrices = [matrices_rows_move, matrices_cols_move, matrices_elts_move]
+    fix_matrices = [
+        matrices_rows_fix,
+        matrices_cols_fix,
+        matrices_elts_fix
+    ]
+    move_matrices = [
+        matrices_rows_move,
+        matrices_cols_move,
+        matrices_elts_move
+    ]
         
     return fix_matrices, move_matrices
 
@@ -266,23 +281,35 @@ class MultiplyMatrix1(Scene):
         A_row0_fix = SurroundingRectangle(A.get_rows()[0])
         A_row1_fix = SurroundingRectangle(A.get_rows()[1])
         A_row_fix = [A_row0_fix, A_row1_fix]
-        A_rows_fix = [SurroundingRectangle(A.get_rows()[i]) for i in range(2)]
+        A_rows_fix = [
+            SurroundingRectangle(A.get_rows()[i])
+            for i in range(2)
+        ]
         
         A_row0_move = SurroundingRectangle(A.get_rows()[0])
         A_row1_move = SurroundingRectangle(A.get_rows()[1])
         A_row_move = [A_row0_move, A_row1_move]
-        A_rows_move = [SurroundingRectangle(A.get_rows()[i]) for i in range(2)]
+        A_rows_move = [
+            SurroundingRectangle(A.get_rows()[i])
+            for i in range(2)
+        ]
 
         # Colonnes de B
         B_col0_fix = SurroundingRectangle(B.get_columns()[0])
         B_col1_fix = SurroundingRectangle(B.get_columns()[1])
         B_col_fix = [B_col0_fix, B_col1_fix]
-        B_cols_fix = [SurroundingRectangle(B.get_columns()[i]) for i in range(2)]
+        B_cols_fix = [
+            SurroundingRectangle(B.get_columns()[i])
+            for i in range(2)
+        ]
 
         B_col0_move = SurroundingRectangle(B.get_columns()[0])
         B_col1_move = SurroundingRectangle(B.get_columns()[1])
         B_col_move = [B_col0_move, B_col1_move]
-        B_cols_move = [SurroundingRectangle(B.get_columns()[i]) for i in range(2)]
+        B_cols_move = [
+            SurroundingRectangle(B.get_columns()[i])
+            for i in range(2)
+        ]
             
         # Éléments du détail du produit AB
         ent_AB_details = AB_details.get_entries()
@@ -409,21 +436,48 @@ class MultiplyMatrix1(Scene):
         # 2) AB_details[1:0] vers AB_details[1:1]
         # 3) AB_result[1:0] vers AB_result[1:1]
         self.play(
-            ReplacementTransform(B_col_fix[0], B_col_fix[1]),
-            ReplacementTransform(AB_details_fix[2], AB_details_fix[3]),
-            ReplacementTransform(AB_details_fix[1], AB_details_fix[3]),
-            ReplacementTransform(AB_details_fix[0], AB_details_fix[3]),
-            ReplacementTransform(AB_result_fix[2], AB_result_fix[3]),
-            ReplacementTransform(AB_result_fix[1], AB_result_fix[3]),
-            ReplacementTransform(AB_result_fix[0], AB_result_fix[3])
+            ReplacementTransform(
+                B_col_fix[0],
+                B_col_fix[1]
+            ),
+            ReplacementTransform(
+                AB_details_fix[2],
+                AB_details_fix[3]
+            ),
+            ReplacementTransform(
+                AB_details_fix[1],
+                AB_details_fix[3]
+            ),
+            ReplacementTransform(
+                AB_details_fix[0],
+                AB_details_fix[3]
+            ),
+            ReplacementTransform(
+                AB_result_fix[2],
+                AB_result_fix[3]
+            ),
+            ReplacementTransform(
+                AB_result_fix[1],
+                AB_result_fix[3]
+            ),
+            ReplacementTransform(
+                AB_result_fix[0],
+                AB_result_fix[3]
+            )
         )
         self.wait(0.3)
         B_col_fix[0] = SurroundingRectangle(B.get_columns()[0])
 
         # STEP 11: envoie les cadres A[:1] et B[:1] sur AB_details[1:1]
         self.play(
-            ReplacementTransform(A_row_move[1], AB_details_fix[3]),
-            ReplacementTransform(B_col_move[1], AB_details_fix[3]),
+            ReplacementTransform(
+                A_row_move[1],
+                AB_details_fix[3]
+            ),
+            ReplacementTransform(
+                B_col_move[1],
+                AB_details_fix[3]
+            ),
         )
         self.wait(0.3)
         A_row_move[1] = SurroundingRectangle(A.get_rows()[1])
@@ -431,13 +485,21 @@ class MultiplyMatrix1(Scene):
         
         # STEP 12: Envoie les cadres AB_details[1:1] sur AB_result[1:1]
         self.play(
-            ReplacementTransform(AB_details_move[3], AB_result_fix[3])
+            ReplacementTransform(
+                AB_details_move[3],
+                AB_result_fix[3]
+            )
         )
         self.wait(0.3)
         AB_details_move[2] = SurroundingRectangle(ent_AB_details[2])
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
-        self.play(ReplacementTransform(title_start, title_end.scale(0.75)))
+        self.play(
+            ReplacementTransform(
+                title_start,
+                title_end.scale(0.75)
+            )
+        )
         disp_sub(self, lang='fr')
 
         
@@ -464,7 +526,12 @@ class MultiplyMatrix2(Scene):
         self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
 
         title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
-        self.play(ReplacementTransform(title_start, title_clap.scale(0.75)))
+        self.play(
+            ReplacementTransform(
+                title_start,
+                title_clap.scale(0.75)
+            )
+        )
         self.wait()
         
         title_question = Title("Conditions de compatibilité")
@@ -476,7 +543,10 @@ class MultiplyMatrix2(Scene):
         
         self.play(
             Write(msg.next_to(title_start, 3*DOWN)),
-            ReplacementTransform(title_clap, title_question.scale(0.75))
+            ReplacementTransform(
+                title_clap,
+                title_question.scale(0.75)
+            )
         )
         self.wait(2.5)
 
@@ -509,7 +579,10 @@ class MultiplyMatrix2(Scene):
                 msg,
                 msg2.next_to(title_start, 3*DOWN)
             ),
-            ReplacementTransform(title_clap, title_rep)
+            ReplacementTransform(
+                title_clap,
+                title_rep
+            )
         )
         self.wait(5)
 
@@ -567,13 +640,22 @@ class MultiplyMatrix2(Scene):
         self.wait(2.5)
 
         self.play(
-            ReplacementTransform(A_rows_move[0], AB_details_rows_move[0]),
-            ReplacementTransform(B_cols_move[0], AB_details_rows_move[0]),
+            ReplacementTransform(
+                A_rows_move[0],
+                AB_details_rows_move[0]
+            ),
+            ReplacementTransform(
+                B_cols_move[0],
+                AB_details_rows_move[0]
+            ),
         )
         self.wait(1.25)
 
         self.play(
-            ReplacementTransform(AB_details_rows_move[0], AB_rows_move[0]),
+            ReplacementTransform(
+                AB_details_rows_move[0],
+                AB_rows_move[0]
+            ),
         )
         self.wait(0.75)
 
@@ -591,9 +673,15 @@ class MultiplyMatrix2(Scene):
         B_bis = Matrix(ent_B_bis)
         ent_A_bis = [[1], [2]]
         A_bis = Matrix(ent_A_bis)
-        ent_AB_bis = multiply_matrix(ent_A_bis, ent_B_bis)
+        ent_AB_bis = multiply_matrix(
+            ent_A_bis,
+            ent_B_bis
+        )
         AB_bis = Matrix(ent_AB_bis)
-        ent_AB_details_bis = product_details(ent_A_bis, ent_B_bis)
+        ent_AB_details_bis = product_details(
+            ent_A_bis,
+            ent_B_bis
+        )
         
         vect_AB_details_bis = from_matrix_to_column(
             product_details(
@@ -602,7 +690,12 @@ class MultiplyMatrix2(Scene):
             )
         )
         AB_details_bis = Matrix(vect_AB_details_bis)
-        matrices_group = [A_bis, B_bis, AB_details_bis, AB_bis]
+        matrices_group = [
+            A_bis,
+            B_bis,
+            AB_details_bis,
+            AB_bis
+        ]
         dispAB_bis = Group(
             *matrices_group
         ).arrange_in_grid(
@@ -627,9 +720,13 @@ class MultiplyMatrix2(Scene):
         title_ex2 = Title("Deuxième exemple 2 x 1 fois 1 x 2")
         self.play(
             ReplacementTransform(
-                title_ex1, title_ex2
+                title_ex1,
+                title_ex2
             ),
-            ReplacementTransform(dispAB, dispAB_bis),
+            ReplacementTransform(
+                dispAB,
+                dispAB_bis
+            ),
         )
         self.wait(2)
 
@@ -669,7 +766,9 @@ class MultiplyMatrix2(Scene):
             ),
         )
         self.wait(0.75)
-        AB_details_rows_move[0] = SurroundingRectangle(AB_details_bis.get_rows()[0])
+        AB_details_rows_move[0] = SurroundingRectangle(
+            AB_details_bis.get_rows()[0]
+        )
 
         # STEP 4:
         # 1) next column for B
@@ -694,7 +793,9 @@ class MultiplyMatrix2(Scene):
             # ),
         )
         self.wait(0.25)
-        B_cols_fix[0] = SurroundingRectangle(B_bis.get_columns()[0])
+        B_cols_fix[0] = SurroundingRectangle(
+            B_bis.get_columns()[0]
+        )
 
         # STEP 5:
         # A and B to AB_details
@@ -709,8 +810,12 @@ class MultiplyMatrix2(Scene):
             ),
         )
         self.wait(0.5)
-        A_rows_move[0] = SurroundingRectangle(A_bis.get_rows()[0])
-        B_cols_move[1] = SurroundingRectangle(B_bis.get_columns()[1])
+        A_rows_move[0] = SurroundingRectangle(
+            A_bis.get_rows()[0]
+        )
+        B_cols_move[1] = SurroundingRectangle(
+            B_bis.get_columns()[1]
+        )
 
         # STEP 6:
         # Move from AB_details to AB
@@ -721,7 +826,9 @@ class MultiplyMatrix2(Scene):
             ),
         )
         self.wait(0.25)
-        AB_details_rows_move[1] = SurroundingRectangle(AB_details_bis.get_rows()[1])
+        AB_details_rows_move[1] = SurroundingRectangle(
+            AB_details_bis.get_rows()[1]
+        )
 
         # STEP 7:
         # 1) 
@@ -752,8 +859,12 @@ class MultiplyMatrix2(Scene):
             ),
         )
         self.wait(0.3)
-        A_rows_fix[0] = SurroundingRectangle(A_bis.get_rows()[0])
-        B_cols_fix[1] = SurroundingRectangle(B_bis.get_columns()[1])
+        A_rows_fix[0] = SurroundingRectangle(
+            A_bis.get_rows()[0]
+        )
+        B_cols_fix[1] = SurroundingRectangle(
+            B_bis.get_columns()[1]
+        )
         # self.play(
         #     Unwrite(A_rows_fix[0]),
         #     Unwrite(B_cols_fix[0]),
@@ -796,10 +907,22 @@ class MultiplyMatrix2(Scene):
         )
         self.wait(5)
 
-        ent_A_bis = [[1, 2], [3, 4], [5, 6]]
-        ent_B_bis = [[7, 8, 9, 0], [1, 2, 3, 4]]
-        ent_AB_bis = multiply_matrix(ent_A_bis, ent_B_bis)
-        ent_AB_details_bis = product_details(ent_A_bis, ent_B_bis)
+        ent_A_bis = [
+            [1, 2],
+            [3, 4], [5, 6]
+        ]
+        ent_B_bis = [
+            [7, 8, 9, 0],
+            [1, 2, 3, 4]
+        ]
+        ent_AB_bis = multiply_matrix(
+            ent_A_bis,
+            ent_B_bis
+        )
+        ent_AB_details_bis = product_details(
+            ent_A_bis,
+            ent_B_bis
+        )
         
         vect_AB_details_bis = from_matrix_to_column(
             product_details(
@@ -834,10 +957,24 @@ class MultiplyMatrix2(Scene):
         )
         self.wait(5)
 
-        ent_A = [[1, 2], [3, 4], [5, 6], [7, 8]]
-        ent_B = [[9, 0, 1], [2, 3, 4]]
-        ent_AB = multiply_matrix(ent_A, ent_B)
-        ent_AB_details = product_details(ent_A, ent_B)
+        ent_A = [
+            [1, 2],
+            [3, 4],
+            [5, 6],
+            [7, 8]
+        ]
+        ent_B = [
+            [9, 0, 1],
+            [2, 3, 4]
+        ]
+        ent_AB = multiply_matrix(
+            ent_A,
+            ent_B
+        )
+        ent_AB_details = product_details(
+            ent_A,
+            ent_B
+        )
         
         vect_AB_details = from_matrix_to_column(
             product_details(
@@ -860,14 +997,23 @@ class MultiplyMatrix2(Scene):
         title_ex5 = Title("Cinquième exemple 4 x 2 fois 2 x 3")
         self.play(
             ReplacementTransform(
-                title_ex4, title_ex5
+                title_ex4,
+                title_ex5
             ),
-            ReplacementTransform(dispAB_bis, dispAB)
+            ReplacementTransform(
+                dispAB_bis,
+                dispAB
+            )
         )
         self.wait(5)
 
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
-        self.play(ReplacementTransform(title_ex5, title_end.scale(0.75)))
+        self.play(
+            ReplacementTransform(
+                title_ex5,
+                title_end.scale(0.75)
+            )
+        )
         disp_sub(self, lang='fr')
 
 
@@ -893,7 +1039,11 @@ class MultiplyMatrixEx1(Scene):
         self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
 
         title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
-        self.play(ReplacementTransform(title_start, title_clap.scale(0.75)))
+        self.play(
+            ReplacementTransform(
+                title_start,
+                title_clap.scale(0.75))
+        )
         self.wait()
         
         title_question = Title("Conditions de compatibilité")
@@ -905,7 +1055,10 @@ class MultiplyMatrixEx1(Scene):
         
         self.play(
             Write(msg.next_to(title_start, 3*DOWN)),
-            ReplacementTransform(title_clap, title_question.scale(0.75))
+            ReplacementTransform(
+                title_clap,
+                title_question.scale(0.75)
+            )
         )
         self.wait(2.5)
 
@@ -938,7 +1091,10 @@ class MultiplyMatrixEx1(Scene):
                 msg,
                 msg2.next_to(title_start, 3*DOWN)
             ),
-            ReplacementTransform(title_clap, title_rep)
+            ReplacementTransform(
+                title_clap,
+                title_rep
+            )
         )
         self.wait(5)
 
@@ -947,7 +1103,7 @@ class MultiplyMatrixEx1(Scene):
         )
         self.wait(1)
         
-        ent_A = [[1, 2]]
+        ent_A = [[2, 0]]
         ent_B = [[1], [2]]
         ent_AB = multiply_matrix(ent_A, ent_B)
         ent_AB_details = product_details(ent_A, ent_B)
@@ -970,7 +1126,9 @@ class MultiplyMatrixEx1(Scene):
             row_alignment="c"
         )
 
-        fix_matrices, move_matrices = surround_matrices_elts(matrices_group)
+        fix_matrices, move_matrices = surround_matrices_elts(
+            matrices_group
+        )
         
         matrices_rows_fix, matrices_cols_fix, matrices_elts_fix = fix_matrices
         A_rows_fix, B_rows_fix, AB_details_rows_fix, AB_rows_fix = matrices_rows_fix
@@ -985,7 +1143,8 @@ class MultiplyMatrixEx1(Scene):
         title_ex1 = Title("Premier exemple ")
         self.play(
             ReplacementTransform(
-                title_rep, title_ex1
+                title_rep,
+                title_ex1
             ),
             FadeIn(dispAB),
             Write(A_rows_fix[0]),
@@ -995,22 +1154,33 @@ class MultiplyMatrixEx1(Scene):
         )
         self.wait(5)
 
-        title_ex1_bis = Title("À gauche matrice 1 ligne x 3 colonnes")
+        title_ex1_bis = Title("À gauche matrice 1 ligne x 2 colonnes")
         self.play(
             ReplacementTransform(
-                title_ex1, title_ex1_bis
+                title_ex1,
+                title_ex1_bis
             ),
-            ReplacementTransform(A_rows_move[0], AB_details_rows_move[0]),
-            ReplacementTransform(B_cols_move[0], AB_details_rows_move[0]),
+            ReplacementTransform(
+                A_rows_move[0],
+                AB_details_rows_move[0]
+            ),
+            ReplacementTransform(
+                B_cols_move[0],
+                AB_details_rows_move[0]
+            ),
         )
         self.wait(2.75)
 
-        title_ex1_ter = Title("À droite matrice 3 lignes x 1 colonne")
+        title_ex1_ter = Title("À droite matrice 2 lignes x 1 colonne")
         self.play(
             ReplacementTransform(
-                title_ex1_bis, title_ex1_ter
+                title_ex1_bis,
+                title_ex1_ter
             ),
-            ReplacementTransform(AB_details_rows_move[0], AB_rows_move[0]),
+            ReplacementTransform(
+                AB_details_rows_move[0],
+                AB_rows_move[0]
+            ),
         )
         self.wait(3)
 
@@ -1030,7 +1200,7 @@ class MultiplyMatrixEx1(Scene):
         inbox2 = "pourrait être interprété, "
         inbox3 = "comme un produit scalaire "
         inbox4 = "entre deux vecteurs de  "
-        inbox5 = "dimension 3 dans l'espace. "
+        inbox5 = "dimension 2 dans le plan. "
         inboxes = [
             inbox1, inbox2,
             inbox3,
@@ -1041,10 +1211,112 @@ class MultiplyMatrixEx1(Scene):
             ReplacementTransform(
                 title_ex1_ter, title_ex1_res
             ),
-            Write(msg3.next_to(title_ex1_res, DOWN))
+            Write(msg3.next_to(title_ex1_res, 1.5*DOWN))
         )
         self.wait(5)
+
+        title_ex1_geom = Title("Visualisation géométrique")
+
+        plane = ComplexPlane()
+        # ax = Axes(
+        #     x_range=[-0.5, 3],
+        #     y_range=[-0.5, 3],
+        #     x_axis_config={"numbers_to_include": [1, 2]}
+        # )
+
+        # labels = ax.get_axis_labels()
+
+        origin = Dot(plane.n2p(0 + 0j), color=BLUE)
+        dot_1 = Dot(plane.n2p(2 + 0j), color=RED)
+        dot_2 = Dot(plane.n2p(1 + 2j), color=GREEN)
+        dots = [origin, dot_1, dot_2]
+        
+        vec_1 = Vector([2, 0], color=RED)
+        vec_2 = Vector([1, 2], color=GREEN)
+        vecs = [vec_1, vec_2]
+        
+        lab_1 = vec_1.coordinate_label(color=RED)
+        lab_2 = vec_2.coordinate_label(color=GREEN)
+        labs = [lab_1, lab_2]
+        
+        # line_1 = ax.get_vertical_line(
+        #     ax.input_to_graph_point(1, vec_1),
+        #     color=YELLOW
+        # )
+        
+        
+
+        self.play(
+            ReplacementTransform(dispAB, plane),
+            ReplacementTransform(
+                title_ex1_res, title_ex1_geom
+            ),
+            FadeOut(msg3),
+            *[Write(v) for v in vecs],
+            *[Write(l) for l in labs],
+            *[Write(d) for d in dots],
+        )
+        self.wait(3)
+
+        #proj1 = Vector
+        #proj_v2 = Vector([1, 0], color=YELLOW)
+        #lab_proj_v2 = proj_v2.coordinate_label(color=YELLOW)
+        
+        # self.play(
+        #     Write(proj_v2),
+        #     Write(lab_proj_v2),
+        # )
+        # self.wait(2)
+
+        
+        dot_proj = Dot(plane.n2p(1 + 0j), color=YELLOW)
+        dashed_line2 = DashedLine(origin, dot_proj, color=YELLOW)
+        vert_line2 = DashedLine(dot_proj, dot_2, color=GREEN)
+        
+        self.play(
+            Write(vert_line2),
+            Write(dashed_line2),
+            Write(dot_proj),
+            Write(
+                RightAngle(
+                    vert_line2,
+                    dashed_line2,
+                    length=0.25,
+                    quadrant=(1,-1)
+                )
+            ),
+        )
+        self.wait(1)
+
+        
+        line1 = Line(origin, dot_1, color=RED)
+        sub_origin = Dot(plane.n2p(0 - 1j), color=RED)
+        sub_sub_origin = Dot(plane.n2p(0 - 2j), color=RED)
+        sub_proj = Dot(plane.n2p(1 - 1j), color=YELLOW)
+        sub_line2 = Line(sub_origin, sub_proj, color=YELLOW)
+        sub1 = Dot(plane.n2p(2 - 1j), color=RED)
+        sub_line1 = Line(sub_origin, sub1, color=RED)
+        sub_sub1 = Dot(plane.n2p(2 - 2j), color=RED)
+        sub_sub_line1 = Line(sub_sub_origin, sub_sub1, color=RED)
+        
+        msg = r"{^{\mathsf{T}}}\begin{pmatrix}2& 0\end{pmatrix}\cdot "
+        msg += r"\begin{pmatrix}1\\ 2\end{pmatrix} = "
+        msg += r"2\times 1 = 2"
+
+        
+        self.play(
+            ReplacementTransform(line1, sub_sub_line1),
+            Write(MathTex("2").next_to(sub_sub_line1, DOWN)),
+            ReplacementTransform(dashed_line2, sub_line2),
+            Write(MathTex("1").next_to(sub_line2, UP))
+        )
+        self.wait(2)
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
-        self.play(ReplacementTransform(title_ex1_res, title_end.scale(0.75)))
+        self.play(
+            ReplacementTransform(
+                title_ex1_geom,
+                title_end.scale(0.75)
+            )
+        )
         disp_sub(self, lang='fr')
