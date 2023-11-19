@@ -112,21 +112,6 @@ class Id1(Scene):
         self.play(*[Write(z) for z in main_square_affixes])
         self.wait()
 
-        AB = Line(z_A.get_center(), z_B.get_center())
-        AB_brace = Brace(AB)
-        AB_txt = AB_brace.get_text("a")
-
-        AD = Line(z_A.get_center(), z_D.get_center())
-        AD_brace = Brace(AD)
-        AD_txt = AD_brace.get_text("a")
-
-        braces = [AB_brace, AD_brace]
-        txts = [AB_txt, AD_txt]
-        self.play(
-            *[Write(b) for b in braces],
-            *[Write(t) for t in txts]
-        )
-        self.wait()
         
         # reg_square = get_regular_polygon(n_gon=4)
         # scale_fact = 1
@@ -144,6 +129,24 @@ class Id1(Scene):
             ABCD.animate.set_fill(GREEN, 0.8)
         )
         self.wait()
+
+        AB = Line(z_A.get_center(), z_B.get_center())
+        AB_brace = Brace(AB)
+        AB_txt = AB_brace.get_text("a")
+        #AB_txt = BraceLabel(AB_brace, "a", color=GREEN)
+
+        AD = plane.get_vertical_line(D)
+        AD_brace = BraceBetweenPoints(D, A)
+        AD_txt = AD_brace.get_text("a")
+        #AD_txt = BraceLabel(AD_brace, "a", color=GREEN)
+
+        braces = [AB_brace, AD_brace]
+        txts = [AB_txt, AD_txt]
+        self.play(
+            *[Write(b, color=GREEN) for b in braces],
+            *[Write(t, color=GREEN) for t in txts]
+        )
+        self.wait()
         
         z_E = Dot(plane.n2p(1 + 2j), color=YELLOW)
         z_F = Dot(plane.n2p(1 + 1j), color=YELLOW)
@@ -151,8 +154,18 @@ class Id1(Scene):
         small_square_affixes = [z_E, z_F, z_G]
         self.play(*[Write(z) for z in small_square_affixes])
         self.wait()
+
         
         E, F, G = [1, 2, 0], [1, 1, 0], [2, 1, 0]
+        #CE = Line(z_E.get_center(), z_C.get_center())
+        CE_brace = BraceBetweenPoints(C, E)
+        CE_txt = CE_brace.get_text("b")
+        self.play(
+            Write(CE_brace),
+            Write(CE_txt)
+        )
+        self.wait()
+        
         small_square_vertices = [C, E, F, G]
         CEFG = Polygon(*small_square_vertices, color=RED, fill_color=RED)
         self.play(Write(CEFG))
@@ -181,6 +194,29 @@ class Id1(Scene):
             BGFH.animate.set_fill(WHITE, 0.8)
         )
         self.wait()
+
+
+        self.play(
+            AHED.animate.shift(UP + 2 * LEFT),
+            CEFG.animate.shift(UR),
+            BGFH.animate.shift(DOWN).rotate(PI / 2)
+        )
+        self.wait()
+
+        fades_out = [
+            ABCD, CEFG,
+            z_A, z_B, z_C, z_D,
+            z_E, z_F, z_G, z_H,
+            AD_brace, AB_brace, CE_brace,
+            AD_txt, AB_txt, CE_txt
+        ]
+        self.play(
+            *[FadeOut(f) for f in fades_out],
+            BGFH.animate.shift(4 * LEFT)
+        )
+        self.wait()
+
+        
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
