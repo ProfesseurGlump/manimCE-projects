@@ -167,7 +167,7 @@ class Bernoulli(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Fonction génératrice des probabilités avec "
+        msg = "Fonction génératrice des moments avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.65))
         self.wait(2)
@@ -182,7 +182,7 @@ class Bernoulli(Scene):
         title_question = Title("Défi pour vous")
         inbox1 = "Savez-vous comment calculer "
         inbox2 = "la fonction génératrice des "
-        inbox3 = "probabilités de la loi de Bernoulli ?"
+        inbox3 = "moments de la loi de Bernoulli ?"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
         
@@ -221,14 +221,9 @@ class Bernoulli(Scene):
         centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
         definition += [centered_expr]
         definition += [r"une variable aléatoire discrète. Alors, "]
-        definition += [r"avec la convention \(s^0 = 1\), "]
-        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-        centered_expr += r"\sum_{n = 0}^{+\infty}\mathbb{P}_X(\{n\})s^n\]"
-        definition += [centered_expr]
-        definition += [r"est définie et continue sur \([-1;1]\) "]
-        definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-        definition += [r"continue à droite en \(-1\) et "]
-        definition += [r"continue à gauche en \(1\))."]
+        definition += [r"\[M_X : t\mapsto \mathbb{E}(e^{tX}) = G_X(e^t)\]"]
+        definition += [r"\[M_X(t) = \sum_{n = 0}^{+\infty}\mathbb{P}_X(\{n\})e^{tn}\]"]
+        definition += [r"est définie et continue sur \(\mathbb{R}\)."]
         
         def_msg = [Tex(d) for d in definition]
         n = len(def_msg)
@@ -267,45 +262,45 @@ class Bernoulli(Scene):
             duration=5,
         )
 
-        bernoulli_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        centered_expr = r"\[G_X(s) = \mathbb{P}_X(\{0\})\times s^0"
-        centered_expr += r"+ \mathbb{P}_X(\{1\})\times s^1\]"
-        bernoulli_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \mathbb{P}(\{X = 0\})\times s^0"
-        centered_expr += r"+ \mathbb{P}(\{X = 1\})\times s^1\]"
-        bernoulli_pgf += [centered_expr]
-        ber_pgf_msg = [Tex(b) for b in bernoulli_pgf]
+        bernoulli_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \mathbb{P}_X(\{0\})\times e^{t\times 0}"
+        centered_expr += r"+ \mathbb{P}_X(\{1\})\times e^t\]"
+        bernoulli_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \mathbb{P}(\{X = 0\})"
+        centered_expr += r"+ \mathbb{P}(\{X = 1\})\times e^t\]"
+        bernoulli_mgf += [centered_expr]
+        ber_mgf_msg = [Tex(b) for b in bernoulli_mgf]
         
-        ber_pgf_end = MathTex(r"G_X(s) = (1 - p) + ps")
+        ber_mgf_end = MathTex(r"M_X(t) = (1 - p) + pe^t")
 
         lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=ber_msg,
-            new=ber_pgf_msg,
+            new=ber_mgf_msg,
             pos_ref=title_rep,
             duration=5,
             **lines_and_scales
         )
 
-        self.play(Write(ber_pgf_end.next_to(ber_pgf_msg[-1], 7 * DOWN)))
+        self.play(Write(ber_mgf_end.next_to(ber_mgf_msg[-1], 7 * DOWN)))
         self.wait(2)
         
         inbox1 = "On a bien calculé la fonction "
-        inbox2 = "génératrice des probabilités "
+        inbox2 = "génératrice des moments "
         inbox3 = "de la loi de Bernoulli"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
 
         replace_and_write(
             self,
-            old=ber_pgf_msg,
+            old=ber_mgf_msg,
             new=msg,
             pos_ref=title_rep,
             duration=5,
         )
         
-        box_res = SurroundingRectangle(ber_pgf_end)
+        box_res = SurroundingRectangle(ber_mgf_end)
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             Write(box_res),
@@ -329,7 +324,7 @@ class Geometric(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Fonction génératrice des probabilités avec "
+        msg = "Fonction génératrice des moments avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.65))
         self.wait(2)
@@ -344,7 +339,7 @@ class Geometric(Scene):
         title_question = Title("Défi pour vous")
         inbox1 = "Savez-vous comment calculer "
         inbox2 = "la fonction génératrice des "
-        inbox3 = "probabilités de la loi géométrique ?"
+        inbox3 = "moments de la loi géométrique ?"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
         
@@ -383,14 +378,9 @@ class Geometric(Scene):
         centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
         definition += [centered_expr]
         definition += [r"une variable aléatoire discrète. Alors, "]
-        definition += [r"avec la convention \(s^0 = 1\), "]
-        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})s^k\]"
-        definition += [centered_expr]
-        definition += [r"est définie et continue sur \([-1;1]\) "]
-        definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-        definition += [r"continue à droite en \(-1\) et "]
-        definition += [r"continue à gauche en \(1\))."]
+        definition += [r"\[M_X : t\mapsto \mathbb{E}(e^{tX}) = G_X(e^t)\]"]
+        definition += [r"\[M_X(t) = \sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})e^{tk}\]"]
+        definition += [r"est définie et continue sur \(\mathbb{R}\) "]
         
         def_msg = [Tex(d) for d in definition]
         n = len(def_msg)
@@ -413,7 +403,7 @@ class Geometric(Scene):
         geometric_prob = [r"Si \(X\) suit une loi géométrique "]
         geometric_prob += [r"de paramètre \(p\) alors "]
         centered_expr = r"\[\mathbb{P}_X(\{k\}) = "
-        centered_expr += r"\mathbb{P}(\{X = k\}) = (1 - p)^{k - 1}p\]"
+        centered_expr += r"\mathbb{P}(\{X = k\}) = p(1 - p)^{k - 1}\]"
         geometric_prob += [centered_expr]
         geom_msg = [Tex(b) for b in geometric_prob]
                     
@@ -425,54 +415,54 @@ class Geometric(Scene):
             duration=5,
         )
 
-        geometric_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        centered_expr = r"\[G_X(s) = \sum_{k = 1}^{+\infty}"
-        centered_expr += r"\mathbb{P}_X(\{k\})\times s^k\]"
-        geometric_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 1}^{+\infty}"
-        centered_expr += r"\mathbb{P}(\{X = k\})\times s^k\]"
-        geometric_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 1}^{+\infty}"
-        centered_expr += r"p(1 - p)^{k - 1}s^k\]"
-        geometric_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = ps\sum_{k = 1}^{+\infty}"
-        centered_expr += r"(1 - p)^{k - 1}s^{k - 1}\]"
-        geometric_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = ps\sum_{k = 0}^{+\infty}"
-        centered_expr += r"\left[s(1 - p)\right]^{k}\]"
-        geometric_pgf += [centered_expr]
-        geom_pgf_msg = [Tex(b) for b in geometric_pgf]
+        geometric_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \sum_{k = 1}^{+\infty}"
+        centered_expr += r"\mathbb{P}_X(\{k\})\times e^{tk}\]"
+        geometric_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 1}^{+\infty}"
+        centered_expr += r"\mathbb{P}(\{X = k\})\times e^{tk}\]"
+        geometric_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 1}^{+\infty}"
+        centered_expr += r"p(1 - p)^{k - 1}e^{tk}\]"
+        geometric_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = pe^t\sum_{k = 1}^{+\infty}"
+        centered_expr += r"(1 - p)^{k - 1}e^{t(k - 1)}\]"
+        geometric_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = pe^t\sum_{k = 0}^{+\infty}"
+        centered_expr += r"\left[e^t(1 - p)\right]^{k}\]"
+        geometric_mgf += [centered_expr]
+        geom_mgf_msg = [Tex(b) for b in geometric_mgf]
 
-        geom_pgf_end = MathTex(r"G_X(s) = \dfrac{ps}{1 - s(1 - p)}")
+        geom_mgf_end = MathTex(r"M_X(t) = \dfrac{pe^t}{1 - e^t(1 - p)}")
 
         #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=geom_msg,
-            new=geom_pgf_msg,
+            new=geom_mgf_msg,
             pos_ref=title_rep,
             duration=5,
             #**lines_and_scales
         )
 
-        self.play(Write(geom_pgf_end.next_to(geom_pgf_msg[-1], 7 * DOWN)))
+        self.play(Write(geom_mgf_end.next_to(geom_mgf_msg[-1], 7 * DOWN)))
         self.wait(2)
         
         inbox1 = "On a bien calculé la fonction "
-        inbox2 = "génératrice des probabilités "
+        inbox2 = "génératrice des moments "
         inbox3 = "de la loi géométrique"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
 
         replace_and_write(
             self,
-            old=geom_pgf_msg,
+            old=geom_mgf_msg,
             new=msg,
             pos_ref=title_rep,
             duration=5,
         )
         
-        box_res = SurroundingRectangle(geom_pgf_end)
+        box_res = SurroundingRectangle(geom_mgf_end)
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             Write(box_res),
@@ -497,7 +487,7 @@ class Binomial(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Fonction génératrice des probabilités avec "
+        msg = "Fonction génératrice des moments avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.65))
         self.wait(2)
@@ -512,7 +502,7 @@ class Binomial(Scene):
         title_question = Title("Défi pour vous")
         inbox1 = "Savez-vous comment calculer "
         inbox2 = "la fonction génératrice des "
-        inbox3 = "probabilités de la loi binomiale ?"
+        inbox3 = "moments de la loi binomiale ?"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
         
@@ -551,14 +541,10 @@ class Binomial(Scene):
         centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
         definition += [centered_expr]
         definition += [r"une variable aléatoire discrète. Alors, "]
-        definition += [r"avec la convention \(s^0 = 1\), "]
-        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})s^k\]"
+        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(e^{tX}) = "
+        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})e^{tk}\]"
         definition += [centered_expr]
-        definition += [r"est définie et continue sur \([-1;1]\) "]
-        definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-        definition += [r"continue à droite en \(-1\) et "]
-        definition += [r"continue à gauche en \(1\))."]
+        definition += [r"est définie et continue sur \(\mathbb{R}\) "]
         
         def_msg = [Tex(d) for d in definition]
         n = len(def_msg)
@@ -596,51 +582,51 @@ class Binomial(Scene):
             duration=5,
         )
 
-        binomial_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\mathbb{P}_X(\{k\})\times s^k\]"
-        binomial_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\mathbb{P}(\{X = k\})\times s^k\]"
-        binomial_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\binom{n}{k}p^k(1 - p)^{n - k}s^k\]"
-        binomial_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\binom{n}{k}(ps)^k(1 - p)^{n - k}\]"
-        binomial_pgf += [centered_expr]
-        bin_pgf_msg = [Tex(b) for b in binomial_pgf]
+        binomial_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\mathbb{P}_X(\{k\})\times e^{tk}\]"
+        binomial_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\mathbb{P}(\{X = k\})\times e^{tk}\]"
+        binomial_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\binom{n}{k}p^k(1 - p)^{n - k}e^{tk}\]"
+        binomial_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\binom{n}{k}(pe^t)^k(1 - p)^{n - k}\]"
+        binomial_mgf += [centered_expr]
+        bin_mgf_msg = [Tex(b) for b in binomial_mgf]
         
-        bin_pgf_end = MathTex(r"G_X(s) = \left[(1 - p) + ps\right]^n")
+        bin_mgf_end = MathTex(r"M_X(t) = \left[(1 - p) + pe^t\right]^n")
 
         #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=bin_msg,
-            new=bin_pgf_msg,
+            new=bin_mgf_msg,
             pos_ref=title_rep,
             duration=5,
             #**lines_and_scales
         )
 
-        self.play(Write(bin_pgf_end.next_to(bin_pgf_msg[-1], 7 * DOWN)))
+        self.play(Write(bin_mgf_end.next_to(bin_mgf_msg[-1], 7 * DOWN)))
         self.wait(2)
         
         inbox1 = "On a bien calculé la fonction "
-        inbox2 = "génératrice des probabilités "
+        inbox2 = "génératrice des moments "
         inbox3 = "de la loi binomiale"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
 
         replace_and_write(
             self,
-            old=bin_pgf_msg,
+            old=bin_mgf_msg,
             new=msg,
             pos_ref=title_rep,
             duration=5,
         )
         
-        box_res = SurroundingRectangle(bin_pgf_end)
+        box_res = SurroundingRectangle(bin_mgf_end)
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             Write(box_res),
@@ -665,7 +651,7 @@ class Poisson(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Fonction génératrice des probabilités avec "
+        msg = "Fonction génératrice des moments avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.65))
         self.wait(2)
@@ -680,7 +666,7 @@ class Poisson(Scene):
         title_question = Title("Défi pour vous")
         inbox1 = "Savez-vous comment calculer "
         inbox2 = "la fonction génératrice des "
-        inbox3 = "probabilités de la loi de Poisson ?"
+        inbox3 = "moments de la loi de Poisson ?"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
         
@@ -719,14 +705,10 @@ class Poisson(Scene):
         centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
         definition += [centered_expr]
         definition += [r"une variable aléatoire discrète. Alors, "]
-        definition += [r"avec la convention \(s^0 = 1\), "]
-        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})s^k\]"
+        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(e^{tX}) = "
+        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})e^{tk}\]"
         definition += [centered_expr]
-        definition += [r"est définie et continue sur \([-1;1]\) "]
-        definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-        definition += [r"continue à droite en \(-1\) et "]
-        definition += [r"continue à gauche en \(1\))."]
+        definition += [r"est définie et continue sur \(\mathbb{R}\) "]
         
         def_msg = [Tex(d) for d in definition]
         n = len(def_msg)
@@ -762,52 +744,52 @@ class Poisson(Scene):
             duration=5,
         )
 
-        poisson_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
-        centered_expr += r"\mathbb{P}_X(\{k\})\times s^k\]"
-        poisson_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
-        centered_expr += r"\mathbb{P}(\{X = k\})\times s^k\]"
-        poisson_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
-        centered_expr += r"e^{-\lambda}\dfrac{\lambda^k}{k!}s^k\]"
-        poisson_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = e^{-\lambda}\sum_{k = 0}^{+\infty}"
+        poisson_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^{+\infty}"
+        centered_expr += r"\mathbb{P}_X(\{k\})\times e^{tk}\]"
+        poisson_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^{+\infty}"
+        centered_expr += r"\mathbb{P}(\{X = k\})\times e^{tk}\]"
+        poisson_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^{+\infty}"
+        centered_expr += r"e^{-\lambda}\dfrac{\lambda^k}{k!}e^{tk}\]"
+        poisson_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = e^{-\lambda}\sum_{k = 0}^{+\infty}"
         centered_expr += r"\dfrac{(\lambda s)^k}{k!}\]"
-        poisson_pgf += [centered_expr]
-        poisson_pgf += [r"\[G_X(s) = e^{-\lambda}e^{\lambda s}\]"]
-        pois_pgf_msg = [Tex(b) for b in poisson_pgf]
+        poisson_mgf += [centered_expr]
+        poisson_mgf += [r"\[M_X(t) = e^{-\lambda}e^{\lambda s}\]"]
+        pois_mgf_msg = [Tex(b) for b in poisson_mgf]
 
-        pois_pgf_end = MathTex(r"G_X(s) = e^{\lambda(s - 1)}")
+        pois_mgf_end = MathTex(r"M_X(t) = e^{\lambda(s - 1)}")
 
         #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=pois_msg,
-            new=pois_pgf_msg,
+            new=pois_mgf_msg,
             pos_ref=title_rep,
             duration=5,
             #**lines_and_scales
         )
 
-        self.play(Write(pois_pgf_end.next_to(pois_pgf_msg[-1], 7 * DOWN)))
+        self.play(Write(pois_mgf_end.next_to(pois_mgf_msg[-1], 7 * DOWN)))
         self.wait(2)
         
         inbox1 = "On a bien calculé la fonction "
-        inbox2 = "génératrice des probabilités "
+        inbox2 = "génératrice des moments "
         inbox3 = "de la loi de Poisson"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
 
         replace_and_write(
             self,
-            old=pois_pgf_msg,
+            old=pois_mgf_msg,
             new=msg,
             pos_ref=title_rep,
             duration=5,
         )
         
-        box_res = SurroundingRectangle(pois_pgf_end)
+        box_res = SurroundingRectangle(pois_mgf_end)
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             Write(box_res),
@@ -832,7 +814,7 @@ class Uniform(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Fonction génératrice des probabilités avec "
+        msg = "Fonction génératrice des moments avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.65))
         self.wait(2)
@@ -847,7 +829,7 @@ class Uniform(Scene):
         title_question = Title("Défi pour vous")
         inbox1 = "Savez-vous comment calculer "
         inbox2 = "la fonction génératrice des "
-        inbox3 = "probabilités de la loi uniforme ?"
+        inbox3 = "moments de la loi uniforme ?"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
         
@@ -886,14 +868,10 @@ class Uniform(Scene):
         centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
         definition += [centered_expr]
         definition += [r"une variable aléatoire discrète. Alors, "]
-        definition += [r"avec la convention \(s^0 = 1\), "]
-        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})s^k\]"
+        centered_expr = r"\[G_X : s\mapsto \mathbb{E}(e^{tX}) = "
+        centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{k\})e^{tk}\]"
         definition += [centered_expr]
-        definition += [r"est définie et continue sur \([-1;1]\) "]
-        definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-        definition += [r"continue à droite en \(-1\) et "]
-        definition += [r"continue à gauche en \(1\))."]
+        definition += [r"est définie et continue sur \(\mathbb{R}\) "]
         
         def_msg = [Tex(d) for d in definition]
         n = len(def_msg)
@@ -931,51 +909,51 @@ class Uniform(Scene):
             duration=5,
         )
 
-        uniform_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\mathbb{P}_X(\{k\})\times s^k\]"
-        uniform_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\mathbb{P}(\{X = k\})\times s^k\]"
-        uniform_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \sum_{k = 0}^n"
-        centered_expr += r"\dfrac{1}{n}s^k\]"
-        uniform_pgf += [centered_expr]
-        centered_expr = r"\[G_X(s) = \dfrac{1}{n}\sum_{k = 0}^n"
-        centered_expr += r"s^k\]"
-        uniform_pgf += [centered_expr]
-        unif_pgf_msg = [Tex(b) for b in uniform_pgf]
+        uniform_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\mathbb{P}_X(\{k\})\times e^{tk}\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\mathbb{P}(\{X = k\})\times e^{tk}\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \sum_{k = 0}^n"
+        centered_expr += r"\dfrac{1}{n}e^{tk}\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \dfrac{1}{n}\sum_{k = 0}^n"
+        centered_expr += r"e^{tk}\]"
+        uniform_mgf += [centered_expr]
+        unif_mgf_msg = [Tex(b) for b in uniform_mgf]
         
-        unif_pgf_end = MathTex(r"G_X(s) = \dfrac{1 - s^{n + 1}}{n(1 - s)}")
+        unif_mgf_end = MathTex(r"M_X(t) = \dfrac{1 - e^t{n + 1}}{n(1 - s)}")
 
         #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=unif_msg,
-            new=unif_pgf_msg,
+            new=unif_mgf_msg,
             pos_ref=title_rep,
             duration=5,
             #**lines_and_scales
         )
 
-        self.play(Write(unif_pgf_end.next_to(unif_pgf_msg[-1], 7 * DOWN)))
+        self.play(Write(unif_mgf_end.next_to(unif_mgf_msg[-1], 7 * DOWN)))
         self.wait(2)
         
         inbox1 = "On a bien calculé la fonction "
-        inbox2 = "génératrice des probabilités "
+        inbox2 = "génératrice des moments "
         inbox3 = "de la loi uniforme"
         inboxes = [inbox1, inbox2, inbox3]
         msg = inbox_msg(*inboxes, font_size=40)
 
         replace_and_write(
             self,
-            old=unif_pgf_msg,
+            old=unif_mgf_msg,
             new=msg,
             pos_ref=title_rep,
             duration=5,
         )
         
-        box_res = SurroundingRectangle(unif_pgf_end)
+        box_res = SurroundingRectangle(unif_mgf_end)
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             Write(box_res),
