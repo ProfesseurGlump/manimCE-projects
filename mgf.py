@@ -273,14 +273,14 @@ class Bernoulli(Scene):
         
         ber_mgf_end = MathTex(r"M_X(t) = (1 - p) + pe^t")
 
-        lines_and_scales = {'1' : 0.75, '2' : 0.85}
+        #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
             self,
             old=ber_msg,
             new=ber_mgf_msg,
             pos_ref=title_rep,
             duration=5,
-            **lines_and_scales
+            #**lines_and_scales
         )
 
         self.play(Write(ber_mgf_end.next_to(ber_mgf_msg[-1], 7 * DOWN)))
@@ -433,7 +433,7 @@ class Geometric(Scene):
         geometric_mgf += [centered_expr]
         geom_mgf_msg = [Tex(b) for b in geometric_mgf]
 
-        geom_mgf_end = MathTex(r"M_X(t) = \dfrac{pe^t}{1 - e^t(1 - p)}")
+        geom_mgf_end = MathTex(r"M_X(t) = \dfrac{pe^t}{1 - (1 - p)e^t}")
 
         #lines_and_scales = {'1' : 0.75, '2' : 0.85}
         replace_and_write(
