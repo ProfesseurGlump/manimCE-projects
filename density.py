@@ -83,6 +83,7 @@ def replace_and_write(self, old, new, pos_ref, duration, **lines_and_scales):
     to_be_continued = False
     m, n = len(old), len(new)
     min_mn = m
+    keys = lines_and_scales.keys()
     
     if m < n:
         to_be_continued = True
@@ -117,39 +118,45 @@ def replace_and_write(self, old, new, pos_ref, duration, **lines_and_scales):
             *[
                 ReplacementTransform(
                 old[0],
-                new[0].scale(lines_and_scales['0']).next_to(pos_ref, 3 * DOWN)
-                ) for i in range(1) if '0' in lines_and_scales.keys()
+                new[0].scale(
+                    lines_and_scales['0']
+                ).next_to(pos_ref, 3 * DOWN)
+                ) for i in range(1) if '0' in keys
               ],
             *[
                 ReplacementTransform(
                 old[0],
                 new[0].next_to(pos_ref, 3 * DOWN)
-                ) for i in range(1) if '0' not in lines_and_scales.keys()
+                ) for i in range(1) if '0' not in keys
               ],
             *[
                 ReplacementTransform(
                     old[i],
-                    new[i].scale(lines_and_scales[str(i)]).next_to(new[i - 1], DOWN)
-                ) for i in range(1, min_mn) if str(i) in lines_and_scales.keys()
+                    new[i].scale(
+                        lines_and_scales[str(i)]
+                    ).next_to(new[i - 1], DOWN)
+                ) for i in range(1, min_mn) if str(i) in keys
             ],
             *[
                 ReplacementTransform(
                     old[i],
                     new[i].next_to(new[i-1], DOWN)
-                ) for i in range(1, min_mn) if str(i) not in lines_and_scales.keys()
+                ) for i in range(1, min_mn) if str(i) not in keys
             ],
         )
         if to_be_continued:
             self.play(
                 *[
                     Write(
-                        new[i].scale(lines_and_scales[str(i)]).next_to(new[i - 1], DOWN)
-                    ) for i in range(min_mn, n) if str(i) in lines_and_scales.keys()
+                        new[i].scale(
+                            lines_and_scales[str(i)]).next_to(
+                                new[i - 1], DOWN)
+                    ) for i in range(min_mn, n) if str(i) in keys
                 ],
                 *[
                     Write(
                         new[i].next_to(new[i - 1], DOWN)
-                    ) for i in range(min_mn, n) if not str(i) in lines_and_scales.keys()
+                    ) for i in range(min_mn, n) if not str(i) in keys
                 ],
             )
     
@@ -160,6 +167,7 @@ def cursive_msg(phrase, sep, font_size=40):
     inboxes = phrase.split(sep)
     msg = inbox_msg(*inboxes, font_size=font_size)
     return msg
+
 
 def density_def_recall():
     definition = [r"Rappel : "]
@@ -180,6 +188,7 @@ def density_def_recall():
     density_def_msg = [Tex(d) for d in definition]
     
     return density_def_msg
+
 
 def prob_def_recall():
     definition = [r"Rappel : "]
@@ -202,6 +211,7 @@ def prob_def_recall():
     
     return prob_def_msg
 
+
 def expectation_def_recall():
     definition = [r"Rappel : "]
     centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
@@ -220,7 +230,8 @@ def expectation_def_recall():
     exp_def_msg = [Tex(d) for d in definition]
     
     return exp_def_msg
-    
+
+
 def variance_def_recall():
     definition = [r"Rappel : "]
     centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
@@ -250,6 +261,62 @@ def variance_def_recall():
     return var_def_msg
 
 
+def generate_uniform_graph(x_inf, x_sup, a, b):
+    c = 1 / (b - a)
+    y_inf, y_sup = -c * 0.1, c * 1.25
+
+    ax = Axes(
+        x_range=[x_inf, x_sup],
+        y_range=[y_inf, y_sup],
+        axis_config={"include_numbers": True}
+    ).scale(0.65)    
+    
+    A_0 = ax.coords_to_point(x_inf,0)
+    dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
+
+    A_1 = ax.coords_to_point(a,0)
+    dotA_1 = Dot(A_1, fill_opacity=1, color=RED)
+    labelA_1 = MathTex(r"a = " + f"{a}", color=GREEN)
+    A_0A_1 = Line(A_0, A_1, color=GREEN)
+        
+    A_2 = ax.coords_to_point(a,c)
+    dotA_2 = Dot(A_2, fill_opacity=1, color=GREEN)        
+    vert_A_2 = ax.get_vertical_line(
+        A_2,
+        line_config={"dashed_ratio": 0.85},
+        color=RED
+    )
+        
+    A_3 = ax.coords_to_point(b,c)
+    dotA_3 = Dot(A_3, fill_opacity=1, color=GREEN)
+        
+    A_2A_3 = Line(A_2, A_3, color=GREEN)
+    vert_A_3 = ax.get_vertical_line(
+        A_3,
+        line_config={"dashed_ratio": 0.85},
+        color=RED
+    )
+        
+    A_4 = ax.coords_to_point(b,0)
+    dotA_4 = Dot(A_4, fill_opacity=1, color=RED)
+    labelA_4 = MathTex(r"b = " + f"{b}", color=GREEN)
+
+    A_5 = ax.coords_to_point(x_sup,0)
+    dotA_5 = Dot(A_5, fill_opacity=1, color=GREEN)
+    A_4A_5 = Line(A_4, A_5, color=GREEN)
+
+    Adots = [dotA_0, dotA_1, dotA_2, dotA_3, dotA_4, dotA_5]
+    Alines = [A_0A_1, vert_A_2, A_2A_3, vert_A_3, A_4A_5]
+    
+    uniform_density = r"f(x) = " + f"{c}"
+    uniform_density += r"\times \mathbb{I}_{["
+    uniform_density += f"{a};{b}" + r"]}(x)"
+    uniform = MathTex(uniform_density, color=GREEN)
+    
+    Alabels = [labelA_1, uniform, labelA_4]
+    Alab_pos = [(dotA_1, DOWN), (A_2A_3, 4 * UP), (dotA_4, DOWN)]
+
+    return ax, Adots, Alines, Alabels, Alab_pos
 
 class Uniform(Scene):
     def setup(self, add_border=True):
@@ -264,7 +331,7 @@ class Uniform(Scene):
     def construct(self):
         msg = "Variables aléatoires à densité avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
-        self.add(title_start.scale(0.85))
+        self.add(title_start.scale(0.75))
         self.wait(2)
         youtube_shorts = SVGMobject(
             "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
@@ -288,7 +355,7 @@ class Uniform(Scene):
                 title_question.scale(0.75)
             )
         )
-        self.wait(3)
+        self.wait(1.5)
 
         title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
@@ -297,7 +364,7 @@ class Uniform(Scene):
                 title_clap.scale(0.75)
             )
         )
-        self.wait(1.5)
+        self.wait(.75)
 
         title_rep = Title("Regardez jusqu'au bout pour la réponse")
         self.play(
@@ -307,7 +374,7 @@ class Uniform(Scene):
             ),
             FadeOut(msg)
         )
-        self.wait(1.5)
+        self.wait(.75)
 
         def_msg = density_def_recall()
         n = len(def_msg)
@@ -325,20 +392,28 @@ class Uniform(Scene):
                 ) for i in range(1, n)
             ]
         )
-        self.wait(5)
+        self.wait(2.5)
 
-        uniform_prob = [r"Si \(X\) suit une loi de uniforme "]
-        uniform_prob += [r"l'intervalle [a;b] alors "]
-        uniform_prob += [r"\[\int_{a}^{b}f(t)dt = 1\]"]
-        uniform_prob += [r"\[c(b - a) = 1\iff f(t)\]"]
-        uniform_prob += [r"\[f(t) = dfrac{1}{b - a}\mathbb{I}_{[a; b]}(t)\]"]
+        uniform_prob = [r"\raggedleft Si \(X\) suit une loi de uniforme "]
+        uniform_prob += [r"\raggedleft sur l'intervalle [a;b] alors "]
+        uniform_prob += [r"\[\int_{-\infty}^{+\infty}f(t)dt = 1\]"]
+        uniform_prob += [r"\[\Rightarrow \int_{a}^{b}cdt = 1\]"]
+        uniform_prob += [r"\[\Rightarrow c(b - a) = 1\]"]
+
+        split = r"\[\Rightarrow f(t) = \dfrac{1}{b - a} "
+        split += r"\mathbb{I}_{[a; b]}(t)\]"
+        uniform_prob += [split]
+        
         uniform_prob += [r"avec "]
-        uniform_prob = [r"\[\mathbb{I}_{[a; b]}(t) = 1\iff t\in [a; b]\]"]
+        uniform_prob += [r"\[\mathbb{I}_{[a; b]}(t) = 1\iff t\in [a; b]\]"]
+
         centered_expr = r"\[\mathbb{I}_{[a; b]}(t) = 0\iff "
         centered_expr += r"t \not \in [a; b]\]"
         uniform_prob += [centered_expr]
+        
         unif_msg = [Tex(u) for u in uniform_prob]
-                    
+        
+        
         replace_and_write(
             self,
             old=def_msg,
@@ -346,30 +421,10 @@ class Uniform(Scene):
             pos_ref=title_rep,
             duration=5,
         )
+        box = SurroundingRectangle(unif_msg[-4])
+        self.play(Write(box))
+        self.wait()
 
-        # uniform_pgf = [r"\[G_X(s) = \mathbb{E}(s^X)\]"]
-        # centered_expr = r"\[G_X(s) = \mathbb{P}_X(\{0\})\times s^0"
-        # centered_expr += r"+ \mathbb{P}_X(\{1\})\times s^1\]"
-        # uniform_pgf += [centered_expr]
-        # centered_expr = r"\[G_X(s) = \mathbb{P}(\{X = 0\})\times s^0"
-        # centered_expr += r"+ \mathbb{P}(\{X = 1\})\times s^1\]"
-        # uniform_pgf += [centered_expr]
-        # ber_pgf_msg = [Tex(b) for b in uniform_pgf]
-        
-        # ber_pgf_end = MathTex(r"G_X(s) = (1 - p) + ps")
-
-        # lines_and_scales = {'1' : 0.75, '2' : 0.85}
-        # replace_and_write(
-        #     self,
-        #     old=ber_msg,
-        #     new=ber_pgf_msg,
-        #     pos_ref=title_rep,
-        #     duration=5,
-        #     **lines_and_scales
-        # )
-
-        # self.play(Write(ber_pgf_end.next_to(ber_pgf_msg[-1], 2 * DOWN)))
-        # self.wait(2)
         
         phrase = "On a bien calculé la fonction | "
         phrase += "de densité de la loi de probabilité | "
@@ -377,6 +432,9 @@ class Uniform(Scene):
         sep = "|"
         msg = cursive_msg(phrase, sep)
 
+        self.play(FadeOut(box))
+        self.wait()
+        
         replace_and_write(
             self,
             old=unif_msg,
@@ -384,9 +442,66 @@ class Uniform(Scene):
             pos_ref=title_rep,
             duration=5,
         )
-        # self.play(ber_pgf_end.animate.next_to(msg, 2 * DOWN))
-        # self.wait()
-        # box_res = SurroundingRectangle(ber_pgf_end)
+
+        
+
+        x_inf, x_sup, a, b = -1, 2, 0, 1
+        ax, Adots, Alines, Alabels, Alab_pos = generate_uniform_graph(x_inf, x_sup, a, b)
+        n = len(Alabels)
+        
+        self.play(
+            Create(ax, run_time=2),
+            *[Write(d) for d in Adots],   
+            *[Create(line) for line in Alines],
+            *[
+                Write(
+                    Alabels[i].next_to(
+                        Alab_pos[i][0],
+                        Alab_pos[i][1],
+                    )
+                ) for i in range(n)
+            ],
+        )
+        self.wait()
+        box = SurroundingRectangle(Alabels[1])
+        self.play(Write(box))
+        self.wait()
+        self.play(FadeOut(box))
+        self.wait()
+        
+        
+
+        x_inf, x_sup, a, b = -1, 2.5, 0, 2
+        ax, Bdots, Blines, Blabels, Blab_pos = generate_uniform_graph(x_inf, x_sup, a, b)
+        n = len(Blabels)
+        
+        self.play(
+            *[
+                ReplacementTransform(
+                    Adots[i],
+                    Bdots[i]
+                ) for i in range(len(Bdots))
+            ],
+            *[
+                ReplacementTransform(
+                    Alines[i],
+                    Blines[i]
+                ) for i in range(len(Blines))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels[i],
+                    Blabels[i].next_to(Blab_pos[i][0], Blab_pos[i][1])
+                ) for i in range(len(Blab_pos))
+            ],
+        )
+        self.wait()
+        box = SurroundingRectangle(Blabels[1])
+        self.play(Write(box))
+        self.wait()
+        self.play(FadeOut(box))
+        self.wait()
+        
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             # Write(box_res),
@@ -395,6 +510,6 @@ class Uniform(Scene):
                 title_end.scale(0.75)
             ),
         )
-        self.wait(3)
+        self.wait(1.5)
         
         disp_sub(self, lang='fr')
