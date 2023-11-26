@@ -316,7 +316,10 @@ def generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b):
     Alabels = [labelA_1, uniform, labelA_4]
     Alab_pos = [(dotA_1, DOWN), (A_2A_3, 4 * UP), (dotA_4, DOWN)]
 
-    return ax, Adots, Alines, Alabels, Alab_pos
+    polygon_list = [A_1, A_2, A_3, A_4]
+    A_1A_2A_3A_4 = Polygon(*polygon_list, fill_opacity=1, color=BLUE, stroke_color=BLUE)
+
+    return ax, Adots, Alines, Alabels, Alab_pos, A_1A_2A_3A_4
 
 class Uniform(Scene):
     def setup(self, add_border=True):
@@ -446,7 +449,10 @@ class Uniform(Scene):
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 1
-        ax, Adots, Alines, Alabels, Alab_pos = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_and_polygon = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        ax = graph_and_polygon[0]
+        _, Adots, Alines, Alabels, Alab_pos, _ = graph_and_polygon
+        A_1A_2A_3A_4 = graph_and_polygon[-1]
         n = len(Alabels)
         
         self.play(
@@ -463,16 +469,30 @@ class Uniform(Scene):
             ],
         )
         self.wait()
+
+        cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
+        cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
+        cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
+        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
         box = SurroundingRectangle(Alabels[1])
-        self.play(Write(box))
+        self.play(
+            Write(box),
+            FadeIn(A_1A_2A_3A_4),
+            Write(cmf.next_to(A_1A_2A_3A_4, 4 * DOWN))
+        )
         self.wait()
-        self.play(FadeOut(box))
+        self.play(
+            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf]]
+        )
         self.wait()
         
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 2
-        ax, Bdots, Blines, Blabels, Blab_pos = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_and_polygon = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        ax = graph_and_polygon[0]
+        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_and_polygon
+        B_1B_2B_3B_4 = graph_and_polygon[-1]
         n = len(Blabels)
         
         self.play(
@@ -496,15 +516,25 @@ class Uniform(Scene):
             ],
         )
         self.wait()
+        
+        cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
+        cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
+        cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
+        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
         box = SurroundingRectangle(Blabels[1])
-        self.play(Write(box))
+        self.play(
+            Write(box),
+            FadeIn(B_1B_2B_3B_4),
+            Write(cmf.next_to(B_1B_2B_3B_4, 4 * DOWN))
+        )
         self.wait()
-        self.play(FadeOut(box))
+        self.play(
+            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf]]
+        )
         self.wait()
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
-            # Write(box_res),
             ReplacementTransform(
                 title_rep,
                 title_end.scale(0.75)
