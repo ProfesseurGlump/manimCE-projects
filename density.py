@@ -261,15 +261,15 @@ def variance_def_recall():
     return var_def_msg
 
 
-def generate_uniform_graph(x_inf, x_sup, a, b):
+def generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b):
     c = 1 / (b - a)
-    y_inf, y_sup = -c * 0.1, c * 1.25
+    # y_inf, y_sup = -c * 0.1, c * 1.25
 
     ax = Axes(
         x_range=[x_inf, x_sup],
         y_range=[y_inf, y_sup],
         axis_config={"include_numbers": True}
-    ).scale(0.65)    
+    ).scale(0.65)
     
     A_0 = ax.coords_to_point(x_inf,0)
     dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
@@ -445,8 +445,8 @@ class Uniform(Scene):
 
         
 
-        x_inf, x_sup, a, b = -1, 2, 0, 1
-        ax, Adots, Alines, Alabels, Alab_pos = generate_uniform_graph(x_inf, x_sup, a, b)
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 1
+        ax, Adots, Alines, Alabels, Alab_pos = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
         n = len(Alabels)
         
         self.play(
@@ -471,8 +471,8 @@ class Uniform(Scene):
         
         
 
-        x_inf, x_sup, a, b = -1, 2.5, 0, 2
-        ax, Bdots, Blines, Blabels, Blab_pos = generate_uniform_graph(x_inf, x_sup, a, b)
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 2
+        ax, Bdots, Blines, Blabels, Blab_pos = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
         n = len(Blabels)
         
         self.play(
