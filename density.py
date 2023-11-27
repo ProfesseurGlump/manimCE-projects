@@ -179,9 +179,9 @@ def density_def_recall():
     centered_expr += r"\int_{-\infty}^xf(t)dt\]"
     definition += [centered_expr]
     definition += [r"avec : "]
-    definition += [r"1. \(f\) positive. "]
-    centered = r"2. \(f\) possède un nombre fini \\"
-    centered += r"de points de discontinuité."
+    definition += [r"\[1. f \geqslant 0\] "]
+    centered = r"\[2. f\in\mathcal{C}^0\backslash\mathcal{D} "
+    centered += r"\quad \mathbb{P}(x\in\mathcal{D}) = 0\]"
     definition += [centered]
     definition += [r"\[3. \int_{-\infty}^{+\infty}f(t)dt = 1\]"]
         
@@ -261,7 +261,7 @@ def variance_def_recall():
     return var_def_msg
 
 
-def generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b):
+def generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b):
     c = 1 / (b - a)
     # y_inf, y_sup = -c * 0.1, c * 1.25
 
@@ -314,14 +314,95 @@ def generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b):
     uniform = MathTex(uniform_density, color=GREEN)
     
     Alabels = [labelA_1, uniform, labelA_4]
-    Alab_pos = [(dotA_1, DOWN), (A_2A_3, 4 * UP), (dotA_4, DOWN)]
+    if b - a < 0.6:
+        Alab_pos = [
+            (dotA_1, 0.1 * LEFT + DOWN),
+            (A_2A_3, 4 * UP),
+            (dotA_4, 0.1 * RIGHT + DOWN)
+        ]
+    else:
+        Alab_pos = [
+            (dotA_1, DOWN),
+            (A_2A_3, 4 * UP),
+            (dotA_4, DOWN)
+        ]
 
     polygon_list = [A_1, A_2, A_3, A_4]
     A_1A_2A_3A_4 = Polygon(*polygon_list, fill_opacity=1, color=BLUE, stroke_color=BLUE)
 
     return ax, Adots, Alines, Alabels, Alab_pos, A_1A_2A_3A_4
 
-class Uniform(Scene):
+
+def generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b):
+    ax = Axes(
+        x_range=[x_inf, x_sup],
+        y_range=[y_inf, y_sup],
+        axis_config={"include_numbers": True}
+    ).scale(0.65).next_to(ax_ref, 2 * DOWN)
+    
+    A_0 = ax.coords_to_point(x_inf,0)
+    dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
+
+    A_1 = ax.coords_to_point(a,0)
+    dotA_1 = Dot(A_1, fill_opacity=1, color=GREEN)
+    labelA_1 = MathTex(r"a = " + f"{a}", color=GREEN)
+    A_0A_1 = Line(A_0, A_1, color=GREEN)
+
+    A_2 = ax.coords_to_point(b,1)
+    dotA_2 = Dot(A_2, fill_opacity=1, color=GREEN)
+    A_1A_2 = Line(A_1, A_2, color=GREEN)
+        
+    A_2_x = ax.coords_to_point(b,0)
+    dotA_2_x = Dot(A_2_x, fill_opacity=1, color=GREEN)
+    labelA_2_x = MathTex(r"b = " + f"{b}", color=GREEN)
+
+    A_3 = ax.coords_to_point(x_sup,1)
+    dotA_3 = Dot(A_3, fill_opacity=1, color=GREEN)
+    A_2A_3 = Line(A_2, A_3, color=GREEN)
+
+    Adots = [dotA_0, dotA_1, dotA_2, dotA_3]
+    Alines = [A_0A_1, A_1A_2, A_2A_3]
+
+    if a > 0:
+        uniform_cmf = r"F(x) = \dfrac{x - "
+        uniform_cmf += f"{a}" + r"}{x "
+    elif a == 0:
+        uniform_cmf = r"F(x) = \dfrac{x}{x "
+    else:
+        uniform_cmf = r"F(x) = \dfrac{x + "
+        uniform_cmf += f"{-a}" + r"}{x "
+
+    if b > 0:
+        uniform_cmf += r"- " + f"{b}" + r"}"
+    elif b == 0:
+        uniform_cmf += r"}"
+    else:
+        uniform_cmf += r"+ " + f"{-b}" + r"}"
+        
+    uniform_cmf += r"\mathbb{I}_{[" + f"{a}" + r" ; "
+    uniform_cmf += f"{b}" + r"]}(x) "
+    uniform_cmf += r"+ \mathbb{I}_{]" + f"{b}"
+    uniform_cmf += r" ; +\infty[}(x)"
+    uniform = MathTex(uniform_cmf, color=GREEN).scale(0.65)
+    
+    Alabels = [labelA_1, labelA_2_x, uniform]
+    n = len(Alabels)
+    if b - a < 0.6:
+        Alab_pos = [
+            (dotA_1, 0.1 * LEFT + DOWN),
+            (dotA_2_x, 0.1 * RIGHT + DOWN),
+            (A_1A_2, 0.15 * UP),
+        ]
+    else:
+        Alab_pos = [
+            (dotA_1, DOWN),
+            (dotA_2_x, DOWN),
+            (A_1A_2, 0.15 * UP),
+        ]
+
+    return ax, Adots, Alines, Alabels, Alab_pos
+
+class Uniform1(Scene):
     def setup(self, add_border=True):
         if add_border:
             self.border = Rectangle(
@@ -449,7 +530,7 @@ class Uniform(Scene):
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 1
-        graph_and_polygon = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
         ax = graph_and_polygon[0]
         _, Adots, Alines, Alabels, Alab_pos, _ = graph_and_polygon
         A_1A_2A_3A_4 = graph_and_polygon[-1]
@@ -489,7 +570,7 @@ class Uniform(Scene):
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 2
-        graph_and_polygon = generate_uniform_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
         ax = graph_and_polygon[0]
         _, Bdots, Blines, Blabels, Blab_pos, _ = graph_and_polygon
         B_1B_2B_3B_4 = graph_and_polygon[-1]
@@ -543,3 +624,288 @@ class Uniform(Scene):
         self.wait(1.5)
         
         disp_sub(self, lang='fr')
+
+
+class Uniform2(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Loi uniforme continue sur [a ; b] avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        phrase = "Savez-vous comment calculer | "
+        phrase += "la fonction de répartition de la | "
+        phrase += "uniforme sur l'intervalle [a ; b] ? | "
+        sep = "|"
+        msg = cursive_msg(phrase, sep, 42)
+        
+        self.play(
+            Write(msg.next_to(title_start, 3 * DOWN)),
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(1.5)
+
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(.75)
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_clap,
+                title_rep.scale(0.75)
+            ),
+            FadeOut(msg)
+        )
+        self.wait(.75)
+
+        def_msg = density_def_recall()
+        n = len(def_msg)
+        self.play(
+            Write(def_msg[0].next_to(title_rep, 3 * DOWN))
+        )
+        self.wait()
+        self.play(
+            *[
+                Write(
+                    def_msg[i].next_to(
+                        def_msg[i-1],
+                        DOWN
+                    )
+                ) for i in range(1, n)
+            ]
+        )
+        self.wait(2.5)
+
+        uniform_prob = [r"\raggedleft Si \(X\) suit une loi de uniforme "]
+        uniform_prob += [r"\raggedleft sur l'intervalle [a;b] alors "]
+        uniform_prob += [r"la fonction de répartition "]
+        uniform_prob += [r"\[F(x) = \mathbb{P}(X\leqslant x) = \int_{-\infty}^{x}f(t)dt\]"]
+        centered = r"\[F(x) = "
+        centered += r"\dfrac{x - a}{b - a}\mathbb{I}_{[a ; b]}(x) "
+        centered += r"+ \mathbb{I}_{]b ; +\infty[}(x)\]"
+        uniform_prob += [centered]
+
+        uniform_prob += [r"avec "]
+        uniform_prob += [r"\[\mathbb{I}_{[a; b]}(x) = 1\iff x\in [a; b]\]"]
+
+        centered_expr = r"\[\mathbb{I}_{[a; b]}(x) = 0\iff "
+        centered_expr += r"x \not \in [a; b]\]"
+        uniform_prob += [centered_expr]
+        
+        uniform_prob += [r"\[\mathbb{I}_{]b ; +\infty[}(x) = 1\iff x > b\]"]
+        centered_expr = r"\[\mathbb{I}_{]b ; +\infty[}(x) = 0\iff "
+        centered_expr += r"x \leqslant b\]"
+        uniform_prob += [centered_expr]
+        
+        unif_msg = [Tex(u) for u in uniform_prob]
+        
+        
+        replace_and_write(
+            self,
+            old=def_msg,
+            new=unif_msg,
+            pos_ref=title_rep,
+            duration=5,
+        )
+        
+        box = SurroundingRectangle(unif_msg[-6])
+        ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 1
+        cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax = cmf_graph[0]
+        _, Adots, Alines, Alabels, Alab_pos = cmf_graph
+        n = len(Alabels)
+        
+        self.play(
+            Write(box),
+            Create(ax, run_time=1.5),
+            *[Write(d) for d in Adots],
+            *[Write(l) for l in Alines],
+            *[
+                Write(
+                    Alabels[i].next_to(
+                        Alab_pos[i][0],
+                        Alab_pos[i][1]
+                    )
+                ) for i in range(n)
+            ]
+        )
+        self.wait()
+        ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 0.5
+        cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax_cmf = cmf_graph[0]
+        _, Bdots, Blines, Blabels, Blab_pos = cmf_graph
+        n = len(Blabels)
+        self.play(
+            *[
+                ReplacementTransform(
+                    Adots[i],
+                    Bdots[i]
+                ) for i in range(len(Adots))
+            ],
+            *[
+                ReplacementTransform(
+                    Alines[i],
+                    Blines[i]
+                ) for i in range(len(Blines))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels[i],
+                    Blabels[i].next_to(
+                        Blab_pos[i][0],
+                        Blab_pos[i][1]
+                    )
+                ) for i in range(len(Blabels))
+            ]
+        )
+        self.wait()
+        
+        phrase = "On a bien calculé la fonction | "
+        phrase += "de répartition de la loi de probabilité | "
+        phrase += "uniforme sur l'intervalle [a; b]"
+        sep = "|"
+        msg = cursive_msg(phrase, sep)
+
+        self.play(
+            FadeOut(box),
+            *[FadeOut(Blabel) for Blabel in Blabels],
+            *[FadeOut(d) for d in Bdots],
+            *[FadeOut(l) for l in Blines],
+            FadeOut(ax_cmf)
+        )
+        self.wait()
+        
+        replace_and_write(
+            self,
+            old=unif_msg,
+            new=msg,
+            pos_ref=title_rep,
+            duration=5,
+        )
+
+        
+
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 2.5, 0, 0.5
+        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        ax_density = graph_and_polygon[0]
+        _, Adots, Alines, Alabels, Alab_pos, _ = graph_and_polygon
+        A_1A_2A_3A_4 = graph_and_polygon[-1]
+        n = len(Alabels)
+        
+        self.play(
+            ReplacementTransform(ax_cmf, ax_density, run_time=2),
+            *[Write(d) for d in Adots],   
+            *[Create(line) for line in Alines],
+            *[
+                Write(
+                    Alabels[i].next_to(
+                        Alab_pos[i][0],
+                        Alab_pos[i][1],
+                    )
+                ) for i in range(n)
+            ],
+        )
+        self.wait()
+
+        cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
+        cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
+        cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
+        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        box = SurroundingRectangle(Alabels[1])
+        self.play(
+            Write(box),
+            FadeIn(A_1A_2A_3A_4),
+            Write(cmf.next_to(A_1A_2A_3A_4, 4 * DOWN))
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf]]
+        )
+        self.wait()
+        
+        
+
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 1.5
+        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
+        ax_density = graph_and_polygon[0]
+        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_and_polygon
+        B_1B_2B_3B_4 = graph_and_polygon[-1]
+        n = len(Blabels)
+        
+        self.play(
+            *[
+                ReplacementTransform(
+                    Adots[i],
+                    Bdots[i]
+                ) for i in range(len(Bdots))
+            ],
+            *[
+                ReplacementTransform(
+                    Alines[i],
+                    Blines[i]
+                ) for i in range(len(Blines))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels[i],
+                    Blabels[i].next_to(Blab_pos[i][0], Blab_pos[i][1])
+                ) for i in range(len(Blab_pos))
+            ],
+        )
+        self.wait()
+        
+        cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
+        cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
+        cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
+        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        box = SurroundingRectangle(Blabels[1])
+        self.play(
+            Write(box),
+            FadeIn(B_1B_2B_3B_4),
+            Write(cmf.next_to(B_1B_2B_3B_4, 4 * DOWN))
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf]]
+        )
+        self.wait()
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_rep,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1.5)
+        
+        disp_sub(self, lang='fr')
+        
