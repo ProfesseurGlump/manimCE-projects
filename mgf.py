@@ -156,6 +156,32 @@ def replace_and_write(self, old, new, pos_ref, duration, **lines_and_scales):
     self.wait(duration)
 
     
+def cursive_msg(phrase, sep, font_size=40):
+    inboxes = phrase.split(sep)
+    msg = inbox_msg(*inboxes, font_size=font_size)
+    return msg
+
+def density_def_recall():
+    definition = [r"Rappel : "]
+    definition += [r"Soit \(X\) une v.a.r : on dit que X "]
+    definition += [r"admet une densité \(f\) si sa fonction "]
+    definition += [r"de répartition \(F\) est continue et "]
+    definition += [r"s'écrire sous la forme : "]
+    centered_expr = r"\[\forall x\in\mathbb{R}, F(x) = "
+    centered_expr += r"\int_{-\infty}^xf(t)dt\]"
+    definition += [centered_expr]
+    definition += [r"avec : "]
+    definition += [r"\[1. f \geqslant 0\] "]
+    centered = r"\[2. f\in\mathcal{C}^0\backslash\mathcal{D} "
+    centered += r"\quad \mathbb{P}(x\in\mathcal{D}) = 0\]"
+    definition += [centered]
+    definition += [r"\[3. \int_{-\infty}^{+\infty}f(t)dt = 1\]"]
+        
+    density_def_msg = [Tex(d) for d in definition]
+    
+    return density_def_msg
+
+
 class Bernoulli(Scene):
     def setup(self, add_border=True):
         if add_border:
@@ -965,4 +991,177 @@ class Uniform(Scene):
         self.wait(3)
         
         disp_sub(self, lang='fr')
+        
+
+        
+
+class ContinuousUniform(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Fonction génératrice des moments avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.65))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        inbox1 = "Savez-vous comment calculer "
+        inbox2 = "la fonction génératrice des "
+        inbox3 = "moments de la loi uniforme continue ?"
+        inboxes = [inbox1, inbox2, inbox3]
+        msg = inbox_msg(*inboxes, font_size=40)
+        
+        self.play(
+            Write(msg.next_to(title_start, 3 * DOWN)),
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(3)
+
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(1.5)
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_clap,
+                title_rep.scale(0.75)
+            ),
+            FadeOut(msg)
+        )
+        self.wait(1.5)
+
+        def_msg = density_def_recall()
+        n = len(def_msg)
+        self.play(
+            Write(def_msg[0].next_to(title_rep, 3 * DOWN))
+        )
+        self.wait()
+        self.play(
+            *[
+                Write(
+                    def_msg[i].next_to(
+                        def_msg[i-1],
+                        DOWN
+                    )
+                ) for i in range(1, n)
+            ]
+        )
+        self.wait(2.5)
+
+        uniform_prob = [r"Si \(X\) suit une loi uniforme "]
+        uniform_prob += [r"sur l'intervalle [a ; b] alors "]
+        centered_expr = r"\[f_X(x) = \dfrac{1}{b - a} "
+        centered_expr += r"\mathbb{I}_{[a ; b]}(x)\]"
+        uniform_prob += [centered_expr]
+        
+        uniform_prob += [r" avec "]
+        
+        centered_expr = r"\[\mathbb{I}_{[a ; b]}(x) = 1\iff "
+        centered_expr += r"x\in [a ; b]\]"
+        uniform_prob += [centered_expr]
+        
+        centered_expr = r"\[\mathbb{I}_{[a ; b]}(x) = 0\iff "
+        centered_expr += r"x\not \in [a ; b]\]"
+        uniform_prob += [centered_expr]
+        
+        unif_msg = [Tex(u) for u in uniform_prob]
+
+        replace_and_write(
+            self,
+            old=def_msg,
+            new=unif_msg,
+            pos_ref=title_rep,
+            duration=2.5,
+        )
+
+        box = SurroundingRectangle(unif_msg[2])
+        self.play(Write(box))
+        self.wait()
+        self.play(FadeOut(box))
+        self.wait()
+        
+        uniform_mgf = [r"\[M_X(t) = \mathbb{E}(e^{tX})\]"]
+        centered_expr = r"\[M_X(t) = \int_{-\infty}^{+\infty} "
+        centered_expr += r"f_X(x)\times e^{tx}dx\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \int_{a}^{b}\dfrac{1}{b - a} "
+        centered_expr += r"\times e^{tx}dx\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \dfrac{1}{b - a}\int_{a}^{b} "
+        centered_expr += r"e^{tx}dx\]"
+        uniform_mgf += [centered_expr]
+        centered_expr = r"\[M_X(t) = \dfrac{1}{b - a}\left[ "
+        centered_expr += r"\dfrac{e^{tx}}{t}\right]_{a}^{b}\]"
+        uniform_mgf += [centered_expr]
+        
+        unif_mgf_msg = [Tex(b) for b in uniform_mgf]
+        
+        unif_mgf_end = MathTex(r"M_X(t) = \dfrac{e^{bt} - e^{at}}{(b - a)t}")
+
+        #lines_and_scales = {'1' : 0.75, '2' : 0.85}
+        replace_and_write(
+            self,
+            old=unif_msg,
+            new=unif_mgf_msg,
+            pos_ref=title_rep,
+            duration=2.5,
+            #**lines_and_scales
+        )
+
+        self.play(Write(unif_mgf_end.next_to(unif_mgf_msg[-1], 2 * DOWN)))
+        self.wait(2)
+        
+        inbox1 = "On a bien calculé la fonction "
+        inbox2 = "génératrice des moments "
+        inbox3 = "de la loi uniforme"
+        inboxes = [inbox1, inbox2, inbox3]
+        msg = inbox_msg(*inboxes, font_size=40)
+
+        replace_and_write(
+            self,
+            old=unif_mgf_msg,
+            new=msg,
+            pos_ref=title_rep,
+            duration=2.5,
+        )
+
+        self.play(unif_mgf_end.animate.next_to(msg, 2 * DOWN))
+        self.wait()
+        
+        box_res = SurroundingRectangle(unif_mgf_end)
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            Write(box_res),
+            ReplacementTransform(
+                title_rep,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(3)
+        
+        disp_sub(self, lang='fr')
+        
         

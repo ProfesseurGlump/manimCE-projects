@@ -162,11 +162,15 @@ def replace_and_write(self, old, new, pos_ref, duration, **lines_and_scales):
     
     self.wait(duration)
 
+
+    
     
 def cursive_msg(phrase, sep, font_size=40):
     inboxes = phrase.split(sep)
     msg = inbox_msg(*inboxes, font_size=font_size)
     return msg
+
+
 
 
 def density_def_recall():
@@ -188,6 +192,8 @@ def density_def_recall():
     density_def_msg = [Tex(d) for d in definition]
     
     return density_def_msg
+
+
 
 
 def prob_def_recall():
@@ -212,6 +218,8 @@ def prob_def_recall():
     return prob_def_msg
 
 
+
+
 def expectation_def_recall():
     definition = [r"Rappel : "]
     centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
@@ -230,6 +238,8 @@ def expectation_def_recall():
     exp_def_msg = [Tex(d) for d in definition]
     
     return exp_def_msg
+
+
 
 
 def variance_def_recall():
@@ -261,15 +271,16 @@ def variance_def_recall():
     return var_def_msg
 
 
-def generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b):
-    c = 1 / (b - a)
-    # y_inf, y_sup = -c * 0.1, c * 1.25
 
+
+def generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b):
+    c = 1 / (b - a)
+    y_sup = c + 0.25
     ax = Axes(
         x_range=[x_inf, x_sup],
         y_range=[y_inf, y_sup],
         axis_config={"include_numbers": True}
-    ).scale(0.65)
+    ).scale(0.65).next_to(ax_ref, ax_pos)
     
     A_0 = ax.coords_to_point(x_inf,0)
     dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
@@ -307,23 +318,33 @@ def generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b):
 
     Adots = [dotA_0, dotA_1, dotA_2, dotA_3, dotA_4, dotA_5]
     Alines = [A_0A_1, vert_A_2, A_2A_3, vert_A_3, A_4A_5]
-    
-    uniform_density = r"f(x) = " + f"{c}"
-    uniform_density += r"\times \mathbb{I}_{["
+
+    if b - a == 1:
+        uniform_density = r"f(x) = "
+    else:
+        uniform_density = r"f(x) = \dfrac{1}{"
+        uniform_density += f"{b - a}" + r"}"
+        
+    uniform_density += r"\mathbb{I}_{["
     uniform_density += f"{a};{b}" + r"]}(x)"
-    uniform = MathTex(uniform_density, color=GREEN)
+    uniform = MathTex(
+        uniform_density,
+        color=GREEN
+    ).scale(0.85)
     
     Alabels = [labelA_1, uniform, labelA_4]
-    if b - a < 0.6:
+    if b - a < 1.1:
         Alab_pos = [
             (dotA_1, 0.1 * LEFT + DOWN),
-            (A_2A_3, 4 * UP),
+            (ax, 3 * DOWN),
             (dotA_4, 0.1 * RIGHT + DOWN)
         ]
+        labelA_1 = labelA_1.scale(0.75)
+        labelA_4 = labelA_4.scale(0.75)
     else:
         Alab_pos = [
             (dotA_1, DOWN),
-            (A_2A_3, 4 * UP),
+            (ax, 3 * DOWN),
             (dotA_4, DOWN)
         ]
 
@@ -333,74 +354,92 @@ def generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b):
     return ax, Adots, Alines, Alabels, Alab_pos, A_1A_2A_3A_4
 
 
+
+
 def generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b):
+    y_sup = 1.25
     ax = Axes(
         x_range=[x_inf, x_sup],
         y_range=[y_inf, y_sup],
         axis_config={"include_numbers": True}
-    ).scale(0.65).next_to(ax_ref, 2 * DOWN)
+    ).scale(0.65).next_to(ax_ref, ax_pos)
     
     A_0 = ax.coords_to_point(x_inf,0)
-    dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
+    dotA_0 = Dot(A_0, fill_opacity=1, color=BLUE)
 
     A_1 = ax.coords_to_point(a,0)
-    dotA_1 = Dot(A_1, fill_opacity=1, color=GREEN)
-    labelA_1 = MathTex(r"a = " + f"{a}", color=GREEN)
-    A_0A_1 = Line(A_0, A_1, color=GREEN)
+    dotA_1 = Dot(A_1, fill_opacity=1, color=BLUE)
+    labelA_1 = MathTex(r"a = " + f"{a}", color=BLUE)
+    A_0A_1 = Line(A_0, A_1, color=BLUE)
 
     A_2 = ax.coords_to_point(b,1)
-    dotA_2 = Dot(A_2, fill_opacity=1, color=GREEN)
-    A_1A_2 = Line(A_1, A_2, color=GREEN)
+    dotA_2 = Dot(A_2, fill_opacity=1, color=BLUE)
+    A_1A_2 = Line(A_1, A_2, color=BLUE)
         
     A_2_x = ax.coords_to_point(b,0)
-    dotA_2_x = Dot(A_2_x, fill_opacity=1, color=GREEN)
-    labelA_2_x = MathTex(r"b = " + f"{b}", color=GREEN)
+    dotA_2_x = Dot(A_2_x, fill_opacity=1, color=RED)
+    labelA_2_x = MathTex(r"b = " + f"{b}", color=BLUE)
+    vert_b = ax.get_vertical_line(
+        A_2_x,
+        line_config={"dashed_ratio": 0.85},
+        color=RED
+    )
 
     A_3 = ax.coords_to_point(x_sup,1)
-    dotA_3 = Dot(A_3, fill_opacity=1, color=GREEN)
-    A_2A_3 = Line(A_2, A_3, color=GREEN)
+    dotA_3 = Dot(A_3, fill_opacity=1, color=BLUE)
+    A_2A_3 = Line(A_2, A_3, color=BLUE)
 
     Adots = [dotA_0, dotA_1, dotA_2, dotA_3]
-    Alines = [A_0A_1, A_1A_2, A_2A_3]
+    Alines = [A_0A_1, A_1A_2, vert_b, A_2A_3]
 
+    
     if a > 0:
-        uniform_cmf = r"F(x) = \dfrac{x - "
-        uniform_cmf += f"{a}" + r"}{x "
+        num = r"x - " + f"{a}"
     elif a == 0:
-        uniform_cmf = r"F(x) = \dfrac{x}{x "
+        num = r"x"
     else:
-        uniform_cmf = r"F(x) = \dfrac{x + "
-        uniform_cmf += f"{-a}" + r"}{x "
+        num = f"x + {-a}"
 
-    if b > 0:
-        uniform_cmf += r"- " + f"{b}" + r"}"
-    elif b == 0:
-        uniform_cmf += r"}"
+    if b - a == 1:
+        uniform_cmf = f"F(x) = ({num})"
     else:
-        uniform_cmf += r"+ " + f"{-b}" + r"}"
+        uniform_cmf = r"F(x) = \dfrac{"
+        uniform_cmf += f"{num}" + r"}{"
+        uniform_cmf += f"{b - a}" + r"} "
         
-    uniform_cmf += r"\mathbb{I}_{[" + f"{a}" + r" ; "
+    uniform_cmf += r"\mathbb{I}_{["
+    uniform_cmf += f"{a}" + r" ; "
     uniform_cmf += f"{b}" + r"]}(x) "
-    uniform_cmf += r"+ \mathbb{I}_{]" + f"{b}"
+    uniform_cmf += r"+ \mathbb{I}_{]" 
+    uniform_cmf += f"{b}"
     uniform_cmf += r" ; +\infty[}(x)"
-    uniform = MathTex(uniform_cmf, color=GREEN).scale(0.65)
+    
+    uniform = MathTex(
+        uniform_cmf,
+        color=BLUE
+    ).scale(0.85)
     
     Alabels = [labelA_1, labelA_2_x, uniform]
     n = len(Alabels)
-    if b - a < 0.6:
+    if b - a < 1.1:
         Alab_pos = [
             (dotA_1, 0.1 * LEFT + DOWN),
             (dotA_2_x, 0.1 * RIGHT + DOWN),
-            (A_1A_2, 0.15 * UP),
+            (ax, 3 * DOWN),
         ]
+        labelA_1 = labelA_1.scale(0.75)
+        labelA_2_x = labelA_2_x.scale(0.75)
     else:
         Alab_pos = [
             (dotA_1, DOWN),
             (dotA_2_x, DOWN),
-            (A_1A_2, 0.15 * UP),
+            (ax, 3 * DOWN),
         ]
 
     return ax, Adots, Alines, Alabels, Alab_pos
+
+
+
 
 class Uniform1(Scene):
     def setup(self, add_border=True):
@@ -503,7 +542,7 @@ class Uniform1(Scene):
             old=def_msg,
             new=unif_msg,
             pos_ref=title_rep,
-            duration=5,
+            duration=2.5,
         )
         box = SurroundingRectangle(unif_msg[-4])
         self.play(Write(box))
@@ -524,16 +563,17 @@ class Uniform1(Scene):
             old=unif_msg,
             new=msg,
             pos_ref=title_rep,
-            duration=5,
+            duration=2.5,
         )
 
         
 
-        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 1
-        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
-        ax = graph_and_polygon[0]
-        _, Adots, Alines, Alabels, Alab_pos, _ = graph_and_polygon
-        A_1A_2A_3A_4 = graph_and_polygon[-1]
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 1
+        ax_ref, ax_pos = msg[-1], 3 * DOWN
+        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax = graph_n_polygon[0]
+        _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
+        A_1A_2A_3A_4 = graph_n_poly[-1]
         n = len(Alabels)
         
         self.play(
@@ -568,12 +608,12 @@ class Uniform1(Scene):
         self.wait()
         
         
-
-        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, -0.1, 1.25, 0, 2
-        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
-        ax = graph_and_polygon[0]
-        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_and_polygon
-        B_1B_2B_3B_4 = graph_and_polygon[-1]
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 2
+        ax_ref, ax_pos = msg[-1], 3 * DOWN
+        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax = graph_n_poly[0]
+        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_n_poly
+        B_1B_2B_3B_4 = graph_n_poly[-1]
         n = len(Blabels)
         
         self.play(
@@ -626,6 +666,8 @@ class Uniform1(Scene):
         disp_sub(self, lang='fr')
 
 
+
+        
 class Uniform2(Scene):
     def setup(self, add_border=True):
         if add_border:
@@ -731,20 +773,20 @@ class Uniform2(Scene):
             old=def_msg,
             new=unif_msg,
             pos_ref=title_rep,
-            duration=5,
+            duration=2.5,
         )
         
         box = SurroundingRectangle(unif_msg[-6])
         ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
-        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 1
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 0.5
         cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
-        ax = cmf_graph[0]
+        ax_cmf_1 = cmf_graph[0]
         _, Adots, Alines, Alabels, Alab_pos = cmf_graph
         n = len(Alabels)
         
         self.play(
             Write(box),
-            Create(ax, run_time=1.5),
+            Create(ax_cmf_1, run_time=1.5),
             *[Write(d) for d in Adots],
             *[Write(l) for l in Alines],
             *[
@@ -758,12 +800,13 @@ class Uniform2(Scene):
         )
         self.wait()
         ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
-        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 0.5
+        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 1.5
         cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
-        ax_cmf = cmf_graph[0]
+        ax_cmf_2 = cmf_graph[0]
         _, Bdots, Blines, Blabels, Blab_pos = cmf_graph
         n = len(Blabels)
         self.play(
+            ReplacementTransform(ax_cmf_1, ax_cmf_2),
             *[
                 ReplacementTransform(
                     Adots[i],
@@ -799,7 +842,7 @@ class Uniform2(Scene):
             *[FadeOut(Blabel) for Blabel in Blabels],
             *[FadeOut(d) for d in Bdots],
             *[FadeOut(l) for l in Blines],
-            FadeOut(ax_cmf)
+            FadeOut(ax_cmf_2)
         )
         self.wait()
         
@@ -808,20 +851,21 @@ class Uniform2(Scene):
             old=unif_msg,
             new=msg,
             pos_ref=title_rep,
-            duration=5,
+            duration=2.5,
         )
 
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 2.5, 0, 0.5
-        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
-        ax_density = graph_and_polygon[0]
-        _, Adots, Alines, Alabels, Alab_pos, _ = graph_and_polygon
-        A_1A_2A_3A_4 = graph_and_polygon[-1]
+        ax_ref, ax_pos = msg[-1], 5 * DOWN
+        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax_density_1 = graph_n_poly[0]
+        _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
+        A_1A_2A_3A_4 = graph_n_poly[-1]
         n = len(Alabels)
         
         self.play(
-            ReplacementTransform(ax_cmf, ax_density, run_time=2),
+            ReplacementTransform(ax_cmf_2, ax_density_1, run_time=2),
             *[Write(d) for d in Adots],   
             *[Create(line) for line in Alines],
             *[
@@ -854,13 +898,15 @@ class Uniform2(Scene):
         
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 1.5
-        graph_and_polygon = generate_uniform_density_graph(x_inf, x_sup, y_inf, y_sup, a, b)
-        ax_density = graph_and_polygon[0]
-        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_and_polygon
-        B_1B_2B_3B_4 = graph_and_polygon[-1]
+        ax_ref, ax_pos = msg[-1], 5 * DOWN
+        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        ax_density_2 = graph_n_poly[0]
+        _, Bdots, Blines, Blabels, Blab_pos, _ = graph_n_poly
+        B_1B_2B_3B_4 = graph_n_poly[-1]
         n = len(Blabels)
         
         self.play(
+            ReplacementTransform(ax_density_1, ax_density_2),
             *[
                 ReplacementTransform(
                     Adots[i],
@@ -876,7 +922,10 @@ class Uniform2(Scene):
             *[
                 ReplacementTransform(
                     Alabels[i],
-                    Blabels[i].next_to(Blab_pos[i][0], Blab_pos[i][1])
+                    Blabels[i].next_to(
+                        Blab_pos[i][0],
+                        Blab_pos[i][1]
+                    )
                 ) for i in range(len(Blab_pos))
             ],
         )
@@ -890,7 +939,12 @@ class Uniform2(Scene):
         self.play(
             Write(box),
             FadeIn(B_1B_2B_3B_4),
-            Write(cmf.next_to(B_1B_2B_3B_4, 4 * DOWN))
+            Write(
+                cmf.next_to(
+                    B_1B_2B_3B_4,
+                    4 * DOWN
+                )
+            )
         )
         self.wait()
         self.play(
@@ -908,4 +962,565 @@ class Uniform2(Scene):
         self.wait(1.5)
         
         disp_sub(self, lang='fr')
+        
+
+
+class Uniform3(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Lois uniformes continues sur [a ; b] avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+
+        
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_start,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(.75)
+
+
+        def_msg = density_def_recall()
+        n = len(def_msg)
+        self.play(
+            Write(def_msg[0].next_to(title_clap, 3 * DOWN))
+        )
+        self.wait()
+        self.play(
+            *[
+                Write(
+                    def_msg[i].next_to(
+                        def_msg[i-1],
+                        DOWN
+                    )
+                ) for i in range(1, n)
+            ]
+        )
+        self.wait(2.5)
+
+        #############################################################
+        ##################### FIRST TRIAL ###########################
+        #############################################################
+        
+        x_inf, x_sup, y_inf, y_sup = -2, 2, 0, 1.25
+        a, b = -1.5, -0.5
+        df_1_ax_ref, df_1_ax_pos = title_clap, 5 * DOWN
+        graph_n_poly_1 = generate_uniform_density_graph(
+            df_1_ax_ref, df_1_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_density_1_fix = graph_n_poly_1[0]
+        ax_density_1_move = graph_n_poly_1[0]
+        _, Adots_1, Alines_1, Alabels_1, Alab_pos_1, _ = graph_n_poly_1
+        A_1A_2A_3A_4 = graph_n_poly_1[-1]
+
+        dft_1_msg = f"Densité de la uniforme sur [{a} ; {b}]"
+        density_title_1 = Title(dft_1_msg).scale(0.75)
+
+        self.play(
+            *[FadeOut(t) for t in def_msg],
+            ReplacementTransform(
+                title_clap,
+                density_title_1
+            ),
+            Create(
+                ax_density_1_move,
+                run_time=2
+            ),
+            *[Write(d) for d in Adots_1],   
+            *[Create(line) for line in Alines_1],
+            *[
+                Write(
+                    Alabels_1[i].next_to(
+                        Alab_pos_1[i][0],
+                        Alab_pos_1[i][1],
+                    )
+                ) for i in range(len(Alabels_1))
+            ],
+        )
+        self.wait(2)
+
+        
+        cmf_1_ax_ref, cmf_1_ax_pos = ax_density_1_fix, 9 * DOWN
+        cmf_graph_1 = generate_uniform_cmf_graph(
+            cmf_1_ax_ref, cmf_1_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_cmf_1 = cmf_graph_1[0]
+        _, Bdots_1, Blines_1, Blabels_1, Blab_pos_1 = cmf_graph_1
+
+
+        cmf_and_df_msg_1 = r"Densité et fonction de répartition "
+        cmf_and_df_msg_1 += r"la loi \(\mathcal{U}\)(["
+        cmf_and_df_msg_1 += f"{a}" + r" ; " + f"{b}" + r"])"
+        cmf_and_df_title_1 = Title(cmf_and_df_msg_1).scale(0.65)
+                
+        
+        self.play(
+            FadeIn(A_1A_2A_3A_4),
+            ReplacementTransform(
+                density_title_1,
+                cmf_and_df_title_1
+            ),
+            Create(
+                ax_cmf_1,
+                run_time=2
+            ),
+            *[Write(d) for d in Bdots_1],
+            *[Write(l) for l in Blines_1],
+            *[
+                Write(
+                    Blabels_1[i].next_to(
+                        Blab_pos_1[i][0],
+                        Blab_pos_1[i][1]
+                    )
+                ) for i in range(len(Blabels_1))
+            ]
+        )
+        self.wait(2)
+
+        #############################################################
+        #################### SECOND TRIAL ###########################
+        #############################################################
+        
+        a, b = -0.5, 0
+        
+        df_2_ax_ref, df_2_ax_pos = title_clap, 5 * DOWN
+        graph_n_poly_2 = generate_uniform_density_graph(
+            df_2_ax_ref, df_2_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_density_2_fix = graph_n_poly_2[0]
+        ax_density_2_move = graph_n_poly_2[0]
+        _, Adots_2, Alines_2, Alabels_2, Alab_pos_2, _ = graph_n_poly_2
+        A_1A_2A_3A_4_2 = graph_n_poly_2[-1]
+
+        dft2_msg = f"Densité de la uniforme sur [{a} ; {b}]"
+        density_title_2 = Title(dft2_msg).scale(0.75)
+
+        
+        self.play(
+            FadeOut(A_1A_2A_3A_4),
+            ReplacementTransform(
+                cmf_and_df_title_1,
+                density_title_2
+            ),
+            ReplacementTransform(
+                ax_density_1_move,
+                ax_density_2_move,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Adots_1[i],
+                    Adots_2[i]
+                ) for i in range(len(Adots_2))
+            ],   
+            *[
+                ReplacementTransform(
+                    Alines_1[i],
+                    Alines_2[i]
+                ) for i in range(len(Alines_2))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels_1[i],
+                    Alabels_2[i].next_to(
+                        Alab_pos_2[i][0],
+                        Alab_pos_2[i][1],
+                    )
+                ) for i in range(len(Alabels_2))
+            ],
+        )
+        self.wait(2)
+
+        cmf_2_ax_ref, cmf_2_ax_pos = ax_density_2_fix, 9 * DOWN
+        cmf_graph_2 = generate_uniform_cmf_graph(
+            cmf_2_ax_ref, cmf_2_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_cmf_2 = cmf_graph_2[0]
+        _, Bdots_2, Blines_2, Blabels_2, Blab_pos_2 = cmf_graph_2
+
+        cmf_and_df_msg_2 = r"Densité et fonction de répartition de la "
+        cmf_and_df_msg_2 += r"loi \(\mathcal{U}\)"
+        cmf_and_df_msg_2 += f"([{a} ; {b}])"
+        cmf_and_df_title_2 = Title(cmf_and_df_msg_2).scale(0.65)
+        
+        self.play(
+            FadeIn(A_1A_2A_3A_4_2),
+            ReplacementTransform(
+                density_title_2,
+                cmf_and_df_title_2
+            ),
+            ReplacementTransform(
+                ax_cmf_1,
+                ax_cmf_2,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Bdots_1[i],
+                    Bdots_2[i]
+                ) for i in range(len(Bdots_1))
+            ],
+            *[
+                ReplacementTransform(
+                    Blines_1[i],
+                    Blines_2[i]
+                ) for i in range(len(Blines_1))],
+            *[
+                ReplacementTransform(
+                    Blabels_1[i],
+                    Blabels_2[i].next_to(
+                        Blab_pos_2[i][0],
+                        Blab_pos_2[i][1]
+                    )
+                ) for i in range(len(Alabels_2))
+            ]
+        )
+        self.wait(2)
+
+        #############################################################
+        ##################### THIRD TRIAL ###########################
+        #############################################################
+        
+        a, b = 0, 0.25
+        df_3_ax_ref, df_3_ax_pos = title_clap, 5 * DOWN
+        graph_n_poly_3 = generate_uniform_density_graph(
+            df_3_ax_ref, df_3_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_density_3_fix = graph_n_poly_3[0]
+        ax_density_3_move = graph_n_poly_3[0]
+        _, Adots_3, Alines_3, Alabels_3, Alab_pos_3, _ = graph_n_poly_3
+        A_1A_2A_3A_4_3 = graph_n_poly_3[-1]
+        dft_3_msg = f"Densité de la uniforme sur [{a} ; {b}]"
+        density_title_3 = Title(dft_3_msg).scale(0.75)
+        
+        self.play(
+            FadeOut(A_1A_2A_3A_4_2),
+            ReplacementTransform(
+                cmf_and_df_title_2,
+                density_title_3
+            ),
+            ReplacementTransform(
+                ax_density_2_move,
+                ax_density_3_move,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Adots_2[i],
+                    Adots_3[i]
+                ) for i in range(len(Adots_3))
+            ],   
+            *[
+                ReplacementTransform(
+                    Alines_2[i],
+                    Alines_3[i]
+                ) for i in range(len(Alines_3))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels_2[i],
+                    Alabels_3[i].next_to(
+                        Alab_pos_3[i][0],
+                        Alab_pos_3[i][1],
+                    )
+                ) for i in range(len(Alabels_3))
+            ],
+        )
+        self.wait(2)
+        
+        cmf_3_ax_ref, cmf_3_ax_pos = ax_density_3_fix, 9 * DOWN
+        cmf_graph_3 = generate_uniform_cmf_graph(
+            cmf_3_ax_ref, cmf_3_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_cmf_3 = cmf_graph_3[0]
+        _, Bdots_3, Blines_3, Blabels_3, Blab_pos_3, = cmf_graph_3
+        cmf_and_df_msg_3 = r"Densité et fonction de répartition de la loi \(\mathcal{U}\)"
+        cmf_and_df_msg_3 += f"([{a} ; {b}])"
+        cmf_and_df_title_3 = Title(cmf_and_df_msg_3).scale(0.65)
+        
+        self.play(
+            FadeIn(A_1A_2A_3A_4_3),
+            ReplacementTransform(
+                density_title_3,
+                cmf_and_df_title_3
+            ),
+            ReplacementTransform(
+                ax_cmf_2,
+                ax_cmf_3,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Bdots_2[i],
+                    Bdots_3[i]
+                ) for i in range(len(Bdots_3))
+            ],
+            *[
+                ReplacementTransform(
+                    Blines_2[i],
+                    Blines_3[i]
+                ) for i in range(len(Blines_3))],
+            *[
+                ReplacementTransform(
+                    Blabels_2[i],
+                    Blabels_3[i].next_to(
+                        Blab_pos_3[i][0],
+                        Blab_pos_3[i][1]
+                    )
+                ) for i in range(len(Blabels_3))
+            ]
+        )
+        self.wait(2)
+
+        #############################################################
+        ##################### FOURTH TRIAL ##########################
+        #############################################################
+        
+        a, b = 0.25, 0.75
+        df_4_ax_ref, df_4_ax_pos = title_clap, 5 * DOWN
+        graph_n_poly_4 = generate_uniform_density_graph(
+            df_4_ax_ref, df_4_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_density_4_fix = graph_n_poly_4[0]
+        ax_density_4_move = graph_n_poly_4[0]
+        _, Adots_4, Alines_4, Alabels_4, Alab_pos_4, _ = graph_n_poly_4
+        A_1A_2A_3A_4_4 = graph_n_poly_4[-1]
+        dft_4_msg = f"Densité de la uniforme sur [{a} ; {b}]"
+        density_title_4 = Title(dft_4_msg).scale(0.75)
+        
+        self.play(
+            FadeOut(A_1A_2A_3A_4_3),
+            ReplacementTransform(
+                cmf_and_df_title_3,
+                density_title_4
+            ),
+            ReplacementTransform(
+                ax_density_3_move,
+                ax_density_4_move,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Adots_3[i],
+                    Adots_4[i]
+                ) for i in range(len(Adots_4))
+            ],   
+            *[
+                ReplacementTransform(
+                    Alines_3[i],
+                    Alines_4[i]
+                ) for i in range(len(Alines_4))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels_3[i],
+                    Alabels_4[i].next_to(
+                        Alab_pos_4[i][0],
+                        Alab_pos_4[i][1],
+                    )
+                ) for i in range(len(Alabels_4))
+            ],
+        )
+        self.wait(2)
+        
+        cmf_4_ax_ref, cmf_4_ax_pos = ax_density_4_fix, 9 * DOWN
+        cmf_graph_4 = generate_uniform_cmf_graph(
+            cmf_4_ax_ref, cmf_4_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_cmf_4 = cmf_graph_4[0]
+        _, Bdots_4, Blines_4, Blabels_4, Blab_pos_4, = cmf_graph_4
+        cmf_and_df_msg_4 = r"Densité et fonction de répartition de la loi \(\mathcal{U}\)"
+        cmf_and_df_msg_4 += f"([{a} ; {b}])"
+        cmf_and_df_title_4 = Title(cmf_and_df_msg_4).scale(0.65)
+        
+        self.play(
+            FadeIn(A_1A_2A_3A_4_4),
+            ReplacementTransform(
+                density_title_4,
+                cmf_and_df_title_4
+            ),
+            ReplacementTransform(
+                ax_cmf_3,
+                ax_cmf_4,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Bdots_3[i],
+                    Bdots_4[i]
+                ) for i in range(len(Bdots_4))
+            ],
+            *[
+                ReplacementTransform(
+                    Blines_3[i],
+                    Blines_4[i]
+                ) for i in range(len(Blines_4))],
+            *[
+                ReplacementTransform(
+                    Blabels_3[i],
+                    Blabels_4[i].next_to(
+                        Blab_pos_4[i][0],
+                        Blab_pos_4[i][1]
+                    )
+                ) for i in range(len(Blabels_4))
+            ]
+        )
+        self.wait(2)
+
+        #############################################################
+        ###################### FIFTH TRIAL ##########################
+        #############################################################
+        
+        a, b = 0.75, 2
+        df_5_ax_ref, df_5_ax_pos = title_clap, 5 * DOWN
+        graph_n_poly_5 = generate_uniform_density_graph(
+            df_5_ax_ref, df_5_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_density_5_fix = graph_n_poly_5[0]
+        ax_density_5_move = graph_n_poly_5[0]
+        _, Adots_5, Alines_5, Alabels_5, Alab_pos_5, _ = graph_n_poly_5
+        A_1A_2A_3A_4_5 = graph_n_poly_5[-1]
+        dft_5_msg = f"Densité de la uniforme sur [{a} ; {b}]"
+        density_title_5 = Title(dft_5_msg).scale(0.75)
+        
+        self.play(
+            FadeOut(A_1A_2A_3A_4_4),
+            ReplacementTransform(
+                cmf_and_df_title_4,
+                density_title_5
+            ),
+            ReplacementTransform(
+                ax_density_4_move,
+                ax_density_5_move,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Adots_4[i],
+                    Adots_5[i]
+                ) for i in range(len(Adots_5))
+            ],   
+            *[
+                ReplacementTransform(
+                    Alines_4[i],
+                    Alines_5[i]
+                ) for i in range(len(Alines_5))
+            ],
+            *[
+                ReplacementTransform(
+                    Alabels_4[i],
+                    Alabels_5[i].next_to(
+                        Alab_pos_5[i][0],
+                        Alab_pos_5[i][1],
+                    )
+                ) for i in range(len(Alabels_5))
+            ],
+        )
+        self.wait(2)
+        
+        cmf_5_ax_ref, cmf_5_ax_pos = ax_density_5_fix, 9 * DOWN
+        cmf_graph_5 = generate_uniform_cmf_graph(
+            cmf_5_ax_ref, cmf_5_ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
+        ax_cmf_5 = cmf_graph_5[0]
+        _, Bdots_5, Blines_5, Blabels_5, Blab_pos_5, = cmf_graph_5
+        cmf_and_df_msg_5 = r"Densité et fonction de répartition de la loi \(\mathcal{U}\)"
+        cmf_and_df_msg_5 += f"([{a} ; {b}])"
+        cmf_and_df_title_5 = Title(cmf_and_df_msg_5).scale(0.65)
+        
+        self.play(
+            FadeIn(A_1A_2A_3A_4_5),
+            ReplacementTransform(
+                density_title_5,
+                cmf_and_df_title_5
+            ),
+            ReplacementTransform(
+                ax_cmf_4,
+                ax_cmf_5,
+                run_time=2
+            ),
+            *[
+                ReplacementTransform(
+                    Bdots_4[i],
+                    Bdots_5[i]
+                ) for i in range(len(Bdots_5))
+            ],
+            *[
+                ReplacementTransform(
+                    Blines_4[i],
+                    Blines_5[i]
+                ) for i in range(len(Blines_5))],
+            *[
+                ReplacementTransform(
+                    Blabels_4[i],
+                    Blabels_5[i].next_to(
+                        Blab_pos_5[i][0],
+                        Blab_pos_5[i][1]
+                    )
+                ) for i in range(len(Blabels_5))
+            ]
+        )
+        self.wait(2)
+
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                cmf_and_df_title_5,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(2)
+        
+        disp_sub(self, lang='fr')
+        
         
