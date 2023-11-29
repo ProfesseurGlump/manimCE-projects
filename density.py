@@ -180,10 +180,11 @@ def density_def_recall():
     definition += [r"de répartition \(F\) est continue et "]
     definition += [r"s'écrire sous la forme : "]
     centered_expr = r"\[\forall x\in\mathbb{R}, F(x) = "
+    centered_expr += r"\mathbb{P}(X\leqslant x) = "
     centered_expr += r"\int_{-\infty}^xf(t)dt\]"
     definition += [centered_expr]
     definition += [r"avec : "]
-    definition += [r"\[1. f \geqslant 0\] "]
+    definition += [r"\[1. f \geqslant 0\]"]
     centered = r"\[2. f\in\mathcal{C}^0\backslash\mathcal{D} "
     centered += r"\quad \mathbb{P}(x\in\mathcal{D}) = 0\]"
     definition += [centered]
@@ -439,6 +440,90 @@ def generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
     return ax, Adots, Alines, Alabels, Alab_pos
 
 
+def generate_exponential_density_graph(ax_ref, ax_pos, theta, x_sup):
+    # f(x) = theta * exp(-theta * x)
+    ax = Axes(
+        x_range=[0, x_sup],
+        y_range=[0, theta],
+        axis_config={"include_numbers": True}
+    ).scale(0.65).next_to(ax_ref, ax_pos)
+
+    exponential_density = f"f(x) = {theta}" + r"\exp(-"
+    exponential_density += f"{theta}x)"
+    exponential_density += r"\mathbb{I}_{[0; +\infty[}(x)"
+    exponential = MathTex(
+        exponential_density,
+        color=GREEN
+    ).scale(0.85)
+
+    exp_dens_curve = ax.plot(
+        lambda x: theta * e**(-theta * x), color=GREEN
+    )
+    
+    exp_dens_lab = ax.get_graph_label(
+        exp_dens_curve,
+        exponential,
+        x_val = 0,
+        direction = 3 * DOWN
+    )
+
+    x_interval = [0, x_sup]
+    exp_area = ax.get_area(
+        exp_dens_curve,
+        x_range=x_interval
+    )
+    
+    return ax, exp_dens_curve, exp_dens_lab, exp_area
+
+
+def generate_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, *params, **df):
+    # 1. f(x) = theta * exp(-theta * x)
+    #           => params = [theta] df = {num : f, lab : LaTeX, col : colour}
+    # 2. f(x) = (sigma * (2*pi)**0.5)**-1 * exp(-(x - mu)**2 / (2 * sigma**2))
+                # params = [mu, sigma]
+    # 3. f(x) = theta**p / Gamma(p) * exp**-theta*x * x**(p-1)
+    #                      Gamma(p) = \int_0^{+\infty}exp(-x) * x**(p - 1)dx
+    #                      params = [theta, p]
+    # 4. f(x) = (2**(n/2) * Gamma(n / 2))**-1 * exp(-x/2) * x**(n/2-1)
+    #                       params = [n]
+    # 5. f(z) = z**(p-1) * (B(p, q) * (1 + z)**(p + q))**-1
+                # avec Z = X / Y où X ~ Gamma(p) et Y ~ Gamma(q)
+                # avec B(p, q) = Gamma(p) * Gamma(q) / Gamma(p+q)
+                # params = [p, q]
+    # 6. f(t) = t**(p-1) * (1 - t)**(q - 1) * (B(p, q))**-1
+    #             params = [p, q]
+    # 7. f(x) = (alpha / x_0) * (x_0 / x)**(alpha + 1)
+    #             params = [alpha, x_0]
+    ax = Axes(
+        x_range=[x_inf, x_sup],
+        y_range=[y_inf, y_sup],
+        axis_config={"include_numbers": True}
+    ).scale(0.65).next_to(ax_ref, ax_pos)
+
+    expr = df["lab"]
+    lab = MathTex(
+        expr,
+        color=df["graph_col"]
+    ).scale(0.85)
+
+    curve = ax.plot(df["num"], color=df["graph_col"])
+    
+    disp_lab = ax.get_graph_label(
+        curve,
+        lab,
+        x_val = x_inf,
+        direction = 3 * DOWN
+    )
+
+    x_interval = [x_inf, x_sup]
+    area = ax.get_area(
+        curve,
+        x_range=x_interval,
+        color=df["area_col"]
+    )
+    
+    return ax, curve, disp_lab, area
+
 
 
 class Uniform1(Scene):
@@ -570,7 +655,12 @@ class Uniform1(Scene):
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 1
         ax_ref, ax_pos = msg[-1], 3 * DOWN
-        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_n_poly = generate_uniform_density_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax = graph_n_polygon[0]
         _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
         A_1A_2A_3A_4 = graph_n_poly[-1]
@@ -610,7 +700,12 @@ class Uniform1(Scene):
         
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 2
         ax_ref, ax_pos = msg[-1], 3 * DOWN
-        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_n_poly = generate_uniform_density_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax = graph_n_poly[0]
         _, Bdots, Blines, Blabels, Blab_pos, _ = graph_n_poly
         B_1B_2B_3B_4 = graph_n_poly[-1]
@@ -632,7 +727,10 @@ class Uniform1(Scene):
             *[
                 ReplacementTransform(
                     Alabels[i],
-                    Blabels[i].next_to(Blab_pos[i][0], Blab_pos[i][1])
+                    Blabels[i].next_to(
+                        Blab_pos[i][0],
+                        Blab_pos[i][1]
+                    )
                 ) for i in range(len(Blab_pos))
             ],
         )
@@ -646,7 +744,12 @@ class Uniform1(Scene):
         self.play(
             Write(box),
             FadeIn(B_1B_2B_3B_4),
-            Write(cmf.next_to(B_1B_2B_3B_4, 4 * DOWN))
+            Write(
+                cmf.next_to(
+                    B_1B_2B_3B_4,
+                    4 * DOWN
+                )
+            )
         )
         self.wait()
         self.play(
@@ -729,7 +832,12 @@ class Uniform2(Scene):
         def_msg = density_def_recall()
         n = len(def_msg)
         self.play(
-            Write(def_msg[0].next_to(title_rep, 3 * DOWN))
+            Write(
+                def_msg[0].next_to(
+                    title_rep,
+                    3 * DOWN
+                )
+            )
         )
         self.wait()
         self.play(
@@ -779,7 +887,12 @@ class Uniform2(Scene):
         box = SurroundingRectangle(unif_msg[-6])
         ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 0.5
-        cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        cmf_graph = generate_uniform_cmf_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax_cmf_1 = cmf_graph[0]
         _, Adots, Alines, Alabels, Alab_pos = cmf_graph
         n = len(Alabels)
@@ -800,13 +913,22 @@ class Uniform2(Scene):
         )
         self.wait()
         ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
-        x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 1.5
-        cmf_graph = generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        x_inf, x_sup, y_inf, y_sup = -1, 2, 0, 1.25
+        a, b = -0.5, 1.5
+        cmf_graph = generate_uniform_cmf_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax_cmf_2 = cmf_graph[0]
         _, Bdots, Blines, Blabels, Blab_pos = cmf_graph
         n = len(Blabels)
         self.play(
-            ReplacementTransform(ax_cmf_1, ax_cmf_2),
+            ReplacementTransform(
+                ax_cmf_1,
+                ax_cmf_2
+            ),
             *[
                 ReplacementTransform(
                     Adots[i],
@@ -858,14 +980,23 @@ class Uniform2(Scene):
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 2.5, 0, 0.5
         ax_ref, ax_pos = msg[-1], 5 * DOWN
-        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_n_poly = generate_uniform_density_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax_density_1 = graph_n_poly[0]
         _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
         A_1A_2A_3A_4 = graph_n_poly[-1]
         n = len(Alabels)
         
         self.play(
-            ReplacementTransform(ax_cmf_2, ax_density_1, run_time=2),
+            ReplacementTransform(
+                ax_cmf_2,
+                ax_density_1,
+                run_time=2
+            ),
             *[Write(d) for d in Adots],   
             *[Create(line) for line in Alines],
             *[
@@ -899,14 +1030,22 @@ class Uniform2(Scene):
 
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, -0.5, 1.5
         ax_ref, ax_pos = msg[-1], 5 * DOWN
-        graph_n_poly = generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
+        graph_n_poly = generate_uniform_density_graph(
+            ax_ref, ax_pos,
+            x_inf, x_sup,
+            y_inf, y_sup,
+            a, b
+        )
         ax_density_2 = graph_n_poly[0]
         _, Bdots, Blines, Blabels, Blab_pos, _ = graph_n_poly
         B_1B_2B_3B_4 = graph_n_poly[-1]
         n = len(Blabels)
         
         self.play(
-            ReplacementTransform(ax_density_1, ax_density_2),
+            ReplacementTransform(
+                ax_density_1,
+                ax_density_2
+            ),
             *[
                 ReplacementTransform(
                     Adots[i],
@@ -1002,7 +1141,12 @@ class Uniform3(Scene):
         def_msg = density_def_recall()
         n = len(def_msg)
         self.play(
-            Write(def_msg[0].next_to(title_clap, 3 * DOWN))
+            Write(
+                def_msg[0].next_to(
+                    title_clap,
+                    3 * DOWN
+                )
+            )
         )
         self.wait()
         self.play(
@@ -1524,3 +1668,181 @@ class Uniform3(Scene):
         disp_sub(self, lang='fr')
         
         
+
+class Exponential1(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = r"Lois exponentielles de paramètre \(\theta\) avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+
+        
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_start,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(.75)
+
+
+        def_msg = density_def_recall()
+        n = len(def_msg)
+        self.play(
+            Write(
+                def_msg[0].next_to(
+                    title_clap,
+                    3 * DOWN
+                )
+            )
+        )
+        self.wait()
+        self.play(
+            *[
+                Write(
+                    def_msg[i].next_to(
+                        def_msg[i-1],
+                        DOWN
+                    )
+                ) for i in range(1, n)
+            ]
+        )
+        self.wait(2.5)
+
+        #############################################################
+        ##################### FIRST TRIAL ###########################
+        #############################################################
+
+        theta = 0.5
+        params = [theta]
+
+        def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
+        def f_exp(x): return expo_dens(theta, x)
+
+        expo_dens_latex = r"f(x) = \theta \exp(-\theta x)"
+        expo_dens_latex += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        df = {
+            "num" : f_exp,
+            "lab" : expo_dens_latex,
+            "graph_col" : GREEN,
+            "area_col" : BLUE
+        }
+        
+        df_1_ax_ref, df_1_ax_pos = title_clap, 5 * DOWN
+        
+        expo_graph_1 = generate_graph(
+            df_1_ax_ref, df_1_ax_pos,
+            0, 5, 0, theta,
+            *params, **df
+        )
+        
+        ax_density_1_fix = expo_graph_1[0]
+        ax_density_1_move = expo_graph_1[0]
+        exp_density_curv_1 = expo_graph_1[1]
+        exp_density_lab_1 = expo_graph_1[2]
+        exp_area = expo_graph_1[3]
+
+        dft_1_msg = "Densité de la exponentielle de paramètre "
+        dft_1_msg += r"\(\theta\)" + f"{theta}"
+        density_title_1 = Title(dft_1_msg).scale(0.75)
+
+        self.play(
+            *[FadeOut(t) for t in def_msg],
+            ReplacementTransform(
+                title_clap,
+                density_title_1
+            ),
+            Create(
+                ax_density_1_move,
+                run_time=2
+            ),
+            Create(
+                exp_density_curv_1,
+                run_time=2
+            ),
+            Create(
+                exp_density_lab_1.next_to(
+                    ax_density_1_fix,
+                    DOWN
+                )
+            ),
+        )
+        self.wait(2)
+
+
+        def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
+        def F_exp(x): return expo_cmf(theta, x)
+
+        expo_cmf_latex = r"F(x) = 1 - \exp(-\theta x)"
+        expo_cmf_latex += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf = {
+            "num" : F_exp,
+            "lab" : expo_cmf_latex,
+            "graph_col" : BLUE,
+            "area_col" : BLUE
+        }
+        
+        cmf_1_ax_ref, cmf_1_ax_pos = ax_density_1_fix, 9 * DOWN
+        
+        expo_cmf_graph_1 = generate_graph(
+            cmf_1_ax_ref, cmf_1_ax_pos,
+            0, 5, 0, 1,
+            *params, **cmf
+        )
+        
+        ax_cmf_1_fix = expo_cmf_graph_1[0]
+        ax_cmf_1_move = expo_cmf_graph_1[0]
+        exp_cmf_curv_1 = expo_cmf_graph_1[1]
+        exp_cmf_lab_1 = expo_cmf_graph_1[2]
+
+        cmf_1_msg = "Fonction de répartition de la exponentielle de paramètre "
+        cmf_1_msg += r"\(\theta\)" + f"{theta}"
+        cmf_title_1 = Title(cmf_1_msg).scale(0.5)
+
+        self.play(
+            FadeIn(exp_area),
+            Create(
+                ax_cmf_1_move,
+                run_time=2
+            ),
+            Create(
+                exp_cmf_curv_1,
+            ),
+            Create(
+                exp_cmf_lab_1.next_to(
+                    ax_cmf_1_move,
+                    DOWN
+                )
+            ),
+        )
+        self.wait()
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                cmf_title_1,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(2)
+        
+        disp_sub(self, lang='fr')
