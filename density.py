@@ -665,7 +665,7 @@ class Uniform1(Scene):
         _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
         A_1A_2A_3A_4 = graph_n_poly[-1]
         n = len(Alabels)
-        
+    
         self.play(
             Create(ax, run_time=2),
             *[Write(d) for d in Adots],   
@@ -1730,18 +1730,30 @@ class Exponential1(Scene):
         ##################### FIRST TRIAL ###########################
         #############################################################
 
-        theta = 0.5
-        params = [theta]
+        def density_title(theta, colour=GREEN, scale=0.75):
+            dft_msg = "Densité de la exponentielle de paramètre "
+            dft_msg += r"\(\theta = " + f" {theta}" + r"\)"
+            return Title(dft_msg, color=colour).scale(scale)
+
+        def cmf_title(theta, colour=BLUE, scale=0.625):
+            cmf_msg = "Fonction de répartition de "
+            cmf_msg += "la exponentielle de paramètre "
+            cmf_msg += r"\(\theta = \)" + f"{theta}"
+            return Title(cmf_msg, color=colour).scale(scale)
+        
+        theta_1 = 0.5
+        params_1 = [theta_1]
 
         def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
-        def f_exp(x): return expo_dens(theta, x)
+        def f_exp_1(x): return expo_dens(theta_1, x)
 
-        expo_dens_latex = r"f(x) = \theta \exp(-\theta x)"
-        expo_dens_latex += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        expo_dens_latex_1 = r"f(x) = " + f"{theta_1}" + r"\exp(-"
+        expo_dens_latex_1 += f"{theta_1} x)"
+        expo_dens_latex_1 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
         
-        df = {
-            "num" : f_exp,
-            "lab" : expo_dens_latex,
+        df_1 = {
+            "num" : f_exp_1,
+            "lab" : expo_dens_latex_1,
             "graph_col" : GREEN,
             "area_col" : BLUE
         }
@@ -1750,20 +1762,21 @@ class Exponential1(Scene):
         
         expo_graph_1 = generate_graph(
             df_1_ax_ref, df_1_ax_pos,
-            0, 5, 0, theta,
-            *params, **df
+            0, 4, 0, theta_1 * 1.5,
+            *params_1, **df_1
         )
         
         ax_density_1_fix = expo_graph_1[0]
         ax_density_1_move = expo_graph_1[0]
         exp_density_curv_1 = expo_graph_1[1]
         exp_density_lab_1 = expo_graph_1[2]
-        exp_area = expo_graph_1[3]
+        exp_area_1 = expo_graph_1[3]
 
-        dft_1_msg = "Densité de la exponentielle de paramètre "
-        dft_1_msg += r"\(\theta\)" + f"{theta}"
-        density_title_1 = Title(dft_1_msg).scale(0.75)
-
+        density_title_1 = density_title(theta_1)
+        
+        A_1 = ax_density_1_move.coords_to_point(0, theta_1)
+        dotA_1 = Dot(A_1, fill_opacity=1, color=YELLOW)
+        
         self.play(
             *[FadeOut(t) for t in def_msg],
             ReplacementTransform(
@@ -1784,19 +1797,21 @@ class Exponential1(Scene):
                     DOWN
                 )
             ),
+            Write(dotA_1)
         )
         self.wait(2)
 
 
         def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
-        def F_exp(x): return expo_cmf(theta, x)
-
-        expo_cmf_latex = r"F(x) = 1 - \exp(-\theta x)"
-        expo_cmf_latex += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        def F_exp_1(x): return expo_cmf(theta_1, x)
         
-        cmf = {
-            "num" : F_exp,
-            "lab" : expo_cmf_latex,
+        expo_cmf_latex_1 = r"F(x) = \left[1 - \exp(-"
+        expo_cmf_latex_1 += f"{theta_1}" + r"x)\right]"
+        expo_cmf_latex_1 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf_1 = {
+            "num" : F_exp_1,
+            "lab" : expo_cmf_latex_1,
             "graph_col" : BLUE,
             "area_col" : BLUE
         }
@@ -1805,8 +1820,8 @@ class Exponential1(Scene):
         
         expo_cmf_graph_1 = generate_graph(
             cmf_1_ax_ref, cmf_1_ax_pos,
-            0, 5, 0, 1,
-            *params, **cmf
+            0, 4, 0, 1.25,
+            *params_1, **cmf_1
         )
         
         ax_cmf_1_fix = expo_cmf_graph_1[0]
@@ -1814,12 +1829,18 @@ class Exponential1(Scene):
         exp_cmf_curv_1 = expo_cmf_graph_1[1]
         exp_cmf_lab_1 = expo_cmf_graph_1[2]
 
-        cmf_1_msg = "Fonction de répartition de la exponentielle de paramètre "
-        cmf_1_msg += r"\(\theta\)" + f"{theta}"
-        cmf_title_1 = Title(cmf_1_msg).scale(0.5)
-
+        cmf_title_1 = cmf_title(theta_1)
+        red_line = ax_cmf_1_move.plot(
+            lambda x: 1, color=RED
+        )
+        red_lab = r"y = 1"
+        disp_red_lab = MathTex(red_lab, color=RED)
         self.play(
-            FadeIn(exp_area),
+            ReplacementTransform(
+                density_title_1,
+                cmf_title_1
+            ),
+            FadeIn(exp_area_1),
             Create(
                 ax_cmf_1_move,
                 run_time=2
@@ -1833,13 +1854,515 @@ class Exponential1(Scene):
                     DOWN
                 )
             ),
+            Create(red_line),
+            Create(disp_red_lab.next_to(red_line, UP)),
+        )
+        self.wait()
+
+        #############################################################
+        ##################### SECOND TRIAL ###########################
+        #############################################################
+
+        theta_2 = 1
+        params_2 = [theta_2]
+
+        def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
+        def f_exp_2(x): return expo_dens(theta_2, x)
+
+        expo_dens_latex_2 = r"f(x) = \exp(-x)"
+        expo_dens_latex_2 += r"\mathbb{I}_{[0"
+        expo_dens_latex_2 += r"; +\infty[}(x)"
+        
+        df_2 = {
+            "num" : f_exp_2,
+            "lab" : expo_dens_latex_2,
+            "graph_col" : GREEN,
+            "area_col" : BLUE
+        }
+        
+        df_2_ax_ref, df_2_ax_pos = title_clap, 5 * DOWN
+        
+        expo_graph_2 = generate_graph(
+            df_2_ax_ref, df_2_ax_pos,
+            0, 4, 0, theta_2 * 1.5,
+            *params_2, **df_2
+        )
+        
+        ax_density_2_fix = expo_graph_2[0]
+        ax_density_2_move = expo_graph_2[0]
+        exp_density_curv_2 = expo_graph_2[1]
+        exp_density_lab_2 = expo_graph_2[2]
+        exp_area_2 = expo_graph_2[3]
+
+        
+        density_title_2 = density_title(theta_2)
+
+        A_2 = ax_density_2_move.coords_to_point(0, theta_2)
+        dotA_2 = Dot(A_2, fill_opacity=1, color=YELLOW)
+        
+        self.play(
+            FadeOut(exp_area_1),
+            ReplacementTransform(
+                cmf_title_1,
+                density_title_2
+            ),
+            ReplacementTransform(
+                ax_density_1_move,
+                ax_density_2_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_curv_1,
+                exp_density_curv_2,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_lab_1,
+                exp_density_lab_2.next_to(
+                    ax_density_2_fix,
+                    DOWN
+                )
+            ),
+            ReplacementTransform(
+                dotA_1,
+                dotA_2
+            )
+        )
+        self.wait(2)
+
+
+        def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
+        def F_exp_2(x): return expo_cmf(theta_2, x)
+        
+        expo_cmf_latex_2 = r"F(x) = \left[1 - \exp(-x)\right]"
+        expo_cmf_latex_2 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf_2 = {
+            "num" : F_exp_2,
+            "lab" : expo_cmf_latex_2,
+            "graph_col" : BLUE,
+            "area_col" : BLUE
+        }
+        
+        cmf_2_ax_ref, cmf_2_ax_pos = ax_density_2_fix, 9 * DOWN
+        
+        expo_cmf_graph_2 = generate_graph(
+            cmf_2_ax_ref, cmf_2_ax_pos,
+            0, 4, 0, 1.25,
+            *params_2, **cmf_2
+        )
+        
+        ax_cmf_2_fix = expo_cmf_graph_2[0]
+        ax_cmf_2_move = expo_cmf_graph_2[0]
+        exp_cmf_curv_2 = expo_cmf_graph_2[1]
+        exp_cmf_lab_2 = expo_cmf_graph_2[2]
+        
+        cmf_title_2 = cmf_title(theta_2)
+        
+        self.play(
+            ReplacementTransform(
+                density_title_2,
+                cmf_title_2
+            ),
+            FadeIn(exp_area_2),
+            ReplacementTransform(
+                ax_cmf_1_move,
+                ax_cmf_2_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_cmf_curv_1,
+                exp_cmf_curv_2,
+            ),
+            ReplacementTransform(
+                exp_cmf_lab_1,
+                exp_cmf_lab_2.next_to(
+                    ax_cmf_2_move,
+                    DOWN
+                )
+            ),
+        )
+        self.wait()
+
+        #############################################################
+        ##################### THIRD TRIAL ###########################
+        #############################################################
+
+        theta_3 = 1.5
+        params_3 = [theta_3]
+
+        def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
+        def f_exp_3(x): return expo_dens(theta_3, x)
+
+        expo_dens_latex_3 = r"f(x) = \exp(-" + f"{theta_3}x)"
+        expo_dens_latex_3 += r"\mathbb{I}_{[0"
+        expo_dens_latex_3 += r"; +\infty[}(x)"
+        
+        df_3 = {
+            "num" : f_exp_3,
+            "lab" : expo_dens_latex_3,
+            "graph_col" : GREEN,
+            "area_col" : BLUE
+        }
+        
+        df_3_ax_ref, df_3_ax_pos = title_clap, 5 * DOWN
+        
+        expo_graph_3 = generate_graph(
+            df_3_ax_ref, df_3_ax_pos,
+            0, 4, 0, theta_3 * 1.5,
+            *params_3, **df_3
+        )
+        
+        ax_density_3_fix = expo_graph_3[0]
+        ax_density_3_move = expo_graph_3[0]
+        exp_density_curv_3 = expo_graph_3[1]
+        exp_density_lab_3 = expo_graph_3[2]
+        exp_area_3 = expo_graph_3[3]
+
+        density_title_3 = density_title(theta_3)
+
+        A_3 = ax_density_3_move.coords_to_point(0, theta_3)
+        dotA_3 = Dot(A_3, fill_opacity=1, color=YELLOW)
+        
+        self.play(
+            FadeOut(exp_area_2),
+            ReplacementTransform(
+                cmf_title_2,
+                density_title_3
+            ),
+            ReplacementTransform(
+                ax_density_2_move,
+                ax_density_3_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_curv_2,
+                exp_density_curv_3,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_lab_2,
+                exp_density_lab_3.next_to(
+                    ax_density_3_fix,
+                    DOWN
+                )
+            ),
+            ReplacementTransform(
+                dotA_2,
+                dotA_3
+            )
+        )
+        self.wait(2)
+
+
+        def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
+        def F_exp_3(x): return expo_cmf(theta_3, x)
+        
+        expo_cmf_latex_3 = r"F(x) = \left[1 - \exp(-"
+        expo_cmf_latex_3 += f"{theta_3}x)" + r"\right]"
+        expo_cmf_latex_3 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf_3 = {
+            "num" : F_exp_3,
+            "lab" : expo_cmf_latex_3,
+            "graph_col" : BLUE,
+            "area_col" : BLUE
+        }
+        
+        cmf_3_ax_ref, cmf_3_ax_pos = ax_density_3_fix, 9 * DOWN
+        
+        expo_cmf_graph_3 = generate_graph(
+            cmf_3_ax_ref, cmf_3_ax_pos,
+            0, 5, 0, 1.25,
+            *params_3, **cmf_3
+        )
+        
+        ax_cmf_3_fix = expo_cmf_graph_3[0]
+        ax_cmf_3_move = expo_cmf_graph_3[0]
+        exp_cmf_curv_3 = expo_cmf_graph_3[1]
+        exp_cmf_lab_3 = expo_cmf_graph_3[2]
+
+        cmf_title_3 = cmf_title(theta_3)
+        
+        self.play(
+            ReplacementTransform(
+                density_title_3,
+                cmf_title_3
+            ),
+            FadeIn(exp_area_3),
+            ReplacementTransform(
+                ax_cmf_2_move,
+                ax_cmf_3_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_cmf_curv_2,
+                exp_cmf_curv_3,
+            ),
+            ReplacementTransform(
+                exp_cmf_lab_2,
+                exp_cmf_lab_3.next_to(
+                    ax_cmf_3_move,
+                    DOWN
+                )
+            ),
+        )
+        self.wait()
+
+        #############################################################
+        ##################### FOURTH TRIAL ##########################
+        #############################################################
+
+        theta_4 = 2
+        params_4 = [theta_4]
+
+        def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
+        def f_exp_4(x): return expo_dens(theta_4, x)
+
+        expo_dens_latex_4 = r"f(x) = \exp(-" + f"{theta_4}x)"
+        expo_dens_latex_4 += r"\mathbb{I}_{[0"
+        expo_dens_latex_4 += r"; +\infty[}(x)"
+        
+        df_4 = {
+            "num" : f_exp_4,
+            "lab" : expo_dens_latex_4,
+            "graph_col" : GREEN,
+            "area_col" : BLUE
+        }
+        
+        df_4_ax_ref, df_4_ax_pos = title_clap, 5 * DOWN
+        
+        expo_graph_4 = generate_graph(
+            df_4_ax_ref, df_4_ax_pos,
+            0, 4, 0, theta_4 * 1.5,
+            *params_4, **df_4
+        )
+        
+        ax_density_4_fix = expo_graph_4[0]
+        ax_density_4_move = expo_graph_4[0]
+        exp_density_curv_4 = expo_graph_4[1]
+        exp_density_lab_4 = expo_graph_4[2]
+        exp_area_4 = expo_graph_4[3]
+
+        density_title_4 = density_title(theta_4)
+
+        A_4 = ax_density_4_move.coords_to_point(0, theta_4)
+        dotA_4 = Dot(A_4, fill_opacity=1, color=YELLOW)
+        
+        self.play(
+            FadeOut(exp_area_3),
+            ReplacementTransform(
+                cmf_title_3,
+                density_title_4
+            ),
+            ReplacementTransform(
+                ax_density_3_move,
+                ax_density_4_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_curv_3,
+                exp_density_curv_4,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_lab_3,
+                exp_density_lab_4.next_to(
+                    ax_density_4_fix,
+                    DOWN
+                )
+            ),
+            ReplacementTransform(
+                dotA_3,
+                dotA_4
+            )
+        )
+        self.wait(2)
+
+
+        def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
+        def F_exp_4(x): return expo_cmf(theta_4, x)
+        
+        expo_cmf_latex_4 = r"F(x) = \left[1 - \exp(-"
+        expo_cmf_latex_4 += f"{theta_4}x)" + r"\right]"
+        expo_cmf_latex_4 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf_4 = {
+            "num" : F_exp_4,
+            "lab" : expo_cmf_latex_4,
+            "graph_col" : BLUE,
+            "area_col" : BLUE
+        }
+        
+        cmf_4_ax_ref, cmf_4_ax_pos = ax_density_4_fix, 9 * DOWN
+        
+        expo_cmf_graph_4 = generate_graph(
+            cmf_4_ax_ref, cmf_4_ax_pos,
+            0, 5, 0, 1.25,
+            *params_4, **cmf_4
+        )
+        
+        ax_cmf_4_fix = expo_cmf_graph_4[0]
+        ax_cmf_4_move = expo_cmf_graph_4[0]
+        exp_cmf_curv_4 = expo_cmf_graph_4[1]
+        exp_cmf_lab_4 = expo_cmf_graph_4[2]
+        
+        cmf_title_4 = cmf_title(theta_4)
+        
+        self.play(
+            ReplacementTransform(
+                density_title_4,
+                cmf_title_4
+            ),
+            FadeIn(exp_area_4),
+            ReplacementTransform(
+                ax_cmf_3_move,
+                ax_cmf_4_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_cmf_curv_3,
+                exp_cmf_curv_4,
+            ),
+            ReplacementTransform(
+                exp_cmf_lab_3,
+                exp_cmf_lab_4.next_to(
+                    ax_cmf_4_move,
+                    DOWN
+                )
+            ),
+        )
+        self.wait()
+
+        #############################################################
+        ##################### FIFTH TRIAL ##########################
+        #############################################################
+
+        theta_5 = 2.5
+        params_5 = [theta_5]
+
+        def expo_dens(Lambda, x): return Lambda * e**(-Lambda * x)
+        def f_exp_5(x): return expo_dens(theta_5, x)
+
+        expo_dens_latex_5 = r"f(x) = \exp(-" + f"{theta_5}x)"
+        expo_dens_latex_5 += r"\mathbb{I}_{[0"
+        expo_dens_latex_5 += r"; +\infty[}(x)"
+        
+        df_5 = {
+            "num" : f_exp_5,
+            "lab" : expo_dens_latex_5,
+            "graph_col" : GREEN,
+            "area_col" : BLUE
+        }
+        
+        df_5_ax_ref, df_5_ax_pos = title_clap, 5 * DOWN
+        
+        expo_graph_5 = generate_graph(
+            df_5_ax_ref, df_5_ax_pos,
+            0, 4, 0, theta_5 * 1.5,
+            *params_5, **df_5
+        )
+        
+        ax_density_5_fix = expo_graph_5[0]
+        ax_density_5_move = expo_graph_5[0]
+        exp_density_curv_5 = expo_graph_5[1]
+        exp_density_lab_5 = expo_graph_5[2]
+        exp_area_5 = expo_graph_5[3]
+
+        density_title_5 = density_title(theta_5)
+
+        A_5 = ax_density_5_move.coords_to_point(0, theta_5)
+        dotA_5 = Dot(A_5, fill_opacity=1, color=YELLOW)
+        
+        self.play(
+            FadeOut(exp_area_4),
+            ReplacementTransform(
+                cmf_title_4,
+                density_title_5
+            ),
+            ReplacementTransform(
+                ax_density_4_move,
+                ax_density_5_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_curv_4,
+                exp_density_curv_5,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_density_lab_4,
+                exp_density_lab_5.next_to(
+                    ax_density_5_fix,
+                    DOWN
+                )
+            ),
+            ReplacementTransform(
+                dotA_4,
+                dotA_5
+            )
+        )
+        self.wait(2)
+
+
+        def expo_cmf(Lambda, x): return 1 - e**(-Lambda * x)
+        def F_exp_5(x): return expo_cmf(theta_5, x)
+        
+        expo_cmf_latex_5 = r"F(x) = \left[1 - \exp(-"
+        expo_cmf_latex_5 += f"{theta_5}x)" + r"\right]"
+        expo_cmf_latex_5 += r"\mathbb{I}_{[0 ; +\infty[}(x)"
+        
+        cmf_5 = {
+            "num" : F_exp_5,
+            "lab" : expo_cmf_latex_5,
+            "graph_col" : BLUE,
+            "area_col" : BLUE
+        }
+        
+        cmf_5_ax_ref, cmf_5_ax_pos = ax_density_5_fix, 9 * DOWN
+        
+        expo_cmf_graph_5 = generate_graph(
+            cmf_5_ax_ref, cmf_5_ax_pos,
+            0, 5, 0, 1.25,
+            *params_5, **cmf_5
+        )
+        
+        ax_cmf_5_fix = expo_cmf_graph_5[0]
+        ax_cmf_5_move = expo_cmf_graph_5[0]
+        exp_cmf_curv_5 = expo_cmf_graph_5[1]
+        exp_cmf_lab_5 = expo_cmf_graph_5[2]
+
+        cmf_title_5 = cmf_title(theta_5)
+        
+        self.play(
+            ReplacementTransform(
+                density_title_5,
+                cmf_title_5
+            ),
+            FadeIn(exp_area_5),
+            ReplacementTransform(
+                ax_cmf_4_move,
+                ax_cmf_5_move,
+                run_time=2
+            ),
+            ReplacementTransform(
+                exp_cmf_curv_4,
+                exp_cmf_curv_5,
+            ),
+            ReplacementTransform(
+                exp_cmf_lab_4,
+                exp_cmf_lab_5.next_to(
+                    ax_cmf_5_move,
+                    DOWN
+                )
+            ),
         )
         self.wait()
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
             ReplacementTransform(
-                cmf_title_1,
+                cmf_title_5,
                 title_end.scale(0.75)
             ),
         )
