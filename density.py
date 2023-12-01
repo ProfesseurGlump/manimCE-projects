@@ -180,15 +180,20 @@ def density_def_recall():
     definition += [r"de répartition \(F\) est continue et "]
     definition += [r"s'écrire sous la forme : "]
     centered_expr = r"\[\forall x\in\mathbb{R}, F(x) = "
-    centered_expr += r"\mathbb{P}(X\leqslant x) = "
-    centered_expr += r"\int_{-\infty}^xf(t)dt\]"
+    centered_expr += r"\mathbb{P}(X\leqslant x)\]"
+    definition += [centered_expr]
+    centered_expr = r"\[F(x) = \int_{-\infty}^xf(t)dt\]"
     definition += [centered_expr]
     definition += [r"avec : "]
-    definition += [r"\[1. f \geqslant 0\]"]
-    centered = r"\[2. f\in\mathcal{C}^0\backslash\mathcal{D} "
+    definition += [r"1. \(f \geqslant 0\) i.e \(f\) est positive"]
+    centered = r"\[2. \, f\in\mathcal{C}^0\backslash\mathcal{D} "
     centered += r"\quad \mathbb{P}(x\in\mathcal{D}) = 0\]"
     definition += [centered]
-    definition += [r"\[3. \int_{-\infty}^{+\infty}f(t)dt = 1\]"]
+    definition += [r"i.e \(f\) est continue presque partout "]
+    definition += [r"et discontinue sur un ensemble "]
+    definition += [r"au plus dénombrable de mesure nulle."]
+    definition += [r"\[3. \, \int_{-\infty}^{+\infty}f(t)dt = 1\]"]
+    definition += [r"i.e l'aire sous le graphe de \(f\) vaut 1"]
         
     density_def_msg = [Tex(d) for d in definition]
     
@@ -426,7 +431,7 @@ def generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
         Alab_pos = [
             (dotA_1, 0.1 * LEFT + DOWN),
             (dotA_2_x, 0.1 * RIGHT + DOWN),
-            (ax, 3 * DOWN),
+            (ax, 2 * DOWN),
         ]
         labelA_1 = labelA_1.scale(0.75)
         labelA_2_x = labelA_2_x.scale(0.75)
@@ -434,7 +439,7 @@ def generate_uniform_cmf_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b)
         Alab_pos = [
             (dotA_1, DOWN),
             (dotA_2_x, DOWN),
-            (ax, 3 * DOWN),
+            (ax, 2 * DOWN),
         ]
 
     return ax, Adots, Alines, Alabels, Alab_pos
@@ -537,7 +542,7 @@ class Uniform1(Scene):
             self.add(self.border)
     
     def construct(self):
-        msg = "Variables aléatoires à densité avec "
+        msg = "Loi uniforme continue avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.75))
         self.wait(2)
@@ -600,11 +605,10 @@ class Uniform1(Scene):
                 ) for i in range(1, n)
             ]
         )
-        self.wait(2.5)
+        self.wait(3)
 
-        uniform_prob = [r"\raggedleft Si \(X\) suit une loi de uniforme "]
-        uniform_prob += [r"\raggedleft sur l'intervalle [a;b] alors "]
-        uniform_prob += [r"\[\int_{-\infty}^{+\infty}f(t)dt = 1\]"]
+        uniform_prob = [r"\[X\hookrightarrow\mathcal{U}([a ; b])\]"]
+        uniform_prob += [r"\[\Rightarrow \int_{-\infty}^{+\infty}f(t)dt = 1\]"]
         uniform_prob += [r"\[\Rightarrow \int_{a}^{b}cdt = 1\]"]
         uniform_prob += [r"\[\Rightarrow c(b - a) = 1\]"]
 
@@ -661,7 +665,7 @@ class Uniform1(Scene):
             y_inf, y_sup,
             a, b
         )
-        ax = graph_n_polygon[0]
+        ax = graph_n_poly[0]
         _, Adots, Alines, Alabels, Alab_pos, _ = graph_n_poly
         A_1A_2A_3A_4 = graph_n_poly[-1]
         n = len(Alabels)
@@ -684,16 +688,17 @@ class Uniform1(Scene):
         cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
         cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
         cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
-        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        cmf_text = Tex(cmf_msg, color=BLUE).scale(0.75)
+        
         box = SurroundingRectangle(Alabels[1])
         self.play(
             Write(box),
             FadeIn(A_1A_2A_3A_4),
-            Write(cmf.next_to(A_1A_2A_3A_4, 4 * DOWN))
+            Write(cmf_text.next_to(box, DOWN))
         )
         self.wait()
         self.play(
-            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf]]
+            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf_text]]
         )
         self.wait()
         
@@ -739,21 +744,17 @@ class Uniform1(Scene):
         cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
         cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
         cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
-        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        cmf_text = Tex(cmf_msg, color=BLUE).scale(0.75)
+        
         box = SurroundingRectangle(Blabels[1])
         self.play(
             Write(box),
             FadeIn(B_1B_2B_3B_4),
-            Write(
-                cmf.next_to(
-                    B_1B_2B_3B_4,
-                    4 * DOWN
-                )
-            )
+            Write(cmf_text.next_to(box, DOWN))
         )
         self.wait()
         self.play(
-            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf]]
+            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf_text]]
         )
         self.wait()
         
@@ -852,10 +853,8 @@ class Uniform2(Scene):
         )
         self.wait(2.5)
 
-        uniform_prob = [r"\raggedleft Si \(X\) suit une loi de uniforme "]
-        uniform_prob += [r"\raggedleft sur l'intervalle [a;b] alors "]
-        uniform_prob += [r"la fonction de répartition "]
-        uniform_prob += [r"\[F(x) = \mathbb{P}(X\leqslant x) = \int_{-\infty}^{x}f(t)dt\]"]
+        uniform_prob = [r"\[X\hookrightarrow\mathcal{U}([a ; b])\]"]
+        uniform_prob += [r"\[\Rightarrow F(x) = \mathbb{P}(X\leqslant x) = \int_{-\infty}^{x}f(t)dt\]"]
         centered = r"\[F(x) = "
         centered += r"\dfrac{x - a}{b - a}\mathbb{I}_{[a ; b]}(x) "
         centered += r"+ \mathbb{I}_{]b ; +\infty[}(x)\]"
@@ -885,7 +884,7 @@ class Uniform2(Scene):
         )
         
         box = SurroundingRectangle(unif_msg[-6])
-        ax_ref, ax_pos = unif_msg[-1], 3 * DOWN
+        ax_ref, ax_pos = unif_msg[-1], 2 * DOWN
         x_inf, x_sup, y_inf, y_sup, a, b = -1, 2, 0, 1.25, 0, 0.5
         cmf_graph = generate_uniform_cmf_graph(
             ax_ref, ax_pos,
@@ -1013,16 +1012,17 @@ class Uniform2(Scene):
         cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
         cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
         cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
-        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        cmf_text = Tex(cmf_msg, color=BLUE).scale(0.75)
+        
         box = SurroundingRectangle(Alabels[1])
         self.play(
             Write(box),
             FadeIn(A_1A_2A_3A_4),
-            Write(cmf.next_to(A_1A_2A_3A_4, 4 * DOWN))
+            Write(cmf_text.next_to(box, DOWN))
         )
         self.wait()
         self.play(
-            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf]]
+            *[FadeOut(t) for t in [A_1A_2A_3A_4, box, cmf_text]]
         )
         self.wait()
         
@@ -1073,21 +1073,17 @@ class Uniform2(Scene):
         cmf_msg = r"\[\int_{-\infty}^{+\infty}f(t)dt = 1 "
         cmf_msg += r"= \int_{-\infty}^{+\infty}\dfrac{1}{b - a}"
         cmf_msg += r"\mathbb{I}_{[a; b]}(t)dt\]"
-        cmf = Tex(cmf_msg, color=BLUE).scale(0.75)
+        cmf_text = Tex(cmf_msg, color=BLUE).scale(0.75)
+        
         box = SurroundingRectangle(Blabels[1])
         self.play(
             Write(box),
             FadeIn(B_1B_2B_3B_4),
-            Write(
-                cmf.next_to(
-                    B_1B_2B_3B_4,
-                    4 * DOWN
-                )
-            )
+            Write(cmf_text.next_to(box, DOWN))
         )
         self.wait()
         self.play(
-            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf]]
+            *[FadeOut(t) for t in [B_1B_2B_3B_4, box, cmf_text]]
         )
         self.wait()
         
