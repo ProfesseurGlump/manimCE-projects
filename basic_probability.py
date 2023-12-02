@@ -569,7 +569,7 @@ class BooleanOperations(Scene):
         msg = "Opérations ensemblistes avec "
         title_start = Title(f"{msg} Manim {manim.__version__}")
         self.add(title_start.scale(0.75))
-        self.wait(2)
+        self.wait(1)
         youtube_shorts = SVGMobject(
             "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
             fill_opacity=1,
@@ -765,11 +765,9 @@ class BooleanOperations(Scene):
             color=YELLOW
         ).next_to(
             u_math_2,
-            # 0.75 * DOWN
             9 * DOWN
         ).scale(0.425)
         self.play(
-            # ReplacementTransform(e_math_1, e_math_2)
             Write(e_math_2)
         )
         self.wait()
@@ -807,7 +805,7 @@ class BooleanOperations(Scene):
                 ) for i in range(n)
             ]
         )
-        self.wait()
+        self.wait(1)
 
         texts = [
             intersection_text,
@@ -820,7 +818,12 @@ class BooleanOperations(Scene):
         everything += [refs[i][2] for i in range(n)]
         everything += [text for text in texts]
         everything += [ellipse_group]
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
         self.play(
+            ReplacementTransform(
+                title_start,
+                title_clap.scale(0.75)
+            ),
             *[FadeOut(e) for e in everything]
         )
         self.wait()
@@ -864,46 +867,79 @@ class BooleanOperations(Scene):
                 targets[i] = targets[i].scale(0.85)
             elif i == 7:
                 targets[i] = targets[i].scale(0.75)
-                
-        self.play(*[Write(t) for t in targets])
-        self.wait()
 
+        title_prop = Title("Propriétés des opérations ensemblistes")
+        self.play(
+            ReplacementTransform(title_clap, title_prop),
+            *[Write(t) for t in targets]
+        )
+        self.wait(1)
 
-        self.play(*[FadeOut(t) for t in targets])
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_prop,
+                title_clap.scale(0.75)
+            ),
+            *[FadeOut(t) for t in targets],
+        )
         self.wait()
 
         # Create rectangle representing probability fundamental space
         omega = Rectangle(
             width=8, height=6,
-            color=XKCD.APRICOT,
+            color=GRAY,
             fill_opacity=0.25
         )
         
         set_A = Circle(
-            radius=1,
+            radius=1.1,
             color=BLUE,
             fill_opacity=0.5
         ).move_to(LEFT)
         
         set_B = Circle(
-            radius=1,
+            radius=1.25,
             color=WHITE,
             fill_opacity=0.5
         ).move_to(UP)
         
         set_C = Circle(
-            radius=1,
+            radius=1.5,
             color=RED,
             fill_opacity=0.5
         ).move_to(RIGHT)
 
         initial_sets = [omega, set_A, set_B, set_C]
         
+        venn_diagram = VGroup(*initial_sets)
+
+        label_Omega = MathTex(
+            "\Omega",
+            color=GRAY
+        ).next_to(set_C, 4 * DR)
+        label_A = Text("A", font_size=36, color=BLUE).next_to(set_A, LEFT)
+        label_B = Text("B", font_size=36, color=WHITE).next_to(set_B, UP)
+        label_C = Text("C", font_size=36, color=RED).next_to(set_C, RIGHT)
+        
+        
+        labels = [label_Omega, label_A, label_B, label_C]
+        title_venn = Title("Diagramme de Venn")
+        self.play(
+            ReplacementTransform(title_clap, title_venn),
+            Create(venn_diagram)
+        )
+        self.play(*[Write(lab) for lab in labels])
+        self.wait(1)
+
         # Create Intersections
         intersection_AB = Intersection(set_A, set_B, color=PURPLE)
         intersection_BC = Intersection(set_B, set_C, color=ORANGE)
         intersection_CA = Intersection(set_C, set_A, color=YELLOW)
-        intersection_ABC = Intersection(set_A, set_B, set_C, color=GREEN)
+        intersection_ABC = Intersection(
+            set_A, set_B, set_C,
+            color=GREEN, fill_opacity=0.75
+        )
 
         intersections = [
             intersection_AB,
@@ -913,10 +949,22 @@ class BooleanOperations(Scene):
         ]
 
         # Create Unions
-        union_AB = Union(set_A, set_B, color=PURPLE)
-        union_BC = Union(set_B, set_C, color=ORANGE)
-        union_CA = Union(set_C, set_A, color=YELLOW)
-        union_ABC = Union(set_A, set_B, set_C, color=GREEN)
+        union_AB = Union(
+            set_A, set_B,
+            color=PURPLE, fill_opacity=0.75
+        )
+        union_BC = Union(
+            set_B, set_C,
+            color=ORANGE, fill_opacity=0.75
+        )
+        union_CA = Union(
+            set_C, set_A,
+            color=YELLOW, fill_opacity=0.75
+        )
+        union_ABC = Union(
+            set_A, set_B, set_C,
+            color=GREEN, fill_opacity=0.75
+        )
 
         unions = [
             union_AB,
@@ -927,24 +975,20 @@ class BooleanOperations(Scene):
 
         # Mix inter-unions
         intersection_A_BC = Intersection(
-            set_A,
-            intersection_BC,
-            color=XKCD.MANGO
+            set_A, union_BC,
+            color=XKCD.MANGO, fill_opacity=0.75
         )
         union_AB_CA = Union(
-            intersection_AB,
-            intersection_CA,
-            color=XKCD.ADOBE
+            intersection_AB, intersection_CA,
+            color=XKCD.MANGO, fill_opacity=0.75
         )
         union_A_BC = Union(
-            set_A,
-            intersection_BC,
-            color=XKCD.ALGAE
+            set_A, intersection_BC,
+            color=XKCD.ALGAE, fill_opacity=0.75
         )
         intersection_AB_CA = Intersection(
-            union_AB,
-            union_CA,
-            color=XKCD.ACIDGREEN
+            union_AB, union_CA,
+            color=XKCD.ALGAE, fill_opacity=0.75
         )
 
         mix_inter_unions = [
@@ -958,10 +1002,18 @@ class BooleanOperations(Scene):
         complement_A = Difference(omega, set_A, color=BLUE)
         complement_B = Difference(omega, set_B, color=WHITE)
         complement_C = Difference(omega, set_C, color=RED)
-        complement_AB = Difference(omega, intersection_AB, color=PURPLE)
+        complement_AB = Difference(
+            omega, intersection_AB,
+            color=PURPLE, fill_opacity=0.75
+        )
         complement_BC = Difference(omega, intersection_BC, color=ORANGE)
         complement_CA = Difference(omega, intersection_CA, color=YELLOW)
         complement_ABC = Difference(omega, intersection_ABC, color=GREEN)
+
+        complement_A_union_B = Difference(
+            omega, union_AB,
+            color=PURPLE, fill_opacity=0.75
+        )
 
         complements = [
             complement_A,
@@ -977,37 +1029,136 @@ class BooleanOperations(Scene):
         # (1) (AnB)bar = Abar U Bbar
         # (2) (A U B)bar = Abar n Bbar
         union_Abar_Bbar = Union(
-            complement_A,
-            complement_B,
-            color=XKCD.AMBER
+            complement_A, complement_B,
+            color=PURPLE, fill_opacity=0.75
         )
         inter_Abar_Bbar = Intersection(
-            complement_A,
-            complement_B,
-            color=XKCD.AQUA
+            complement_A, complement_B,
+            color=PURPLE, fill_opacity=0.75
         )
 
         de_morgans = [union_Abar_Bbar]
-        
-        
-        venn_diagram = VGroup(
-            *initial_sets,
-            *intersections,
-            *unions,
-            *mix_inter_unions,
-            *complements,
-            *de_morgans
+
+        self.play(
+            intersection_ABC.animate.scale(0.5).move_to(4 * DOWN)
         )
+        ABC_1 = r"A\cap(B\cap C) = (A\cap B)\cap C"
+        label_ABC_1 = MathTex(
+            ABC_1,
+            color=GREEN
+        ).next_to(intersection_ABC, 2 * DOWN)
+        self.play(FadeIn(label_ABC_1))
 
-        label_Omega = MathTex(
-            "\Omega",
-            color=XKCD.APRICOT
-        ).next_to(set_C, 4 * DR)
-        label_A = Text("A", font_size=36, color=BLUE).next_to(set_A, LEFT)
-        label_B = Text("B", font_size=36, color=WHITE).next_to(set_B, UP)
-        label_C = Text("C", font_size=36, color=RED).next_to(set_C, RIGHT)
+        self.play(
+            FadeOut(label_ABC_1, intersection_ABC),
+            union_ABC.animate.scale(0.5).move_to(5 * DOWN)
+        )
+        ABC_2 = r"A\cup(B\cup C) = (A\cup B)\cup C"
+        label_ABC_2 = MathTex(
+            ABC_2,
+            color=GREEN
+        ).next_to(union_ABC, 2 * DOWN)
+        self.play(FadeIn(label_ABC_2))
+        
+        ABC_3 = r"P(A\cup B\cup C) = P(A) + P(B) + P(C) \\"
+        ABC_3 += r"\qquad - P(A\cap B) - P(B\cap C) - P(C\cap A) \\"
+        ABC_3 += r"\qquad + P(A\cap B\cap C)"
+        label_ABC_3 = MathTex(
+            ABC_3,
+            color=GREEN
+        ).scale(0.75).next_to(union_ABC, 2 * DOWN)
+        title_crible = Title("Formule du crible de Poincaré")
+        self.play(
+            ReplacementTransform(
+                title_venn,
+                title_crible
+            ),
+            ReplacementTransform(
+                label_ABC_2,
+                label_ABC_3
+            )
+        )
+        self.wait(1)
+        title_venn = Title("Diagramme de Venn")
+        self.play(
+            ReplacementTransform(title_crible, title_venn),
+            FadeOut(label_ABC_3, union_ABC),
+            intersection_A_BC.animate.scale(0.5).move_to(5 * DOWN + LEFT),
+            union_AB_CA.animate.scale(0.5).move_to(5 * DOWN + RIGHT)
+        )
+        self.wait(1)
+        equal = r"="
+        label_equal = MathTex(equal).next_to(union_AB_CA, 2 * LEFT)
+        A_inter_B_union_C = r"A\cap(B\cup C) = "
+        A_inter_B_union_C += r"(A\cap B)\cup (A\cap C)"
+        label_A_inter_B_union_C = MathTex(
+            A_inter_B_union_C,
+            color=XKCD.MANGO
+        ).next_to(label_equal, 2 * DOWN)
+        self.play(
+            FadeIn(label_equal),
+            FadeIn(label_A_inter_B_union_C),
+        )
+        self.wait(1)
+        A_union_B_inter_C = r"A\cup(B\cap C) = "
+        A_union_B_inter_C += r"(A\cup B)\cap (A\cup C)"
+        label_A_union_B_inter_C = MathTex(
+            A_union_B_inter_C,
+            color=XKCD.ALGAE
+        ).next_to(label_equal, 6 * DOWN)
+        self.play(
+            FadeOut(intersection_A_BC, union_AB_CA),
+            union_A_BC.animate.move_to(5 * DOWN + 2 * LEFT),
+            intersection_AB_CA.animate.move_to(5 * DOWN + 2 * RIGHT),
+            ReplacementTransform(
+                label_A_inter_B_union_C,
+                label_A_union_B_inter_C
+            )
+        )
+        self.wait(1)
+        
+        title_morgan = Title("Lois de De Morgan")
+        morgan1 = r"\overline{A\cap B} = "
+        morgan1 += r"\overline{A}\cup\overline{B}"
+        label_morgan1 = MathTex(
+            morgan1,
+            color=PURPLE
+        ).next_to(label_equal, 5 * DOWN)
+        self.play(
+            FadeOut(
+                union_A_BC,
+                intersection_AB_CA,
+                label_A_union_B_inter_C
+            ),
+            ReplacementTransform(title_venn, title_morgan),
+            complement_AB.scale(0.25).animate.move_to(5 * DOWN + 2 * LEFT),
+            union_Abar_Bbar.scale(0.25).animate.move_to(5 * DOWN + 2 * RIGHT),
+            FadeIn(label_morgan1)
+        )
+        self.wait(1)
+        morgan2 = r"\overline{A\cup B} = "
+        morgan2 += r"\overline{A}\cap\overline{B}"
+        label_morgan2 = MathTex(
+            morgan2,
+            color=PURPLE
+        ).next_to(label_equal, 5 * DOWN)
+        self.play(
+            FadeOut(complement_AB, union_Abar_Bbar),
+            inter_Abar_Bbar.scale(0.25).animate.move_to(5 * DOWN + 2 * LEFT),
+            complement_A_union_B.scale(0.25).animate.move_to(
+                5 * DOWN + 2 * RIGHT
+            ),
+            ReplacementTransform(label_morgan1, label_morgan2)
+        )
+        self.wait(1)
 
-        labels = [label_Omega, label_A, label_B, label_C]
-        self.play(Create(venn_diagram))
-        self.play(*[Write(lab) for lab in labels])
-        self.wait()
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_morgan,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1)
+        
+        disp_sub(self, lang='fr')
