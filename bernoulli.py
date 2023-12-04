@@ -173,7 +173,7 @@ def cursive_msg(phrase, sep, font_size=40):
     return msg
 
 
-def bernoulli_def():
+def bernoulli_dens_def():
     phrase = [r"En théorie des probabilités, "]
     phrase += [r"la loi de Bernoulli, du nom du "]
     phrase += [r"mathématicien suisse Jacques Bernoulli, "]
@@ -185,7 +185,18 @@ def bernoulli_def():
     phrase_tex = [Tex(p).scale(0.85) for p in phrase]
     return phrase_tex
 
-
+def bernoulli_cmf_def():
+    phrase = [r"La loi de Bernoulli de paramètre \(p\), "]
+    phrase += [r"avec \(\mathbb{P}(X = 1) = p\) "]
+    phrase += [r" et "]
+    phrase += [r"\(\mathbb{P}(X = 0) = 1 - p = q\), "]
+    phrase += [r"a pour fonction de répartition "]
+    centered = r"\[F(x) = q\mathbb{I}_{[0 ; 1[}(x) "
+    centered += r" + \mathbb{I}_{[1 ; +\infty[}(x)\]"
+    phrase += [centered]
+    phrase_tex = [Tex(p).scale(0.85) for p in phrase]
+    return phrase_tex
+    
 def bernoulli_density(ax_ref, ax_pos, p=0.5):
     q = 1 - p
     ax = Axes(
@@ -227,7 +238,61 @@ def bernoulli_density(ax_ref, ax_pos, p=0.5):
     
     return ax, dots, lines, Alabels
 
+
+def bernoulli_cmf(ax_ref, ax_pos, p=0.5):
+    q = 1 - p
+    ax = Axes(
+        x_range=[-1, 2],
+        y_range=[0, 1.25],
+        axis_config={"include_numbers": True}
+    ).scale(0.65).next_to(ax_ref, ax_pos)
     
+    A_0 = ax.coords_to_point(-1,0)
+    dotA_0 = Dot(A_0, fill_opacity=1, color=BLUE)
+
+    A_1 = ax.coords_to_point(0,0)
+    dotA_1 = Dot(A_1, fill_opacity=1, color=WHITE)
+
+    A_0A_1 = Line(A_0, A_1, color=BLUE)
+
+    A_2 = ax.coords_to_point(0,q)
+    dotA_2 = Dot(A_2, fill_opacity=1, color=BLUE)
+    A_2_lab = Tex(f"q = {round(q, 2)}", color=BLUE).next_to(A_2, UL)
+    vert_A_2 = ax.get_vertical_line(
+        A_2,
+        line_config={"dashed_ratio": 0.85},
+        color=WHITE
+    )
+
+    A_3 = ax.coords_to_point(1,q)
+    dotA_3 = Dot(A_3, fill_opacity=1, color=WHITE)
+
+    A_2A_3 = Line(A_2, A_3, color=BLUE)
+    
+    A_3 = ax.coords_to_point(1,1)
+    dotA_3 = Dot(A_3, fill_opacity=1, color=BLUE)
+    lab_A_3 = f"p + q = {round(p, 2)} + {round(q, 2)} = 1"
+    A_3_lab = Tex(lab_A_3, color=BLUE).next_to(A_3, UP)
+    vert_A_3 = ax.get_vertical_line(
+        A_3,
+        line_config={"dashed_ratio": 0.85},
+        color=WHITE
+    )
+
+    A_4 = ax.coords_to_point(2,1)
+    dotA_4 = Dot(A_4, fill_opacity=1, color=BLUE)
+
+    A_3A_4 = Line(A_3, A_4, color=BLUE)
+
+    f = f"F(x) = {round(q, 2)}" + r"\mathbb{I}_{[0; 1[}(x) "
+    f += r" + \mathbb{I}_{[1 ; +\infty [}(x)"
+    f_lab = MathTex(f, color=BLUE).next_to(ax, 0.15 * DOWN)
+    dots = [dotA_0, dotA_1, dotA_2, dotA_3, dotA_4]
+    lines = [A_0A_1, vert_A_2, A_2A_3, vert_A_3, A_3A_4]
+    Alabels = [A_2_lab, A_3_lab, f_lab]
+    
+    return ax, dots, lines, Alabels
+
     
 
 def density_def_recall():
@@ -259,162 +324,6 @@ def density_def_recall():
 
 
 
-def prob_def_recall():
-    definition = [r"Rappel : "]
-    definition += [r"Soit \((\Omega, \mathcal{T}, \mathbb{P})\) "]
-    definition += [r"un espace probabilisé et"]
-    centered_expr = r"\[X : (\Omega, \mathcal{T})\to "
-    centered_expr += r"(\mathbb{N}, \mathcal{P}(\mathbb{N}))\]"
-    definition += [centered_expr]
-    definition += [r"une variable aléatoire discrète. Alors, "]
-    definition += [r"avec la convention \(s^0 = 1\), "]
-    centered_expr = r"\[G_X : s\mapsto \mathbb{E}(s^X) = "
-    centered_expr += r"\sum_{k = 0}^{+\infty}\mathbb{P}_X(\{n\})s^k\]"
-    definition += [centered_expr]
-    definition += [r"est définie et continue sur \([-1;1]\) "]
-    definition += [r"(c'est-à-dire continue sur \(]-1;1[\), "]
-    definition += [r"continue à droite en \(-1\) et "]
-    definition += [r"continue à gauche en \(1\))."]
-        
-    prob_def_msg = [Tex(d) for d in definition]
-    
-    return prob_def_msg
-
-
-
-
-def expectation_def_recall():
-    definition = [r"Rappel : "]
-    centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"\mathbb{P}_X(\{k\})s^k\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G'_X(s) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k\mathbb{P}_X(\{k\})s^{k - 1}\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G'_X(1) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k\mathbb{P}_X(\{k\})1^{k - 1}\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G'_X(1) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k\mathbb{P}_X(\{k\}) = \mathbb{E}(X)\]"
-    definition += [centered_expr]
-        
-    exp_def_msg = [Tex(d) for d in definition]
-    
-    return exp_def_msg
-
-
-
-
-def variance_def_recall():
-    definition = [r"Rappel : "]
-    centered_expr = r"\[G_X(s) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"\mathbb{P}_X(\{k\})s^k\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G'_X(s) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k\mathbb{P}_X(\{k\})s^{k - 1}\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G'_X(1) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k\mathbb{P}_X(\{k\}) = \mathbb{E}(X)\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G''_X(s) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k(k - 1)\mathbb{P}_X(\{k\})s^{k - 2}\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G''_X(1) = \sum_{k = 0}^{+\infty}"
-    centered_expr += r"k(k - 1)\mathbb{P}_X(\{k\})1^{k - 2}\]"
-    definition += [centered_expr]
-    centered_expr = r"\[G''_X(1) = \mathbb{E}(X^2) - "
-    centered_expr += r"G'_X(1)\]"
-    definition += [centered_expr]
-    centered_expr = r"\[\mathbb{V}(X) = G''_X(1) + G'_X(1) "
-    centered_expr += r"- \left[G'_X(1)\right]^2\]"
-    definition += [centered_expr]
-    
-    var_def_msg = [Tex(d) for d in definition]
-    
-    return var_def_msg
-
-
-
-
-def generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a, b):
-    c = 1 / (b - a)
-    y_sup = c + 0.25
-    ax = Axes(
-        x_range=[x_inf, x_sup],
-        y_range=[y_inf, y_sup],
-        axis_config={"include_numbers": True}
-    ).scale(0.65).next_to(ax_ref, ax_pos)
-    
-    A_0 = ax.coords_to_point(x_inf,0)
-    dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
-
-    A_1 = ax.coords_to_point(a,0)
-    dotA_1 = Dot(A_1, fill_opacity=1, color=RED)
-    labelA_1 = MathTex(r"a = " + f"{a}", color=GREEN)
-    A_0A_1 = Line(A_0, A_1, color=GREEN)
-        
-    A_2 = ax.coords_to_point(a,c)
-    dotA_2 = Dot(A_2, fill_opacity=1, color=GREEN)        
-    vert_A_2 = ax.get_vertical_line(
-        A_2,
-        line_config={"dashed_ratio": 0.85},
-        color=RED
-    )
-        
-    A_3 = ax.coords_to_point(b,c)
-    dotA_3 = Dot(A_3, fill_opacity=1, color=GREEN)
-        
-    A_2A_3 = Line(A_2, A_3, color=GREEN)
-    vert_A_3 = ax.get_vertical_line(
-        A_3,
-        line_config={"dashed_ratio": 0.85},
-        color=RED
-    )
-        
-    A_4 = ax.coords_to_point(b,0)
-    dotA_4 = Dot(A_4, fill_opacity=1, color=RED)
-    labelA_4 = MathTex(r"b = " + f"{b}", color=GREEN)
-
-    A_5 = ax.coords_to_point(x_sup,0)
-    dotA_5 = Dot(A_5, fill_opacity=1, color=GREEN)
-    A_4A_5 = Line(A_4, A_5, color=GREEN)
-
-    Adots = [dotA_0, dotA_1, dotA_2, dotA_3, dotA_4, dotA_5]
-    Alines = [A_0A_1, vert_A_2, A_2A_3, vert_A_3, A_4A_5]
-
-    if b - a == 1:
-        uniform_density = r"f(x) = "
-    else:
-        uniform_density = r"f(x) = \dfrac{1}{"
-        uniform_density += f"{b - a}" + r"}"
-        
-    uniform_density += r"\mathbb{I}_{["
-    uniform_density += f"{a};{b}" + r"]}(x)"
-    uniform = MathTex(
-        uniform_density,
-        color=GREEN
-    ).scale(0.85)
-    
-    Alabels = [labelA_1, uniform, labelA_4]
-    if b - a < 1.1:
-        Alab_pos = [
-            (dotA_1, 0.1 * LEFT + DOWN),
-            (ax, 3 * DOWN),
-            (dotA_4, 0.1 * RIGHT + DOWN)
-        ]
-        labelA_1 = labelA_1.scale(0.75)
-        labelA_4 = labelA_4.scale(0.75)
-    else:
-        Alab_pos = [
-            (dotA_1, DOWN),
-            (ax, 3 * DOWN),
-            (dotA_4, DOWN)
-        ]
-
-    polygon_list = [A_1, A_2, A_3, A_4]
-    A_1A_2A_3A_4 = Polygon(*polygon_list, fill_opacity=1, color=BLUE, stroke_color=BLUE)
-
-    return ax, Adots, Alines, Alabels, Alab_pos, A_1A_2A_3A_4
 
 
 
@@ -620,7 +529,7 @@ def generate_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, *params, **df):
 
 
 
-class Bernoulli(Scene):
+class BernoulliDensity(Scene):
     def setup(self, add_border=True):
         if add_border:
             self.border = Rectangle(
@@ -679,7 +588,7 @@ class Bernoulli(Scene):
         )
         self.wait(.75)
 
-        def_msg = bernoulli_def()
+        def_msg = bernoulli_dens_def()
         n = len(def_msg)
         targets = targets_to_write(def_msg, title_rep, 3)
         # self.play(
@@ -733,3 +642,105 @@ class Bernoulli(Scene):
         self.wait(1.5)
         
         disp_sub(self, lang='fr')
+
+
+class BernoulliCMF(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Loi Bernoulli avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        phrase = "Savez-vous comment représenter | "
+        phrase += "la fonction de répartition de la | "
+        phrase += "de Bernoulli ?  |"
+        sep = "|"
+        msg = cursive_msg(phrase, sep, 42)
+        
+        self.play(
+            Write(msg.next_to(title_start, 3 * DOWN)),
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(1.5)
+
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(.75)
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_clap,
+                title_rep.scale(0.75)
+            ),
+            FadeOut(msg)
+        )
+        self.wait(.75)
+
+        def_msg = bernoulli_cmf_def()
+        n = len(def_msg)
+        targets = targets_to_write(def_msg, title_rep, 3)
+        
+        self.play(*[Write(t) for t in targets])
+        self.wait(3)
+        box = SurroundingRectangle(def_msg[-1])
+        self.play(Write(box))
+        self.wait()
+
+        ax_ref, ax_pos = box, DOWN
+        p_values = [i/5 for i in range(1, 6)]
+        bernoulli_cmf_graphs = [
+            bernoulli_cmf(ax_ref, ax_pos, p) for p in p_values
+        ]
+        for bernoulli_cmf_graph in bernoulli_cmf_graphs:
+            ax = bernoulli_cmf_graph[0]
+            _, Adots, Alines, Alabels = bernoulli_cmf_graph
+            self.play(
+                Create(ax, run_time=2),
+                *[Write(d) for d in Adots],
+                *[Create(line) for line in Alines],
+                *[Write(Alabel) for Alabel in Alabels],
+            )
+            self.wait(2)
+            everything = [ax] + Adots + Alines + Alabels
+            self.play(
+                *[FadeOut(t) for t in everything]
+            )
+
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_rep,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1.5)
+        
+        disp_sub(self, lang='fr')
+        
