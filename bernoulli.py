@@ -185,6 +185,19 @@ def bernoulli_dens_def():
     phrase_tex = [Tex(p).scale(0.85) for p in phrase]
     return phrase_tex
 
+def binomial_dens_def():
+    phrase = [r"En théorie des probabilités, "]
+    phrase += [r"la loi Binomiale, du nom du "]
+    phrase += [r"coefficient binomial intervenant "]
+    phrase += [r"dans la formule de son calcul, "]
+    phrase += [r"désigne la loi de probabilité d'une "]
+    phrase += [r"variable aléatoire discrète qui compte "]
+    phrase += [r"le nombre \(k\) de succès dans une "]
+    phrase += [r"répétition de \(n\) épreuves de Bernoulli."]
+    phrase += [r"\[\mathbb{P}(X = k) = \binom{n}{k}p^k(1 - p)^{n - k}\]"]
+    phrase_tex = [Tex(p).scale(0.85) for p in phrase]
+    return phrase_tex
+
 def bernoulli_cmf_def():
     phrase = [r"La loi de Bernoulli de paramètre \(p\), "]
     phrase += [r"avec \(\mathbb{P}(X = 1) = p\) "]
@@ -196,7 +209,18 @@ def bernoulli_cmf_def():
     phrase += [centered]
     phrase_tex = [Tex(p).scale(0.85) for p in phrase]
     return phrase_tex
-    
+
+def binomial_cmf_def():
+    phrase = [r"La loi Binoumiale de paramètres \((n, p)\), "]
+    phrase += [r"avec \(\mathbb{P}(X = k) = \binom{n}{k}p^k(1 - p)^{n - k}\) "]
+    phrase += [r"a pour fonction de répartition "]
+    centered = r"\[F(x) = q\mathbb{I}_{[0 ; n[}(x) "
+    centered += r"\sum_{k = 0}^{\lfloor x \rfloor}\binom{n}{k}p^k(1 - p)^{n - k} "
+    centered += r"+ \mathbb{I}_{[n ; +\infty[}(x)\]"
+    phrase += [centered]
+    phrase_tex = [Tex(p).scale(0.85) for p in phrase]
+    return phrase_tex
+
 def bernoulli_density(ax_ref, ax_pos, p=0.5):
     q = 1 - p
     ax = Axes(
@@ -237,6 +261,114 @@ def bernoulli_density(ax_ref, ax_pos, p=0.5):
     Alabels = [A_1_lab, A_3_lab, f_lab]
     
     return ax, dots, lines, Alabels
+
+def factorial(n):
+    if n < 0: return False
+    elif n == 0 or n == 1: return 1
+    else: return n * factorial(n - 1)
+
+def binom(n, k):
+    if n < k: return False
+    else: return factorial(n) // ( factorial(k) * factorial(n - k) )
+    
+def binomial_density(ax_ref, ax_pos,n=2, p=0.5):
+    q = 1 - p
+    ax = Axes(
+        x_range=[0, n+1],
+        y_range=[0, 1],
+        x_length=9,
+        y_length=16,
+        axis_config={"include_numbers": True}
+    ).scale(0.6).next_to(ax_ref, ax_pos)
+
+    n_lab = MathTex(f"n = {n}", color=RED).next_to(ax, 1.05 * UP)
+    Ax_0 = ax.coords_to_point(0,0)
+    dotAx_0 = Dot(Ax_0, fill_opacity=1, color=GREEN)
+
+    
+    Ay_0 = ax.coords_to_point(0,q**n)
+    dotAy_0 = Dot(Ay_0, fill_opacity=1, color=GREEN)
+    y_0_lab = r"q^{" + f"{n}" + r"} = " + f"{round(q**n, 2)}"
+    Ay_0_lab = MathTex(
+        y_0_lab,
+        color=GREEN
+    ).scale(0.65).next_to(Ay_0, UL)
+    vert_Ay_0 = ax.get_vertical_line(
+        Ay_0,
+        line_config={"dashed_ratio": 0.85},
+        color=GREEN
+    )
+    
+    Acoords = [Ax_0, Ay_0]
+    Adots = [dotAx_0, dotAy_0]
+    Alabs = [n_lab, Ay_0_lab]
+    Alines = [vert_Ay_0]
+
+    for k in range(1, n):
+        Ax = ax.coords_to_point(k, 0)
+        Acoords += [Ax]
+        dotAx = Dot(Ax, fill_opacity=1, color=GREEN)
+        Adots += [dotAx]
+        
+        binom_n_k = binom(n, k)
+        p_k = binom_n_k * p**k * q**(n - k)
+        Ay = ax.coords_to_point(k, p_k)
+        Acoords += [Ay]
+        dotAy = Dot(Ay, fill_opacity=1, color=GREEN)
+        Adots += [dotAy]
+        
+        Alab = r"\binom{" + f"{n}" + r"}{" + f"{k}"
+        Alab += r"}" + f"{round(p, 2)}^" + r"{" + f"{k}"
+        Alab += r"}" + f"{round(q, 2)}^" + r"{" + f"{n - k}" + r"}"
+        A_lab = MathTex(
+            f"{Alab} = {round(p_k, 2)}",
+            color=GREEN
+        ).scale(0.65).next_to(Ay, UP)
+        if n % 2 == 1 and k % 2 == 1: Alabs += [A_lab]
+        elif n % 2 == 0 and k % 2 == 0: Alabs += [A_lab]
+        
+        vert_Ay = ax.get_vertical_line(
+            Ay,
+            line_config={"dashed_ratio": 0.85},
+            color=GREEN
+        )
+        Alines += [vert_Ay]
+        
+    Ax_n = ax.coords_to_point(n,0)
+    Acoords += [Ax_n]
+    dotAx_n = Dot(Ax_n, fill_opacity=1, color=GREEN)
+    Adots += [dotAx_n]
+    
+    Ay_n = ax.coords_to_point(n, p**n)
+    Acoords += [Ay_n]
+    dotAy_n = Dot(Ay_n, fill_opacity=1, color=GREEN)
+    Adots += [dotAy_n]
+    
+    Ay_n_lab = MathTex(
+        f"p^{n} = {round(p**n, 2)}",
+        color=GREEN
+    ).scale(0.65).next_to(Ay_n, UR)
+    Alabs += [Ay_n_lab]
+    
+    vert_Ay_n = ax.get_vertical_line(
+        Ay_n,
+        line_config={"dashed_ratio": 0.85},
+        color=GREEN
+    )
+    Alines += [vert_Ay_n]
+
+    f = f"f(x) = " + r"\binom{" + f"{n}" + r"}{" + f"{k}"
+    f += r"}" + f"{round(p, 2)}" + r"^{\lfloor x \rfloor}"
+    f += f"{round(q, 2)}" + r"^{" + f"{n}"
+    f += r"- \lfloor x \rfloor}"
+    f_lab = MathTex(
+        f,
+        color=GREEN
+    ).scale(0.85).next_to(ax, 2.5 * DOWN)
+
+    Alabs += [f_lab]
+    
+    return ax, Adots, Alines, Alabs
 
 
 def bernoulli_cmf(ax_ref, ax_pos, p=0.5):
@@ -591,20 +723,7 @@ class BernoulliDensity(Scene):
         def_msg = bernoulli_dens_def()
         n = len(def_msg)
         targets = targets_to_write(def_msg, title_rep, 3)
-        # self.play(
-        #     Write(def_msg[0].next_to(title_rep, 3 * DOWN))
-        # )
-        # self.wait()
-        # self.play(
-        #     *[
-        #         Write(
-        #             def_msg[i].next_to(
-        #                 def_msg[i-1],
-        #                 DOWN
-        #             )
-        #         ) for i in range(1, n)
-        #     ]
-        # )
+        
         self.play(*[Write(t) for t in targets])
         self.wait(3)
         box = SurroundingRectangle(def_msg[-1])
@@ -731,6 +850,117 @@ class BernoulliCMF(Scene):
             self.play(
                 *[FadeOut(t) for t in everything]
             )
+
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_rep,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1.5)
+        
+        disp_sub(self, lang='fr')
+        
+
+class BinomialDensity(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Loi Binomiale avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        phrase = "Savez-vous comment représenter | "
+        phrase += "la fonction de densité de la | "
+        phrase += "loi Binomiale ?  |"
+        phrase += "On l'appelle aussi fonction de masse |"
+        sep = "|"
+        msg = cursive_msg(phrase, sep, 42)
+        
+        self.play(
+            Write(msg.next_to(title_start, 3 * DOWN)),
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(0.75)
+
+        title_clap = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_clap.scale(0.75)
+            )
+        )
+        self.wait(.75)
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_clap,
+                title_rep.scale(0.75)
+            ),
+            FadeOut(msg)
+        )
+        self.wait(.75)
+
+        def_msg = binomial_dens_def()
+        n = len(def_msg)
+        
+        targets = targets_to_write(def_msg, title_rep, 3)
+        self.play(*[Write(t) for t in targets])
+        self.wait(1.5)
+        
+        box = SurroundingRectangle(def_msg[-1])
+        self.play(Write(box))
+        self.wait(1)
+        self.play(
+            *[FadeOut(targets[i]) for i in range(len(targets) - 1)],
+            *[t.animate.shift(8.5 * UP) for t in [box, targets[-1]]]
+        )
+        self.wait()
+
+        ax_ref, ax_pos = box, 3 * DOWN
+        
+        
+        for n in range(2, 6):
+            p_values = [i/n for i in range(1, n)]
+            binomial_dens_graphs = [
+                binomial_density(ax_ref, ax_pos, n, p) for p in p_values
+            ]
+            for binomial_dens_graph in binomial_dens_graphs:
+                ax = binomial_dens_graph[0]
+                _, Adots, Alines, Alabels = binomial_dens_graph
+                self.play(
+                    Create(ax, run_time=0.1),
+                    *[Write(d) for d in Adots],
+                    *[Create(line) for line in Alines],
+                    *[Write(Alabel) for Alabel in Alabels],
+                )
+                self.wait(0.75)
+                everything = [ax] + Adots + Alines + Alabels
+                self.play(
+                    *[FadeOut(t) for t in everything]
+                )
 
         
         title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
