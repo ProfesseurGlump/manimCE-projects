@@ -565,7 +565,7 @@ def generate_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, *params, **df):
 
 
 
-class Exo1a(Scene):
+class Norm1(Scene):
     def setup(self, add_border=True):
         if add_border:
             self.border = Rectangle(
@@ -591,7 +591,7 @@ class Exo1a(Scene):
         title_question = Title("Défi pour vous")
         phrase = [r"Savez-vous comment "]
         phrase += [r"représenter l'ensemble"]
-        split = r"\[E = \{(x, y)\in\mathbb{R}^2 ; \lvert x \rvert "
+        split = r"\[E_1 = \{(x, y)\in\mathbb{R}^2 ; \lvert x \rvert "
         split += r" + \lvert y\rvert \leqslant 2\}\]"
         phrase += [split]
         msg = [Tex(p) for p in phrase]
@@ -664,7 +664,7 @@ class Exo1a(Scene):
         Alines = [A_0A_1, A_0A_2, A_1A_2]
         A_0A_1A_2 = Polygon(
             *polygon_list,
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -730,7 +730,7 @@ class Exo1a(Scene):
         Alines = [A_0A_1, A_0A_2, A_1A_2]
         A_0A_1A_2 = Polygon(
             *polygon_list,
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -797,7 +797,7 @@ class Exo1a(Scene):
         Alines = [A_0A_1, A_0A_2, A_1A_2]
         A_0A_1A_2 = Polygon(
             *polygon_list,
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -863,7 +863,7 @@ class Exo1a(Scene):
         Alines = [A_0A_1, A_0A_2, A_1A_2]
         A_0A_1A_2 = Polygon(
             *polygon_list,
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -883,7 +883,7 @@ class Exo1a(Scene):
             *[FadeOut(e) for e in everything]
         )
 
-        final_case = "Dessinons l'ensemble E en entier"
+        final_case = r"Dessinons l'ensemble \(E_1\) en entier"
         title_final_case = Title(final_case)
         self.play(
             ReplacementTransform(title_case_4, title_final_case)
@@ -914,7 +914,7 @@ class Exo1a(Scene):
 
         AA_0A_1 = Polygon(
             *[A, A_0, A_1],
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -931,7 +931,7 @@ class Exo1a(Scene):
 
         A_1A_2A = Polygon(
             *[A_1, A_2, A],
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -944,7 +944,7 @@ class Exo1a(Scene):
 
         A_2A_3A = Polygon(
             *[A_2, A_3, A],
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -953,7 +953,7 @@ class Exo1a(Scene):
         A_3A_0 = Line(A_3, A_0, color=GREEN)
         A_3A_0A = Polygon(
             *[A_3, A_0, A],
-            fill_opacity=1,
+            fill_opacity=0.25,
             color=GREEN,
             stroke_color=GREEN
         )
@@ -997,7 +997,7 @@ class Exo1a(Scene):
 
         boule = [r"Topologiquement on peut définir"]
         boule += [r"une boule fermée avec la norme 1 "]
-        center = r"\[B_f\left((0;0) ; r\right) = "
+        center = r"\[B_{1, f}\left((0;0) ; r\right) = "
         center += r"\left\{(x ; y)\in \mathbb{R}^2 ; "
         center += r"\lvert\lvert (x ; y)\rvert\rvert_{1} "
         center += r"\leqslant r\right\}\]"
@@ -1022,8 +1022,8 @@ class Exo1a(Scene):
             *[e.animate.shift(3 * UP) for e in everything]
         )
 
-        conclusion = [r"\[E = B_f\left((0 ; 0) ; 2\right)\]"]
-        conclusion += [r"L'ensemble \(E\) est la boule "]
+        conclusion = [r"\[E_1 = B_{1, f}\left((0 ; 0) ; 2\right)\]"]
+        conclusion += [r"L'ensemble \(E_1\) est la boule "]
         conclusion += [r"centrée en l'origine, de rayon 2 "]
         conclusion += [r"définie selon la norme 1."]
         conclusion += [r"Que se passe-t-il si on change "]
@@ -1054,3 +1054,222 @@ class Exo1a(Scene):
         self.wait(1.5)
         
         disp_sub(self, lang='fr')
+
+
+class Norm2(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Norme 2 dans \(\mathbb{R}^2\) avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        phrase = [r"Savez-vous comment "]
+        phrase += [r"représenter l'ensemble"]
+        split = r"\[E_2 = \{(x, y)\in\mathbb{R}^2 ; \sqrt{x^2 + y^2} "
+        split += r"\leqslant 2\}\]"
+        phrase += [split]
+        msg = [Tex(p) for p in phrase]
+        targets = targets_to_write(msg, title_start, 3)
+        
+        self.play(
+            *[Write(t) for t in targets],
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(3)
+
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_rep.scale(0.75)
+            ),
+            *[FadeOut(m) for m in msg]
+        )
+        self.wait(.75)
+
+        
+
+        review_E_1 = r"Dessinons pour rappel, l'ensemble \(E_1\) "
+        review_E_1 += r"avec la norme 1"
+        title_review_E_1 = Title(review_E_1).scale(0.75)
+        self.play(
+            ReplacementTransform(title_rep, title_review_E_1)
+        )
+        
+        ax = Axes(
+            x_range=[-2.5, 2.5],
+            y_range=[-2.5, 2.5],
+            x_length=10,
+            y_length=10,
+            axis_config={"include_numbers": True}
+        ).scale(0.75).next_to(title_review_E_1, 3 * DOWN)
+
+        A = ax.coords_to_point(0,0)
+        dotA = Dot(A, fill_opacity=0.5, color=GREEN)
+
+        # Case 1
+        A_0 = ax.coords_to_point(2,0)
+        dotA_0 = Dot(A_0, fill_opacity=0.5, color=GREEN)
+
+        AA_0 = Line(A, A_0, color=GREEN)
+        
+        A_1 = ax.coords_to_point(0,2)
+        dotA_1 = Dot(A_1, fill_opacity=0.5, color=GREEN)
+
+        A_0A_1 = Line(A_0, A_1, color=GREEN)
+        A_1A = Line(A_1, A, color=GREEN)
+
+        # Case 2
+        A_2 = ax.coords_to_point(-2,0)
+        dotA_2 = Dot(A_2, fill_opacity=0.5, color=GREEN)
+        
+        A_1A_2 = Line(A_1, A_2, color=GREEN)
+        A_2A = Line(A_2, A, color=GREEN)
+
+        A_2 = ax.coords_to_point(-2,0)
+        dotA_2 = Dot(A_2, fill_opacity=0.5, color=GREEN)
+
+        # Case 3
+        A_3 = ax.coords_to_point(0,-2)
+        dotA_3 = Dot(A_3, fill_opacity=0.5, color=GREEN)
+        A_2A_3 = Line(A_2, A_3, color=GREEN)
+        A_3A = Line(A_3, A, color=GREEN)
+        
+        # Case 4
+        A_3A_0 = Line(A_3, A_0, color=GREEN)
+        A_0A_1A_2A_3 = Polygon(
+            *[A_0, A_1, A_2, A_3],
+            fill_opacity=0.25,
+            color=GREEN,
+            stroke_color=GREEN
+        )
+        
+        Adots = [dotA, dotA_0, dotA_1, dotA_2, dotA_3]
+        Alines = [
+            AA_0, A_0A_1, A_1A,
+            A_1A_2, A_2A, A_1A,
+            A_2A_3, A_3A, A_2A,
+            A_3A_0, AA_0, A_3A
+        ]
+        Apolygons = [A_0A_1A_2A_3]
+
+        self.play(
+            Create(ax, run_time=0.5),
+            *[Write(Adot) for Adot in Adots],
+            *[Create(Aline) for Aline in Alines],
+            *[FadeIn(Apolygon) for Apolygon in Apolygons]
+            )
+        self.wait(2)
+
+        draw_E_2 = r"Dessinons l'ensemble \(E_2\) avec la norme 2"
+        title_draw_E_2 = Title(draw_E_2).scale(0.85)
+        circle = Circle(
+            radius=2.0,
+            color=RED,
+            fill_opacity=0.5
+        ).from_three_points(A_0, A_1, A_2, fill_opacity=0.5)
+        
+        
+        self.play(
+            ReplacementTransform(title_review_E_1, title_draw_E_2),
+            Write(circle)
+        )
+        self.wait(2)
+
+        norme = [r"Topologiquement on peut définir"]
+        norme += [r"une norme appelée norme 2 telle que "]
+        center = r"\[\lvert\lvert (x ; y)\rvert\rvert_{2} = "
+        center += r"\sqrt{x^2 + y^2}\]"
+        norme += [center]
+        norme += [r"C'est la norme euclidienne que vous "]
+        norme += [r"connaissez depuis le lycée."]
+        norm_msg = [Tex(n) for n in norme]
+        norm_targets = targets_to_write(norm_msg, title_draw_E_2, 3)
+
+        self.play(
+            *[Write(nt) for nt in norm_targets]
+        )
+        self.wait(1)
+
+        boule = [r"Topologiquement on peut définir"]
+        boule += [r"une boule fermée avec la norme 2 "]
+        center = r"\[B_{2, f}\left((0;0) ; r\right) = "
+        center += r"\left\{(x ; y)\in \mathbb{R}^2 ; "
+        center += r"\lvert\lvert (x ; y)\rvert\rvert_{2} "
+        center += r"\leqslant r\right\}\]"
+        boule += [center]
+        boule_msg = [Tex(b) for b in boule]
+        boule_msg[-1] = boule_msg[-1].scale(0.85)
+        boule_targets = targets_to_write(boule_msg, ax, 3)
+
+        self.play(
+            *[Write(boule_targets[i]) for i in range(2)],
+        )
+
+        replace_and_write(
+            self,
+            norm_msg,
+            boule_msg[2:],
+            title_draw_E_2,
+            2
+        )
+
+        everything = [ax] + Adots + Alines + Apolygons + [circle]
+        self.play(
+            *[e.animate.shift(2 * DOWN) for e in everything]
+        )
+
+        conclusion = [r"\[E_2 = B_{2, f}\left((0 ; 0) ; 2\right)\]"]
+        conclusion += [r"L'ensemble \(E_2\) est la boule "]
+        conclusion += [r"centrée en l'origine, de rayon 2 "]
+        conclusion += [r"définie selon la norme 2."]
+        conclusion += [r"Que se passe-t-il si on change "]
+        conclusion += [r"la norme utilisée ?"]
+        conclusion_msg = [
+            Tex(
+                c,
+                color=RED
+            ).scale(0.85) for c in conclusion
+        ]
+        conc_targets = targets_to_write(conclusion_msg, ax, 3)
+
+        replace_and_write(
+            self,
+            boule_msg[0:2],
+            conclusion_msg,
+            ax,
+            0.5
+        )
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_draw_E_2,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1.5)
+        
+        disp_sub(self, lang='fr')
+        
