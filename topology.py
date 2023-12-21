@@ -357,7 +357,12 @@ def generate_uniform_density_graph(ax_ref, ax_pos, x_inf, x_sup, y_inf, y_sup, a
         ]
 
     polygon_list = [A_1, A_2, A_3, A_4]
-    A_1A_2A_3A_4 = Polygon(*polygon_list, fill_opacity=1, color=BLUE, stroke_color=BLUE)
+    A_1A_2A_3A_4 = Polygon(
+        *polygon_list,
+        fill_opacity=1,
+        color=BLUE,
+        stroke_color=BLUE
+    )
 
     return ax, Adots, Alines, Alabels, Alab_pos, A_1A_2A_3A_4
 
@@ -1266,6 +1271,222 @@ class Norm2(Scene):
         self.play(
             ReplacementTransform(
                 title_draw_E_2,
+                title_end.scale(0.75)
+            ),
+        )
+        self.wait(1.5)
+        
+        disp_sub(self, lang='fr')
+        
+
+class Norm3(Scene):
+    def setup(self, add_border=True):
+        if add_border:
+            self.border = Rectangle(
+                width = FRAME_WIDTH,
+                height = FRAME_HEIGHT,
+                color = WHITE
+            )
+            self.add(self.border)
+    
+    def construct(self):
+        msg = "Norme \(\infty\) dans \(\mathbb{R}^2\) avec "
+        title_start = Title(f"{msg} Manim {manim.__version__}")
+        self.add(title_start.scale(0.75))
+        self.wait(2)
+        youtube_shorts = SVGMobject(
+            "/Users/dn/Documents/pics/svg/Youtube_shorts.svg",
+            fill_opacity=1,
+            fill_color=RED
+        ).scale(0.25)
+        self.play(FadeIn(youtube_shorts.to_edge(2.5*UP)))
+
+        
+        title_question = Title("Défi pour vous")
+        phrase = [r"Savez-vous comment "]
+        phrase += [r"représenter l'ensemble"]
+        split = r"\[E_{\infty} = \{(x, y)\in\mathbb{R}^2 ; "
+        split += r"\max(\lvert x \rvert ; "
+        split += r"\lvert y\rvert) \leqslant 2\}\]"
+        phrase += [split]
+        msg = [Tex(p) for p in phrase]
+        targets = targets_to_write(msg, title_start, 3)
+        
+        self.play(
+            *[Write(t) for t in targets],
+            ReplacementTransform(
+                title_start,
+                title_question.scale(0.75)
+            )
+        )
+        self.wait(5)
+
+
+        title_rep = Title("Regardez jusqu'au bout pour la réponse")
+        self.play(
+            ReplacementTransform(
+                title_question,
+                title_rep.scale(0.75)
+            ),
+            *[FadeOut(m) for m in msg]
+        )
+        self.wait(.75)
+
+        exp_msg = r"Expliquons la construction de l'ensemble \(E_{\infty}\)"
+        title_exp = Title(exp_msg)
+        
+        exp = r"Si \(\max(\lvert x \rvert ; \lvert y \rvert)"
+        exp += r" \leqslant 2\) alors "
+        explanation = [exp]
+        explanation += [r"d'une part \(\lvert x \rvert \leqslant 2\)"]
+        explanation += [r"et donc \(-2\leqslant x \leqslant 2\)"]
+        explanation += [r"c'est-à-dire \(x\in [-2 ; 2]\)"]
+        explanation += [r"d'autre part \(\lvert y \rvert \leqslant 2\)"]
+        explanation += [r"et donc \(-2\leqslant y \leqslant 2\)"]
+        explanation += [r"c'est-à-dire \(y\in [-2 ; 2]\)."]
+        explanation += [r"Ainsi l'ensemble \(E_{\infty} = [-2 ; 2]^2\)."]
+        msg = [Tex(e) for e in explanation]
+        targets = targets_to_write(msg, title_rep, 3)
+        
+        self.play(
+            *[Write(t) for t in targets],
+            ReplacementTransform(
+                title_rep,
+                title_exp.scale(0.75)
+            )
+        )
+        self.wait(6)
+        
+        final_case = r"Dessinons l'ensemble \(E_{\infty}\) en entier"
+        title_final_case = Title(final_case)
+        self.play(
+            ReplacementTransform(title_exp, title_final_case)
+        )
+        
+        ax = Axes(
+            x_range=[-2.5, 2.5],
+            y_range=[-2.5, 2.5],
+            x_length=10,
+            y_length=10,
+            axis_config={"include_numbers": True}
+        ).scale(0.75).next_to(title_final_case, 3 * DOWN)
+
+        
+        # Case 1
+        A_0 = ax.coords_to_point(2,2)
+        dotA_0 = Dot(A_0, fill_opacity=1, color=GREEN)
+        
+        A_1 = ax.coords_to_point(-2,2)
+        dotA_1 = Dot(A_1, fill_opacity=1, color=GREEN)
+
+        A_0A_1 = Line(A_0, A_1, color=GREEN)
+
+        # Case 2
+        A_2 = ax.coords_to_point(-2,-2)
+        dotA_2 = Dot(A_2, fill_opacity=1, color=GREEN)
+        
+        A_1A_2 = Line(A_1, A_2, color=GREEN)
+
+        # Case 3
+        A_3 = ax.coords_to_point(2,-2)
+        dotA_3 = Dot(A_3, fill_opacity=1, color=GREEN)
+        A_2A_3 = Line(A_2, A_3, color=GREEN)
+        A_3A_0 = Line(A_3, A_0, color=GREEN)
+
+        A_0A_1A_2A_3 = Polygon(
+            *[A_0, A_1, A_2, A_3],
+            fill_opacity=0.75,
+            color=GREEN,
+            stroke_color=GREEN
+        )
+        
+        Adots = [dotA_0, dotA_1, dotA_2, dotA_3]
+        Alines = [A_0A_1, A_1A_2, A_2A_3, A_3A_0]
+        Apolygons = [A_0A_1A_2A_3]
+
+        self.play(
+            *[FadeOut(t) for t in targets],
+            Create(ax, run_time=0.5),
+            *[Write(d) for d in Adots],
+            *[Create(line) for line in Alines],
+            *[FadeIn(poly) for poly in Apolygons]
+            )
+        self.wait(1)
+
+        everything = [ax] + Adots + Alines + Apolygons
+        
+
+        norme = [r"Topologiquement on peut définir"]
+        norme += [r"une norme appelée norme \(\infty\) telle que "]
+        center = r"\[\lvert\lvert (x ; y)\rvert\rvert_{\infty} = "
+        center += r"\max(\lvert x \rvert ; \lvert y \rvert)\]"
+        norme += [center]
+        norm_msg = [Tex(n) for n in norme]
+        norm_targets = targets_to_write(norm_msg, title_final_case, 3)
+
+        self.play(
+            *[Write(nt) for nt in norm_targets]
+        )
+        self.wait(1)
+
+        boule = [r"Topologiquement on peut définir"]
+        boule += [r"une boule fermée avec la norme \(\infty\) "]
+        center = r"\[B_{\infty, f}\left((0;0) ; r\right) = "
+        center += r"\left\{(x ; y)\in \mathbb{R}^2 ; "
+        center += r"\lvert\lvert (x ; y)\rvert\rvert_{\infty} "
+        center += r"\leqslant r\right\}\]"
+        boule += [center]
+        boule_msg = [Tex(b) for b in boule]
+        boule_msg[-1] = boule_msg[-1].scale(0.85)
+        boule_targets = targets_to_write(boule_msg, ax, 3)
+
+        self.play(
+            *[Write(boule_targets[i]) for i in range(2)],
+        )
+        self.wait(3)
+        
+        replace_and_write(
+            self,
+            norm_msg,
+            boule_msg[2:],
+            title_final_case,
+            2
+        )
+        self.wait(2)
+        
+        self.play(
+            *[e.animate.shift(2 * DOWN) for e in everything]
+        )
+
+        center = r"\[E_{\infty} = B_{\infty, f}\left((0 ; 0) "
+        center += r"; 2\right)\]"
+        conclusion = [center]
+        conclusion += [r"L'ensemble \(E_{\infty}\) est la boule "]
+        conclusion += [r"centrée en l'origine, de rayon 2 "]
+        conclusion += [r"définie selon la norme \(\infty\)."]
+        conclusion += [r"Que se passe-t-il si on compare les "]
+        conclusion += [r"3 normes utilisées jusqu'alors ?"]
+        conclusion_msg = [
+            Tex(
+                c,
+                color=GREEN
+            ).scale(0.85) for c in conclusion
+        ]
+        conc_targets = targets_to_write(conclusion_msg, ax, 3)
+
+        replace_and_write(
+            self,
+            boule_msg[0:2],
+            conclusion_msg,
+            ax,
+            0.5
+        )
+        self.wait(3)
+        
+        title_end = Title("CLAP : Commentez Likez Abonnez-vous Partagez")
+        self.play(
+            ReplacementTransform(
+                title_final_case,
                 title_end.scale(0.75)
             ),
         )
