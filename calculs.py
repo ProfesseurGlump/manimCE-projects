@@ -1,6 +1,19 @@
 from manim import *
 import manim
+from decimal import *
 
+def res_a_op_b(a, op, b):
+    a_op_b = []
+    for i in range(len(a)):
+        if op[i] == "+":
+            a_op_b += [Decimal(a[i] + b[i])]
+        elif op[i] == "-":
+            a_op_b += [Decimal(a[i] - b[i])]
+        elif op[i] == r"\times":
+            a_op_b += [Decimal(a[i] * b[i])]
+        elif op[i] == r"\div":
+            a_op_b += [Decimal(a[i] / b[i])]
+    return a_op_b
 
 class exerciceA(Scene):
     def construct(self):
@@ -39,16 +52,15 @@ class solutionA(Scene):
         A = MathTex(
             r"A =",
             r"(1 + ",
-            r"2\times 3",
+            r"2\times 3", # 2
             r"- 4 + ",
-            r"5\times 6",
+            r"5\times 6", # 4
             r")\div 11"
         )
         self.play(Write(A.next_to(title_start, 2 * DOWN)))
         self.wait()
-        boxA02 = SurroundingRectangle(A[2])
-        boxA04 = SurroundingRectangle(A[4])
-        self.play(*[Create(box) for box in [boxA02, boxA04]])
+        boxesA = [SurroundingRectangle(A[i]) for i in [2, 4]]
+        self.play(*[Create(box) for box in boxesA])
         self.wait()
         
         A1 = MathTex(
@@ -62,13 +74,23 @@ class solutionA(Scene):
         
         self.play(Write(A1.next_to(A, DOWN)))
         self.wait()
-        boxA12 = SurroundingRectangle(A1[2])
-        boxA14 = SurroundingRectangle(A1[4])
+        boxesA1 = [SurroundingRectangle(A1[i]) for i in [2, 4]]
         self.play(
-            ReplacementTransform(boxA02, boxA12),
-            ReplacementTransform(boxA04, boxA14),
+            *[
+                ReplacementTransform(
+                    boxesA[i],
+                    boxesA1[i]
+                ) for i in range(len(boxesA))
+            ]
         )
         self.wait()
+
+        ext_boxA1 = SurroundingRectangle(A1[1:3])
+        self.play(
+            ReplacementTransform(boxesA1[0], ext_boxA1),
+        )
+        self.wait()
+        self.play(*[FadeOut(box) for box in boxesA1])
         
         A2 = MathTex(
             r"A = (",
@@ -77,66 +99,82 @@ class solutionA(Scene):
             r"+ 30",
             r")\div 11",
         )
-        boxA112 = SurroundingRectangle(A1[1:3])
         self.play(
-            ReplacementTransform(boxA12, boxA112),
             Write(A2.next_to(A1, DOWN)),
-            *[FadeOut(box) for box in [boxA14, boxA04]],
         )
         self.wait()
         boxA21 = SurroundingRectangle(A2[1])
         self.play(
-            ReplacementTransform(boxA112, boxA21)
+            ReplacementTransform(ext_boxA1, boxA21)
         )
         self.wait()
 
+        ext_boxA2 = SurroundingRectangle(A2[1:3])
+        self.play(
+            ReplacementTransform(boxA21, ext_boxA2)
+        )
+        self.wait()
+        
         A3 = MathTex(
             r"A = (",
             r"3",
             r"+ 30",
             r")\div 11",
         )
-        boxA212 = SurroundingRectangle(A2[1:3])
+    
         self.play(
-            ReplacementTransform(boxA21, boxA212),
             Write(A3.next_to(A2, DOWN))
         )
         self.wait()
+        
         boxA31 = SurroundingRectangle(A3[1])
-        self.play(ReplacementTransform(boxA212, boxA31))
+        self.play(ReplacementTransform(ext_boxA2, boxA31))
         self.wait()
-
+        ext_boxA3 = SurroundingRectangle(A3[1:3])
+        self.play(ReplacementTransform(boxA31, ext_boxA3))
+        self.wait()
+        
         A4 = MathTex(
             r"A =",
             r"33",
             r"\div 11"
         )
-        boxA312 = SurroundingRectangle(A3[1:3])
+        
         self.play(
-            ReplacementTransform(boxA31, boxA312),
             Write(A4.next_to(A3, DOWN))
         )
         self.wait()
+        
         boxA41 = SurroundingRectangle(A4[1])
-        self.play(ReplacementTransform(boxA312, boxA41))
+        self.play(ReplacementTransform(ext_boxA3, boxA41))
         self.wait()
 
+        ext_boxA4 = SurroundingRectangle(A4[1:3])
+        self.play(ReplacementTransform(boxA41, ext_boxA4))
+        self.wait()
+        
         A5 = MathTex(
             r"A =",
-            r"3",
+            r"3", # 1
         )
-        boxA412 = SurroundingRectangle(A4[1:3])
+        
         self.play(
-            ReplacementTransform(boxA41, boxA412),
             Write(A5.next_to(A4, DOWN))
+        )
+        self.wait()
+
+        boxA51 = SurroundingRectangle(A5[1])
+        self.play(
+            ReplacementTransform(ext_boxA4, boxA51)
         )
         self.wait()
 
         boxA5 = SurroundingRectangle(A5)
         self.play(
-            ReplacementTransform(boxA412, boxA5)
+            ReplacementTransform(boxA51, boxA5)
         )
         self.wait()
+        self.play(FadeOut(boxA51))
 
 
 class exerciceB(Scene):
@@ -149,9 +187,9 @@ class exerciceB(Scene):
         B = MathTex(
             r"B =",
             r"(9 - ",
-            r"4\times 2",
+            r"4\times 2", # 2
             r" + ",
-            r"7\times 3",
+            r"7\times 3", # 4
             r")\div 11"
         )
         self.play(Write(B.next_to(title_start, 2 * DOWN)))
@@ -176,88 +214,105 @@ class solutionB(Scene):
         B = MathTex(
             r"B = (",
             r"9 - ",
-            r"4\times 2",
+            r"4\times 2", # 2
             r"+ ",
-            r"7\times 3 ",
+            r"7\times 3 ", # 4
             r")",
             r"\div 11"
         )
         self.play(Write(B.next_to(title_start, 2 * DOWN)))
         self.wait()
-        boxB02 = SurroundingRectangle(B[2])
-        boxB04 = SurroundingRectangle(B[4])
-        self.play(*[Create(box) for box in [boxB02, boxB04]])
+        boxesB = [SurroundingRectangle(B[i]) for i in [2, 4]]
+        self.play(*[Create(box) for box in boxesB])
         self.wait()
         
         B1 = MathTex(
             r"B = (",
             r"9 - ",
-            r"8",
+            r"8", # 2
             r" + ",
-            r"21",
+            r"21", # 4
             r")",
             r"\div 11",
         )
         
         self.play(Write(B1.next_to(B, DOWN)))
         self.wait()
-        boxB12 = SurroundingRectangle(B1[2])
-        boxB14 = SurroundingRectangle(B1[4])
+        boxesB1 = [SurroundingRectangle(B1[i]) for i in [2, 4]]
         self.play(
-            ReplacementTransform(boxB02, boxB12),
-            ReplacementTransform(boxB04, boxB14),
-        )
-        self.wait()
-        
-        B2 = MathTex(
-            r"B = (",
-            r"1 ",
-            r"+ ",
-            r"21",
-            r")",
-            r"\div 11",
-        )
-        boxB112 = SurroundingRectangle(B1[1:3])
-        self.play(
-            ReplacementTransform(boxB12, boxB112),
-            Write(B2.next_to(B1, DOWN)),
-            *[FadeOut(box) for box in [boxB14, boxB04]],
-        )
-        self.wait()
-        boxB21 = SurroundingRectangle(B2[1])
-        self.play(
-            ReplacementTransform(boxB112, boxB21)
+            *[
+                ReplacementTransform(
+                    boxesB[i],
+                    boxesB1[i]
+                ) for i in range(len(boxesB))
+            ]
         )
         self.wait()
 
+        ext_boxB1 = SurroundingRectangle(B1[1:3])
+        self.play(ReplacementTransform(boxesB1[0], ext_boxB1))
+        self.wait()
+        self.play(*[FadeOut(box) for box in boxesB1])
+        
+        B2 = MathTex(
+            r"B = (",
+            r"1 ", # 1
+            r"+ ",
+            r"21", # 3
+            r")",
+            r"\div 11",
+        )
+        
+        self.play(
+            Write(B2.next_to(B1, DOWN)),
+        )
+        self.wait()
+                  
+        boxB21 = SurroundingRectangle(B2[1])
+        self.play(
+            ReplacementTransform(ext_boxB1, boxB21)
+        )
+        self.wait()
+
+        ext_boxB2 = SurroundingRectangle(B2[1:4])
+        self.play(ReplacementTransform(boxB21, ext_boxB2))
+        self.wait()
+        self.play(FadeOut(boxB21))
+    
+                  
         B3 = MathTex(
             r"B = ",
             r"22",
             r"\div 11",
         )
-        boxB212 = SurroundingRectangle(B2[1:4])
+        
         self.play(
-            ReplacementTransform(boxB21, boxB212),
             Write(B3.next_to(B2, DOWN))
         )
         self.wait()
+                  
         boxB31 = SurroundingRectangle(B3[1])
-        self.play(ReplacementTransform(boxB212, boxB31))
+        self.play(ReplacementTransform(ext_boxB2, boxB31))
         self.wait()
 
+        ext_boxB3 = SurroundingRectangle(B3[1:3])
+        self.play(ReplacementTransform(boxB31, ext_boxB3))
+        self.wait()
+        self.play(FadeOut(boxB31))
+                  
         B4 = MathTex(
             r"B =",
             r"2",
         )
-        boxB312 = SurroundingRectangle(B3[1:3])
         self.play(
-            ReplacementTransform(boxB31, boxB312),
             Write(B4.next_to(B3, DOWN))
         )
         self.wait()
+                  
         boxB41 = SurroundingRectangle(B4[1])
-        self.play(ReplacementTransform(boxB312, boxB41))
+        self.play(ReplacementTransform(ext_boxB3, boxB41))
         self.wait()
+        self.play(FadeOut(ext_boxB3))
 
         boxB4 = SurroundingRectangle(B4)
         self.play(
@@ -279,7 +334,7 @@ class exerciceC(Scene):
             r"19 - 8",
             r")\times 4 - (",
             r"5 + 1",
-            r")\times ",
+            r")\times (",
             r"3 + 4",
             r")]"
         )
@@ -307,7 +362,7 @@ class solutionC(Scene):
             r"19 - 8", # 1
             r")\times 4 - (",
             r"5 + 1", # 3
-            r")\times ",
+            r")\times (",
             r"3 + 4", # 5
             r")]"
         )
@@ -479,6 +534,7 @@ class solutionD(Scene):
         )
         self.play(Write(D.next_to(title_start, 2 * DOWN)))
         self.wait()
+        
         boxesD = [SurroundingRectangle(D[i]) for i in [1, 3]]
         self.play(*[Create(box) for box in boxesD])
         self.wait()
@@ -495,6 +551,7 @@ class solutionD(Scene):
         
         self.play(Write(D1.next_to(D, DOWN)))
         self.wait()
+        
         boxesD1 = [SurroundingRectangle(D1[i]) for i in [1, 4]]
         self.play(
             *[
@@ -505,6 +562,10 @@ class solutionD(Scene):
         )
         self.wait()
         self.play(*[FadeOut(boxesD[i]) for i in range(2)])
+
+        ext_boxD1 = SurroundingRectangle(D1[3:5])
+        self.play(ReplacementTransform(boxesD1[1], ext_boxD1))
+        self.play(*[FadeOut(b) for b in boxesD1])
         
         D2 = MathTex(
             r"D = (",
@@ -513,26 +574,28 @@ class solutionD(Scene):
             r"1", # 3
             r")\times 23",
         )
-        boxD134 = SurroundingRectangle(D1[3:5])
+        
         self.play(
-            FadeOut(boxesD1[0]),
-            ReplacementTransform(boxesD1[-1], boxD134),
             Write(D2.next_to(D1, DOWN)),
         )
         self.wait()
-        self.play(FadeOut(boxesD1[-1]))
+        
         
         boxD23 = SurroundingRectangle(D2[3])
         self.play(
             ReplacementTransform(
-                boxD134,
+                ext_boxD1,
                 boxD23
             ) 
         )
         self.wait()
-        self.play(FadeOut(boxD134))
+        self.play(FadeOut(ext_boxD1))
 
         ext_boxD2 = SurroundingRectangle(D2[2:4])
+        self.play(ReplacementTransform(boxD23, ext_boxD2))
+        self.wait()
+        self.play(FadeOut(boxD23))
+        
         D3 = MathTex(
             r"D = (",
             r"3 - ",
@@ -540,11 +603,9 @@ class solutionD(Scene):
             r")\times 23",
         )
         self.play(
-            ReplacementTransform(boxD23, ext_boxD2),
             Write(D3.next_to(D2, DOWN))
         )
         self.wait()
-        self.play(FadeOut(boxD23))
         
         boxD32 = SurroundingRectangle(D3[2])
         self.play(
@@ -579,6 +640,11 @@ class solutionD(Scene):
         self.wait()
         self.play(FadeOut(ext_boxD3))
 
+        ext_boxD4 = SurroundingRectangle(D4[1:])
+        self.play(ReplacementTransform(boxD41, ext_boxD4))
+        self.wait()
+        self.play(FadeOut(boxD41))
+
         D5 = MathTex(
             r"D = ",
             r"0", # 1
@@ -592,10 +658,10 @@ class solutionD(Scene):
         boxD51 = SurroundingRectangle(D5[1])
         
         self.play(
-            ReplacementTransform(boxD41, boxD51),
+            ReplacementTransform(ext_boxD4, boxD51),
         )
         self.wait()
-        self.play(FadeOut(boxD41))
+        self.play(FadeOut(ext_boxD4))
         
         boxD5 = SurroundingRectangle(D5)
         self.play(
@@ -1249,3 +1315,494 @@ class solutionG(Scene):
         self.play(ReplacementTransform(boxG61, boxG6))
         self.wait()
         self.play(FadeOut(boxG61))
+
+
+class exerciceH(Scene):
+    def construct(self):
+        msg = "Exercice"
+        title_start = Title(f"{msg}")
+        self.add(title_start)
+        self.wait()
+        
+        H = MathTex(
+            r"H = [(",
+            r"0,17 + 3,24", # 1 
+            r") + (", 
+            r"0,09 + 0,5", # 3
+            r")]\times (", 
+            r"0,01\times 25", # 5
+            r") - [(",
+            r"8\times 0,125", # 7
+            r") + (",
+            r"0,125 + 1,375", # 9
+            r")]\times (",
+            r"3,749 - 3,549", # 11
+            r")"
+        ).scale(0.55)
+        self.play(Write(H.next_to(title_start, 2 * DOWN)))
+        self.wait()
+
+        H1 = MathTex(
+            r"H = ",
+            r"\,?"
+        )
+        
+        self.play(Write(H1.next_to(H, DOWN)))
+        self.wait()
+        
+        
+class solutionH(Scene):
+    def construct(self):
+        msg = "Solution"
+        title_start = Title(f"{msg}")
+        self.add(title_start)
+        self.wait()
+        
+        H = MathTex(
+            r"H = [(",
+            r"0,17 + 3,24", # 1 
+            r") + (", 
+            r"0,09 + 0,5", # 3
+            r")]\times (", 
+            r"0,01\times 25", # 5
+            r") - [(",
+            r"8\times 0,125", # 7
+            r") + (",
+            r"0,125 + 1,375", # 9
+            r")]\times (",
+            r"3,749 - 3,549", # 11
+            r")"
+        ).scale(0.55)
+        self.play(Write(H.next_to(title_start, 2 * DOWN)))
+        self.wait()
+        boxesH = [
+            SurroundingRectangle(H[i]) for i in range(1, 12, 2)
+        ]
+        self.play(*[Create(box) for box in boxesH])
+        self.wait()
+        
+        H1 = MathTex(
+            r"H = [(",
+            r"3,41", # 1 
+            r"+ ", 
+            r"0,59", # 3
+            r")\times ", 
+            r"0,25", # 5
+            r"] - [(",
+            r"1", # 7
+            r"+ ",
+            r"1,5", # 9
+            r")\times ",
+            r"0,2", # 11
+            r"]"
+        )
+        
+        self.play(Write(H1.next_to(H, DOWN)))
+        self.wait()
+        boxesH1 = [
+            SurroundingRectangle(H1[i]) for i in range(1, 12, 2)
+        ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesH[i], boxesH1[i]
+                ) for i in range(len(boxesH))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesH])
+
+        ext_boxesH1 = [
+            SurroundingRectangle(H1[1:4]),
+            SurroundingRectangle(H1[7:10])
+        ]
+        
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesH1[i],
+                    ext_boxesH1[0]
+                ) for i in [0, 1]
+            ],
+            *[
+                ReplacementTransform(
+                    boxesH1[i],
+                    ext_boxesH1[1]
+                ) for i in [3, 4]
+            ],
+            *[FadeOut(boxesH1[i]) for i in [2, 5]]
+        )
+        self.wait()
+        
+        H2 = MathTex(
+            r"H = (",
+            r"4", # 1 
+            r"\times ", 
+            r"0,25", # 3
+            r") - (",
+            r"2,5", # 5
+            r"\times ",
+            r"0,2", # 7
+            r")"
+        )
+        
+        self.play(
+            Write(H2.next_to(H1, DOWN)),
+        )
+        self.wait()
+
+        
+        boxesH215 = [
+            SurroundingRectangle(H2[1]),
+            SurroundingRectangle(H2[5])
+            ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    ext_boxesH1[i],
+                    boxesH215[i]
+                ) for i in range(len(boxesH215))
+            ]
+        )
+        self.wait()
+        self.play(*[FadeOut(eb) for eb in ext_boxesH1])
+
+        ext_boxesH2 = [
+            SurroundingRectangle(H2[1:4]),
+            SurroundingRectangle(H2[5:8])
+        ]
+            
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesH215[i],
+                    ext_boxesH2[i]
+                ) for i in range(len(boxesH215))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesH215])
+        
+        H3 = MathTex(
+            r"H = ",
+            r"1", # 1 
+            r" - ",
+            r"0,5", # 3
+        )
+
+        self.play(
+            Write(H3.next_to(H2, DOWN))
+        )
+        self.wait()
+        
+        boxesH313 = [
+            SurroundingRectangle(H3[1]),
+            SurroundingRectangle(H3[3])
+        ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    ext_boxesH2[i],
+                    boxesH313[i]
+                ) for i in range(len(boxesH313))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(eb) for eb in ext_boxesH2])
+
+        ext_boxH3 = SurroundingRectangle(H3[1:4])
+        self.play(
+            *[
+                ReplacementTransform(
+                    b,
+                    ext_boxH3
+                ) for b in boxesH313
+            ]
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesH313])
+        
+        H4 = MathTex(
+            r"H = ",
+            r"0,5", # 1
+        )
+
+        self.play(
+            Write(H4.next_to(H3, DOWN))
+        )
+        self.wait()             
+        
+        boxH41 = SurroundingRectangle(H4[1])
+        
+        self.play(
+            ReplacementTransform(ext_boxH3, boxH41),
+        )
+        self.wait()
+        self.play(FadeOut(ext_boxH3))
+
+        boxH4 = SurroundingRectangle(H4)
+        self.play(ReplacementTransform(boxH41, boxH4))
+        self.wait()
+        self.play(FadeOut(boxH41))
+        
+        
+        
+        
+class exerciceI(Scene):
+    def construct(self):
+        msg = "Exercice"
+        title_start = Title(f"{msg}")
+        self.add(title_start)
+        self.wait()
+
+        a_1, a_3, a_5, a_7, a_9, a_11 = 0.17, 0.09, 0.01, 8, 0.125, 3.749
+        op_1, op_3, op_5= "+", "+", r"\times"
+        op_7, op_9, op_11 = r"\times", "+", "-"
+        b_1, b_3, b_5, b_7, b_9, b_11 = 3.24, 0.5, 25, 0.124, 1.375, 3.549
+        I = MathTex(
+            r"I = [(",
+            f"{a_1}{op_1}{b_1}", # 1 
+            r") + (", 
+            f"{a_3}{op_3}{b_3}", # 3
+            r")]\times (", 
+            f"{a_5}{op_5}{b_5}", # 5
+            r") - [(",
+            f"{a_7}{op_7}{b_7}", # 7
+            r") + (",
+            f"{a_9}{op_9}{b_9}", # 9
+            r")]\times (",
+            f"{a_11}{op_11}{b_11}", # 11
+            r")"
+        ).scale(0.55)
+        self.play(Write(I.next_to(title_start, 2 * DOWN)))
+        self.wait()
+
+        I1 = MathTex(
+            r"I = ",
+            r"\,?"
+        )
+        
+        self.play(Write(I1.next_to(I, DOWN)))
+        self.wait()
+        
+        
+class solutionI(Scene):
+    def construct(self):
+        msg = "Solution"
+        title_start = Title(f"{msg}")
+        self.add(title_start)
+        self.wait()
+        
+        a_1, a_3, a_5, a_7, a_9, a_11 = 0.123, 1.62, 12, 3.125, 12.507, 3.519
+        op_1, op_2, op_3, op_4, op_5= "+", "-", "-", r"\times", r"\div"
+        op_6, op_7, op_8, op_9, op_10, op_11 = "-", "+", "+", "-", r"\times", "-"
+        b_1, b_3, b_5, b_7, b_9, b_11 = 8.427, 0.07, 2, 4.375, 0.993, 1.769
+
+        getcontext().prec = 3
+        a = [a_1, a_3, a_5, a_7, a_9, a_11]
+        a = [Decimal(a[i]) for i in range(len(a))]
+        
+        op = [op_1, op_3, op_5, op_7, op_9, op_11]
+        
+        b = [b_1, b_3, b_5, b_7, b_9, b_11]
+        b = [Decimal(b[i]) for i in range(len(b))]
+        I = MathTex(
+            r"I = [(",
+            f"{a_1}{op_1}{b_1}", # 1 
+            f") {op_2} (", 
+            f"{a_3}{op_3}{b_3}", # 3
+            f")] {op_4} (", 
+            f"{a_5}{op_5}{b_5}", # 5
+            f") {op_6} [(",
+            f"{a_7}{op_7}{b_7}", # 7
+            f") {op_8} (",
+            f"{a_9}{op_9}{b_9}", # 9
+            f")] {op_10} (",
+            f"{a_11}{op_11}{b_11}", # 11
+            r")"
+        ).scale(0.55)
+        self.play(Write(I.next_to(title_start, 2 * DOWN)))
+        self.wait()
+        
+        boxesI = [
+            SurroundingRectangle(I[i]) for i in range(1, 12, 2)
+        ]
+        self.play(*[Create(box) for box in boxesI])
+        self.wait()
+        
+        a_op_b = res_a_op_b(a, op, b)
+        
+        I1 = MathTex(
+            r"I = [(",
+            f"{a_op_b[0]}", # 1 
+            f"{op_2}", 
+            f"{a_op_b[1]}", # 3
+            f") {op_4}", 
+            f"{a_op_b[2]}", # 5
+            f"] {op_6} [(",
+            f"{a_op_b[3]}", # 7
+            f"{op_8} ",
+            f"{a_op_b[4]}", # 9
+            f") {op_10}",
+            f"{a_op_b[5]}", # 11
+            r"]"
+        )
+        
+        self.play(Write(I1.next_to(I, DOWN)))
+        self.wait()
+
+        a1 = [Decimal(a_op_b[i]) for i in range(len(a_op_b)) if i % 2 == 0]
+        op1 = [op[i] for i in range(len(op)) if i % 2 == 1]
+        b1 = [Decimal(a_op_b[i]) for i in range(len(a_op_b)) if i % 2 == 1]
+        
+        boxesI1 = [
+            SurroundingRectangle(I1[i]) for i in range(1, 12, 2)
+        ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesI[i], boxesI1[i]
+                ) for i in range(len(boxesI))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesI])
+
+        ext_boxesI1 = [
+            SurroundingRectangle(I1[1:4]),
+            SurroundingRectangle(I1[7:10])
+        ]
+        
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesI1[i],
+                    ext_boxesI1[0]
+                ) for i in [0, 1]
+            ],
+            *[
+                ReplacementTransform(
+                    boxesI1[i],
+                    ext_boxesI1[1]
+                ) for i in [3, 4]
+            ], 
+            *[FadeOut(boxesI1[i]) for i in [2, 5]]
+        )
+        self.wait()
+
+        a_op_b2 = res_a_op_b(a1, op1, b1)
+        
+        I2 = MathTex(
+            r"I = (",
+            f"{a_op_b2[0]}", # 1 
+            f"{op1[0]}", 
+            f"{a_op_b2[1]}", # 3
+            f") {op1[1]} (",
+            f"{a_op_b2[2]}", # 5
+            f"{op1[2]} ",
+            f"{a_op_b2[-1]}", # 7
+            r")"
+        )
+        
+        self.play(
+            Write(I2.next_to(I1, DOWN)),
+        )
+        self.wait()
+
+        
+        boxesI215 = [
+            SurroundingRectangle(I2[1]),
+            SurroundingRectangle(I2[5])
+            ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    ext_boxesI1[i],
+                    boxesI215[i]
+                ) for i in range(len(boxesI215))
+            ]
+        )
+        self.wait()
+        self.play(*[FadeOut(eb) for eb in ext_boxesI1])
+
+        ext_boxesI2 = [
+            SurroundingRectangle(I2[1:4]),
+            SurroundingRectangle(I2[5:8])
+        ]
+            
+        self.play(
+            *[
+                ReplacementTransform(
+                    boxesI215[i],
+                    ext_boxesI2[i]
+                ) for i in range(len(boxesI215))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesI215])
+        
+        I3 = MathTex(
+            r"I = ",
+            r"1", # 1 
+            r" - ",
+            r"0,5", # 3
+        )
+
+        self.play(
+            Write(I3.next_to(I2, DOWN))
+        )
+        self.wait()
+        
+        boxesI313 = [
+            SurroundingRectangle(I3[1]),
+            SurroundingRectangle(I3[3])
+        ]
+        self.play(
+            *[
+                ReplacementTransform(
+                    ext_boxesI2[i],
+                    boxesI313[i]
+                ) for i in range(len(boxesI313))
+            ],
+        )
+        self.wait()
+        self.play(*[FadeOut(eb) for eb in ext_boxesI2])
+
+        ext_boxI3 = SurroundingRectangle(I3[1:4])
+        self.play(
+            *[
+                ReplacementTransform(
+                    b,
+                    ext_boxI3
+                ) for b in boxesI313
+            ]
+        )
+        self.wait()
+        self.play(*[FadeOut(b) for b in boxesI313])
+        
+        I4 = MathTex(
+            r"I = ",
+            r"0,5", # 1
+        )
+
+        self.play(
+            Write(I4.next_to(I3, DOWN))
+        )
+        self.wait()             
+        
+        boxI41 = SurroundingRectangle(I4[1])
+        
+        self.play(
+            ReplacementTransform(ext_boxI3, boxI41),
+        )
+        self.wait()
+        self.play(FadeOut(ext_boxI3))
+
+        boxI4 = SurroundingRectangle(I4)
+        self.play(ReplacementTransform(boxI41, boxI4))
+        self.wait()
+        self.play(FadeOut(boxI41))
+        
+        
+        
+        
